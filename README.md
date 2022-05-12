@@ -6,7 +6,8 @@ Steps to build a shared library for iOS:
 
 1. git clone this repository
 2. cd into cmd/btfs
-3. make ios
+3. export IOS_OUT=$(pwd) #Defining the IOS_OUT PATH envar used in makefile.
+4. make ios
 
 
 Steps to add shared library into iOS for testing:
