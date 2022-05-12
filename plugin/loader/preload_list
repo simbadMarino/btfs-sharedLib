@@ -1,0 +1,9 @@
+# this file contains plugins to be preloaded
+# empty lines or starting with '#' are ignored
+#
+# name             go-path                  number of the sub-plugin or *
+
+ipldgit github.com/bittorrent/go-btfs/plugin/plugins/git *
+badgerds github.com/bittorrent/go-btfs/plugin/plugins/badgerds *
+flatfs github.com/bittorrent/go-btfs/plugin/plugins/flatfs *
+levelds github.com/bittorrent/go-btfs/plugin/plugins/levelds *

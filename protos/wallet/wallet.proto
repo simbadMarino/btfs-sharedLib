@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package wallet;
+
+// gogo plugin toggles
+option (gogoproto.gogoproto_import) = true;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.messagename_all) = true;
+option (gogoproto.populate_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+// golang option
+option go_package = "walletpb";
+// java options
+option java_multiple_files = true;
+option java_outer_classname = "WalletProto";
+option java_package = "io.btfs.wallet";
+
+import "github.com/tron-us/go-btfs-common/protos/ledger/ledger.proto";
+import "github.com/tron-us/protobuf/gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+message Transaction {
+  int64 id = 1;
+  google.protobuf.Timestamp time_create = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  int64 amount = 3;
+  string from = 4;
+  string to = 5;
+  string status = 6;
+}
+
+message TransactionV1 {
+  string id = 1;
+  google.protobuf.Timestamp time_create = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  int64 amount = 3;
+  string from = 4;
+  string to = 5;
+  string status = 6;
+  enum Type {
+    EXCHANGE = 0;
+    ON_CHAIN = 1;
+    OFF_CHAIN = 2;
+  }
+  Type type = 7;
+}
+
+message ChannelState {
+  ledger.ChannelState state = 1;
+  google.protobuf.Timestamp time_create = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+}

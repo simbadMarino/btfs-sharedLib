@@ -1,0 +1,31 @@
+FROM golang:1.15
+MAINTAINER TRON-US <support@tron.network>
+
+# Dockerfile.unit_testing will build an image to run the go unit tests.
+# Use the regular Dockerfile to run a btfs daemon instead
+ENV SRC_DIR /go-btfs
+ENV TEST_NO_FUSE 1
+ENV PATH="/usr/local/go/bin:${PATH}"
+
+# Set test coverage output
+ENV TEST_COVERAGE_OUTPUT="/btfs_data/tests_coverage"
+
+# Set directory where special test binary will go
+ENV TEST_FILE_DIR="/btfs_data"
+
+# Set timeout value for unit tests
+ENV GOTFLAGS -timeout 3m
+
+WORKDIR /go-btfs
+
+# Download packages first so they can be cached.
+COPY go.mod go.sum $SRC_DIR/
+
+RUN go mod download 
+
+COPY . $SRC_DIR
+
+RUN git init && git add .
+
+# by default lets run the go fmt, tidy and unit tests
+CMD make test_go_fmt test_go_mod test_go_test test_coverage_output test_coverage_html test_build_special_exe
