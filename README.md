@@ -1,5 +1,6 @@
 # btfs-sharedLib
 BTFS shared libraries implementation for iOS and Android
+This code is a modified fork from the official bittorrent/go-btfs code. Some dependencies were adapted/removed so it can run on iOS. Android support is pending to be tested.
 
 Steps to build a shared library for iOS:
 
