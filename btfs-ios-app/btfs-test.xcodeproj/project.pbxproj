@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		85F7C716282AB821008C2F74 /* btfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 85F7C714282AB821008C2F74 /* btfs.a */; };
+		85A68ED7283935F700199EA2 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85A68ED6283935F700199EA2 /* CloudKit.framework */; };
+		85A68EDA28395A4F00199EA2 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85A68ED928395A4F00199EA2 /* NetworkExtension.framework */; };
+		85EA4F80283BD873008E9789 /* btfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EA4F7F283BD873008E9789 /* btfs.a */; };
 		BC7DBBAD2804D57C000A7B7E /* btfs_testApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC7DBBAC2804D57C000A7B7E /* btfs_testApp.swift */; };
 		BC7DBBAF2804D57C000A7B7E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC7DBBAE2804D57C000A7B7E /* ContentView.swift */; };
 		BC7DBBB12804D57D000A7B7E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC7DBBB02804D57D000A7B7E /* Assets.xcassets */; };
@@ -35,8 +37,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		85F7C714282AB821008C2F74 /* btfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = btfs.a; sourceTree = "<group>"; };
-		85F7C715282AB821008C2F74 /* btfs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = btfs.h; sourceTree = "<group>"; };
+		850F604B2839A56600CFC2B1 /* libsandbox.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsandbox.tbd; path = usr/lib/libsandbox.tbd; sourceTree = SDKROOT; };
+		85A68ECD2838C32000199EA2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		85A68ED6283935F700199EA2 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		85A68ED928395A4F00199EA2 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
+		85EA4F7E283BD873008E9789 /* btfs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btfs.h; path = ../../cmd/btfs/btfs.h; sourceTree = "<group>"; };
+		85EA4F7F283BD873008E9789 /* btfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = btfs.a; path = ../../cmd/btfs/btfs.a; sourceTree = "<group>"; };
 		BC7DBBA92804D57C000A7B7E /* btfs-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "btfs-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC7DBBAC2804D57C000A7B7E /* btfs_testApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = btfs_testApp.swift; sourceTree = "<group>"; };
 		BC7DBBAE2804D57C000A7B7E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -55,7 +61,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85F7C716282AB821008C2F74 /* btfs.a in Frameworks */,
+				85A68EDA28395A4F00199EA2 /* NetworkExtension.framework in Frameworks */,
+				85A68ED7283935F700199EA2 /* CloudKit.framework in Frameworks */,
+				85EA4F80283BD873008E9789 /* btfs.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,6 +84,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		85A68ED5283935F700199EA2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				850F604B2839A56600CFC2B1 /* libsandbox.tbd */,
+				85A68ED928395A4F00199EA2 /* NetworkExtension.framework */,
+				85A68ED6283935F700199EA2 /* CloudKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		BC7DBBA02804D57C000A7B7E = {
 			isa = PBXGroup;
 			children = (
@@ -83,6 +101,7 @@
 				BC7DBBBC2804D57D000A7B7E /* btfs-testTests */,
 				BC7DBBC62804D57D000A7B7E /* btfs-testUITests */,
 				BC7DBBAA2804D57C000A7B7E /* Products */,
+				85A68ED5283935F700199EA2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -99,8 +118,9 @@
 		BC7DBBAB2804D57C000A7B7E /* btfs-test */ = {
 			isa = PBXGroup;
 			children = (
-				85F7C714282AB821008C2F74 /* btfs.a */,
-				85F7C715282AB821008C2F74 /* btfs.h */,
+				85EA4F7F283BD873008E9789 /* btfs.a */,
+				85EA4F7E283BD873008E9789 /* btfs.h */,
+				85A68ECD2838C32000199EA2 /* Info.plist */,
 				BC7DBBAC2804D57C000A7B7E /* btfs_testApp.swift */,
 				BC7DBBAE2804D57C000A7B7E /* ContentView.swift */,
 				BC7DBBB02804D57D000A7B7E /* Assets.xcassets */,
@@ -338,6 +358,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_ON_DEMAND_RESOURCES = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -354,6 +375,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -400,6 +423,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_ON_DEMAND_RESOURCES = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -409,6 +433,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -424,19 +450,34 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "btfs-test/btfs-test.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"btfs-test/Preview Content\"";
 				DEVELOPMENT_TEAM = P6UG545LF4;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
-				"EXCLUDED_ARCHS[sdk=*]" = arm64;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				EXCLUDED_ARCHS = "";
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "btfs-test/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "BTFS node";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "";
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
+				INSTALL_PATH = "$(LOCAL_APPS_DIR)";
+				LD_DYLIB_ALLOWABLE_CLIENTS = "";
+				"LD_DYLIB_ALLOWABLE_CLIENTS[arch=*]" = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -445,7 +486,8 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/btfs-test",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "btfs.btfs-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -461,20 +503,30 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "btfs-test/btfs-test.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"btfs-test/Preview Content\"";
 				DEVELOPMENT_TEAM = P6UG545LF4;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				EXCLUDED_ARCHS = "";
-				"EXCLUDED_ARCHS[sdk=*]" = arm64;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "btfs-test/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "BTFS node";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "";
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -483,7 +535,8 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/btfs-test",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "btfs.btfs-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
