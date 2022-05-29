@@ -2,7 +2,12 @@
 BTFS shared libraries implementation for iOS and Android
 This code is a modified fork from the official bittorrent/go-btfs code. Some dependencies were adapted/removed so it can run on iOS. Android support is pending to be tested.
 
-Steps to build a shared library for iOS:
+# Requirements(iOS library):
+* go1.16.15 darwin/arm64
+* XCode command line tools installed
+* Tested on XCode 13.3.1, other versions might present unexpected problems.
+
+# Steps to build a shared library for iOS:
 
 1. git clone this repository
 2. cd into cmd/btfs
@@ -10,7 +15,7 @@ Steps to build a shared library for iOS:
 4. make ios
 
 
-Steps to add shared library into iOS for testing:
+# Steps to add shared library into iOS for testing:
 
 1. Open btfs-ios-app in Xcode
 2. Copy btfs.a and bfs.h into btfs/btfs-test using Xcode drag and drop function.
