@@ -27,11 +27,9 @@ func GenerateKey(importKey string, keyType string, seedPhrase string) (string, s
 		if err := !bip39.IsMnemonicValid(mnemonic); err {
 			return "", "", fmt.Errorf("Entered seed phrase is not valid")
 		}
-		Println("Generating TRON key with BIP39 seed phrase...")
 		fmt.Println("Generating TRON key with BIP39 seed phrase...")
 		return GeneratePrivKeyUsingBIP39(mnemonic)
 	} else if (keyType == "" && importKey == "") || keyType == "BIP39" {
-		Println("Generating TRON key with BIP39 seed phrase...")
 		fmt.Println("Generating TRON key with BIP39 seed phrase...")
 		return GeneratePrivKeyUsingBIP39("")
 	} else {
@@ -90,7 +88,6 @@ func GeneratePrivKeyUsingBIP39(mnemonic string) (string, string, error) {
 	importKey := hex.EncodeToString(encoding)
 
 	// Display mnemonic and keys
-	Println("Master public key: ", publicKey)
 	fmt.Println("Master public key: ", publicKey)
 
 	return importKey, mnemonic, nil

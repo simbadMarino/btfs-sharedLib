@@ -151,7 +151,7 @@ func doInit(out io.Writer, repoRoot string, empty bool, nBitsForKeypair int, con
 		return err
 	}
 
-	Printf("initializing BTFS node at %s\n", repoRoot)
+	fmt.Printf("initializing BTFS node at %s\n", repoRoot)
 	if _, err := fmt.Fprintf(out, "initializing BTFS node at %s\n", repoRoot); err != nil {
 		return err
 	}
@@ -211,14 +211,14 @@ func doInit(out io.Writer, repoRoot string, empty bool, nBitsForKeypair int, con
 func storeChainId(conf *config.Config, repoRoot string) error {
 	statestore, err := chain.InitStateStore(repoRoot)
 	if err != nil {
-		Println("init statestore err: ", err)
 		fmt.Println("init statestore err: ", err)
 		return err
 	}
 
+	defer statestore.Close()
+
 	err = chain.StoreChainIdToDisk(conf.ChainInfo.ChainId, statestore)
 	if err != nil {
-		Println("init StoreChainId err: ", err)
 		fmt.Println("init StoreChainId err: ", err)
 		return err
 	}
@@ -231,7 +231,6 @@ func addChainInfo(conf *config.Config) error {
 	chainId := conf.ChainInfo.ChainId
 	chainCfg, found := chaincfg.GetChainConfig(chainId)
 	if !found {
-		Printf("chainid=%d is not found.", chainId)
 		return errors.New(fmt.Sprintf("chainid=%d is not found.", chainId))
 	}
 
@@ -319,12 +318,10 @@ func addDefaultAssets(out io.Writer, repoRoot string) error {
 	}
 	log.Debugf("init: seeded init docs %s", dkey)
 
-	Printf("to get started, enter:\n")
 	if _, err = fmt.Fprintf(out, "to get started, enter:\n"); err != nil {
 		return err
 	}
 
-	Printf("\n\tbtfs cat /btfs/%s/readme\n\n", dkey)
 	_, err = fmt.Fprintf(out, "\n\tbtfs cat /btfs/%s/readme\n\n", dkey)
 	return err
 }

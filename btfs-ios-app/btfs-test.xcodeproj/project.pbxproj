@@ -453,7 +453,7 @@
 				CODE_SIGN_ENTITLEMENTS = "btfs-test/btfs-test.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_ASSET_PATHS = "\"btfs-test/Preview Content\"";
 				DEVELOPMENT_TEAM = P6UG545LF4;
 				ENABLE_APP_SANDBOX = NO;
@@ -486,7 +486,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/btfs-test",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.1.2;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "btfs.btfs-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -506,7 +506,7 @@
 				CODE_SIGN_ENTITLEMENTS = "btfs-test/btfs-test.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_ASSET_PATHS = "\"btfs-test/Preview Content\"";
 				DEVELOPMENT_TEAM = P6UG545LF4;
 				ENABLE_APP_SANDBOX = NO;
@@ -535,7 +535,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/btfs-test",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.1.2;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "btfs.btfs-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
