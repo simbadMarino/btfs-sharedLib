@@ -66,7 +66,7 @@ Set the value of the 'Datastore.Path' key:
 		"show":    configShowCmd,
 		"edit":    configEditCmd,
 		"replace": configReplaceCmd,
-		//"profile": configProfileCmd,
+		//"profile":             configProfileCmd,
 		"storage-host-enable": storageHostEnableCmd,
 		"sync-chain-info":     SyncChainInfoCmd,
 		"optin":               optInCmd,
@@ -662,6 +662,28 @@ func SyncConfigChainInfoV2(configRoot string, chainid int64, endpoint string, cu
 	cfg.ChainInfo.CurrentFactory = currentFactoryAddr.Hex()
 	cfg.ChainInfo.PriceOracleAddress = priceOracleAddr.Hex()
 	cfg.ChainInfo.Endpoint = endpoint
+
+	err = r.SetConfig(cfg)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func SyncConfigOnlineCfg(configRoot string, onlineServerDomain string, reportOnline, reportStatusContract bool) error {
+	r, err := fsrepo.Open(configRoot)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+
+	cfg, err := r.Config()
+	if err != nil {
+		return err
+	}
+	cfg.Services.OnlineServerDomain = onlineServerDomain
+	cfg.Experimental.ReportOnline = reportOnline
+	cfg.Experimental.ReportStatusContract = reportStatusContract
 
 	err = r.SetConfig(cfg)
 	if err != nil {

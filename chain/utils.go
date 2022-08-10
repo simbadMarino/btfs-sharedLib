@@ -2,9 +2,12 @@ package chain
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"os"
+	"time"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	oldcmds "github.com/bittorrent/go-btfs/commands"
@@ -14,6 +17,7 @@ import (
 	"github.com/bittorrent/go-btfs/transaction/storage"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/tron-us/go-btfs-common/crypto"
+	onlinePb "github.com/tron-us/go-btfs-common/protos/online"
 )
 
 // after btfs init
@@ -154,6 +158,151 @@ func StoreChainIdIfNotExists(chainID int64, statestore storage.StateStorer) erro
 			fmt.Println("StoreChainIdIfNotExists: init StoreChainId err: ", err)
 			return err
 		}
+	}
+
+	return nil
+}
+
+// GetReportStatus from leveldb
+var keyReportStatus = "keyReportStatus"
+
+type ReportStatusInfo struct {
+	ReportStatusSeconds int64
+	LastReportTime      time.Time
+}
+
+func GetReportStatus() (*ReportStatusInfo, error) {
+	if StateStore == nil {
+		return nil, errors.New("please start btfs node, at first! ")
+	}
+
+	var reportStatusInfo ReportStatusInfo
+	err := StateStore.Get(keyReportStatus, &reportStatusInfo)
+	if err != nil {
+		if err == storage.ErrNotFound {
+			reportStatusInfo = ReportStatusInfo{ReportStatusSeconds: int64(rand.Intn(100000000) % 86400), LastReportTime: time.Time{}}
+			err := StateStore.Put(keyReportStatus, reportStatusInfo)
+			if err != nil {
+				fmt.Println("StoreChainIdIfNotExists: init StoreChainId err: ", err)
+				return nil, err
+			}
+		}
+		return nil, err
+	}
+	return &reportStatusInfo, nil
+}
+
+func SetReportStatusOK() (*ReportStatusInfo, error) {
+	var reportStatusInfo ReportStatusInfo
+	err := StateStore.Get(keyReportStatus, &reportStatusInfo)
+	if err != nil {
+		return nil, err
+	}
+	reportStatusInfo.LastReportTime = time.Now()
+	err = StateStore.Put(keyReportStatus, reportStatusInfo)
+	if err != nil {
+		return nil, err
+	}
+	//fmt.Println("... ReportStatus, SetReportStatus: ok! ")
+	return &reportStatusInfo, nil
+}
+
+// GetReportStatus from leveldb
+var keyReportStatusList = "keyReportStatusList"
+
+type LevelDbReportStatusInfo struct {
+	Peer           string    `json:"peer"`
+	BttcAddress    string    `json:"bttc_addr"`
+	StatusContract string    `json:"status_contract"`
+	Nonce          uint32    `json:"nonce"`
+	TxHash         string    `json:"tx_hash"`
+	GasSpend       string    `json:"gas_spend"`
+	ReportTime     time.Time `json:"report_time"`
+	IncreaseNonce  uint32    `json:"increase_nonce"`
+}
+
+// SetReportStatusListOK store tx list
+func SetReportStatusListOK(r *LevelDbReportStatusInfo) ([]*LevelDbReportStatusInfo, error) {
+	if StateStore == nil {
+		return nil, errors.New("please start btfs node, at first! ")
+	}
+
+	init := false
+
+	rList := make([]*LevelDbReportStatusInfo, 0)
+	err := StateStore.Get(keyReportStatusList, &rList)
+	if err != nil {
+		if err.Error() == "storage: not found" {
+			init = true
+			// continue
+		} else {
+			return nil, err
+		}
+	}
+
+	if init {
+		r.IncreaseNonce = r.Nonce
+	} else {
+		r.IncreaseNonce = r.Nonce - rList[len(rList)-1].Nonce
+	}
+
+	rList = append(rList, r)
+	err = StateStore.Put(keyReportStatusList, rList)
+	if err != nil {
+		return nil, err
+	}
+	//fmt.Println("... ReportStatus, SetReportStatusListOK: ok! rList = ", rList)
+	return rList, nil
+}
+
+// GetReportStatusListOK store tx list
+func GetReportStatusListOK() ([]*LevelDbReportStatusInfo, error) {
+	if StateStore == nil {
+		return nil, errors.New("please start btfs node, at first! ")
+	}
+
+	rList := make([]*LevelDbReportStatusInfo, 0)
+	err := StateStore.Get(keyReportStatusList, &rList)
+	if err != nil {
+		if err.Error() == "storage: not found" {
+			return nil, nil
+		} else {
+			return nil, err
+		}
+	}
+
+	return rList, nil
+}
+
+// GetLastOnline from leveldb
+var keyLastOnline = "keyLastOnline"
+
+type LastOnlineInfo struct {
+	LastSignedInfo onlinePb.SignedInfo
+	LastSignature  string
+	LastTime       time.Time
+}
+
+func GetLastOnline() (*LastOnlineInfo, error) {
+	if StateStore == nil {
+		return nil, errors.New("please start btfs node, at first! ")
+	}
+
+	var lastOnlineInfo LastOnlineInfo
+	err := StateStore.Get(keyLastOnline, &lastOnlineInfo)
+	if err != nil {
+		if err == storage.ErrNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &lastOnlineInfo, nil
+}
+func StoreOnline(lastOnlineInfo *LastOnlineInfo) error {
+	err := StateStore.Put(keyLastOnline, *lastOnlineInfo)
+	if err != nil {
+		fmt.Println("StoreOnline: init StoreChainId err: ", err)
+		return err
 	}
 
 	return nil

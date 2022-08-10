@@ -323,6 +323,11 @@ func TestCommands(t *testing.T) {
 		"/wallet/transactions",
 		//"/wallet/keys",
 		"/wallet/withdraw",
+		"/statuscontract",
+		"/statuscontract/total",
+		"/statuscontract/reportlist",
+		"/statuscontract/lastinfo",
+		"/statuscontract/config",
 	}
 
 	cmdSet := make(map[string]struct{})

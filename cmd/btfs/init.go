@@ -151,7 +151,6 @@ func doInit(out io.Writer, repoRoot string, empty bool, nBitsForKeypair int, con
 		return err
 	}
 
-	fmt.Printf("initializing BTFS node at %s\n", repoRoot)
 	if _, err := fmt.Fprintf(out, "initializing BTFS node at %s\n", repoRoot); err != nil {
 		return err
 	}
@@ -170,7 +169,6 @@ func doInit(out io.Writer, repoRoot string, empty bool, nBitsForKeypair int, con
 		if err != nil {
 			return err
 		}
-
 		if rmOnUnpin {
 			raw := json.RawMessage(`{"rmOnUnpin":"` + strconv.FormatBool(rmOnUnpin) + `"}`)
 			conf.Datastore.Params = &raw
