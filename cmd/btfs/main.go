@@ -82,6 +82,10 @@ func mainC(in *C.char) *C.char {
 	exitCode := mainRet(args)
 	return C.CString("exit code:" + strconv.Itoa(exitCode))
 }
+//export mainCMod
+func mainCMod(in *C.char) *C.char{
+	return C.CString(C.GoString(in))
+}
 
 func mainRet(args []string) int {
 	rand.Seed(time.Now().UnixNano())
