@@ -209,6 +209,7 @@ func doInit(out io.Writer, repoRoot string, empty bool, nBitsForKeypair int, con
 func storeChainId(conf *config.Config, repoRoot string) error {
 	statestore, err := chain.InitStateStore(repoRoot)
 	if err != nil {
+		Println("init statestore err: ", err)
 		fmt.Println("init statestore err: ", err)
 		return err
 	}
@@ -217,6 +218,7 @@ func storeChainId(conf *config.Config, repoRoot string) error {
 
 	err = chain.StoreChainIdToDisk(conf.ChainInfo.ChainId, statestore)
 	if err != nil {
+		Println("init StoreChainId err: ", err)
 		fmt.Println("init StoreChainId err: ", err)
 		return err
 	}
