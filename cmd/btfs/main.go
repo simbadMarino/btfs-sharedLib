@@ -192,7 +192,7 @@ func mainRet(args []string) int {
 
 	err = cli.Run(ctx, Root, os.Args, os.Stdin, os.Stdout, os.Stderr, buildEnv, makeExecutor)
 	if err != nil {
-		Println("6")
+		Println("6", err)
 		return 1
 	}
 
