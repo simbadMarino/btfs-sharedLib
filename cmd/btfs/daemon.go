@@ -455,8 +455,7 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 
 		err := transaction.WaitSynced(context.Background(), chainInfo.Backend, chain.MaxDelay)
 		if err != nil {
-			Errorf("waiting backend sync: %w", err)
-			return
+			return fmt.Errorf("waiting backend sync: %w", err)
 		}
 	}
 
@@ -473,9 +472,16 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	}
 
 	// init report status contract
-	err = reportstatus.Init(chainInfo.TransactionService, cfg, configRoot, chainCfg.StatusAddress, chainInfo.ChainID)
+	reportStatusServ := reportstatus.Init(chainInfo.TransactionService, cfg, chainCfg.StatusAddress)
+	err = CheckExistLastOnlineReport(cfg, configRoot, chainid, reportStatusServ)
 	if err != nil {
 		Println("init report status, err: ", err)
+		return err
+	}
+
+	err = CheckHubDomainConfig(cfg, configRoot, chainid)
+	if err != nil {
+		fmt.Println("check report status, err: ", err)
 		return err
 	}
 
@@ -552,8 +558,7 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	case routingOptionNoneKwd:
 		ncfg.Routing = libp2p.NilRouterOption
 	default:
-		Errorf("unrecognized routing option: %s", routingOption)
-		return
+		return fmt.Errorf("unrecognized routing option: %s", routingOption)
 	}
 
 	node, err := core.NewNode(req.Context, ncfg)
@@ -726,7 +731,7 @@ func serveHTTPApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, error
 	for _, addr := range apiAddrs {
 		apiMaddr, err := ma.NewMultiaddr(addr)
 		if err != nil {
-			return nil, Errorf("serveHTTPApi: invalid API address: %q (err: %s)", addr, err)
+			return nil, fmt.Errorf("serveHTTPApi: invalid API address: %q (err: %s)", addr, err)
 		}
 		if listenerAddrs[string(apiMaddr.Bytes())] {
 			continue
@@ -734,7 +739,7 @@ func serveHTTPApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, error
 
 		apiLis, err := manet.Listen(apiMaddr)
 		if err != nil {
-			return nil, Errorf("serveHTTPApi: manet.Listen(%s) failed: %s", apiMaddr, err)
+			return nil, fmt.Errorf("serveHTTPApi: manet.Listen(%s) failed: %s", apiMaddr, err)
 		}
 
 		listenerAddrs[string(apiMaddr.Bytes())] = true
@@ -783,11 +788,11 @@ func serveHTTPApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, error
 
 	node, err := cctx.ConstructNode()
 	if err != nil {
-		return nil, Errorf("serveHTTPApi: ConstructNode() failed: %s", err)
+		return nil, fmt.Errorf("serveHTTPApi: ConstructNode() failed: %s", err)
 	}
 
 	if err := node.Repo.SetAPIAddr(listeners[0].Multiaddr()); err != nil {
-		return nil, Errorf("serveHTTPApi: SetAPIAddr() failed: %s", err)
+		return nil, fmt.Errorf("serveHTTPApi: SetAPIAddr() failed: %s", err)
 	}
 
 	errc := make(chan error)
@@ -843,14 +848,14 @@ func getChainID(req *cmds.Request, cfg *config.Config, stateStorer storage.State
 			// compare cfg chain id and leveldb chain id
 			if storeChainid != cfgChainId {
 				return 0, stored, errors.New(
-					Sprintf("current chainId=%d is different from config chainId=%d, "+
+					fmt.Sprintf("current chainId=%d is different from config chainId=%d, "+
 						"you can not change chain id in config file", storeChainid, cfgChainId))
 			}
 
 			// compare input chain id and leveldb chain id
 			if inputChainId > 0 && storeChainid != inputChainId {
 				return 0, stored, errors.New(
-					Sprintf("current chainId=%d is different from input chainId=%d, "+
+					fmt.Sprintf("current chainId=%d is different from input chainId=%d, "+
 						"you can not change chain id with --chain-id when node start", storeChainid, inputChainId))
 			}
 
@@ -902,7 +907,7 @@ func printSwarmAddrs(node *core.IpfsNode) {
 func serveHTTPGateway(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, error) {
 	cfg, err := cctx.GetConfig()
 	if err != nil {
-		return nil, Errorf("serveHTTPGateway: GetConfig() failed: %s", err)
+		return nil, fmt.Errorf("serveHTTPGateway: GetConfig() failed: %s", err)
 	}
 
 	writable, writableOptionFound := req.Options[writableKwd].(bool)
@@ -912,7 +917,7 @@ func serveHTTPGateway(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, e
 
 	listeners, err := sockets.TakeListeners("io.ipfs.gateway")
 	if err != nil {
-		return nil, Errorf("serveHTTPGateway: socket activation failed: %s", err)
+		return nil, fmt.Errorf("serveHTTPGateway: socket activation failed: %s", err)
 	}
 
 	listenerAddrs := make(map[string]bool, len(listeners))
@@ -924,7 +929,7 @@ func serveHTTPGateway(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, e
 	for _, addr := range gatewayAddrs {
 		gatewayMaddr, err := ma.NewMultiaddr(addr)
 		if err != nil {
-			return nil, Errorf("serveHTTPGateway: invalid gateway address: %q (err: %s)", addr, err)
+			return nil, fmt.Errorf("serveHTTPGateway: invalid gateway address: %q (err: %s)", addr, err)
 		}
 
 		if listenerAddrs[string(gatewayMaddr.Bytes())] {
@@ -933,7 +938,7 @@ func serveHTTPGateway(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, e
 
 		gwLis, err := manet.Listen(gatewayMaddr)
 		if err != nil {
-			return nil, Errorf("serveHTTPGateway: manet.Listen(%s) failed: %s", gatewayMaddr, err)
+			return nil, fmt.Errorf("serveHTTPGateway: manet.Listen(%s) failed: %s", gatewayMaddr, err)
 		}
 		listenerAddrs[string(gatewayMaddr.Bytes())] = true
 		listeners = append(listeners, gwLis)
@@ -971,7 +976,7 @@ func serveHTTPGateway(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, e
 
 	node, err := cctx.ConstructNode()
 	if err != nil {
-		return nil, Errorf("serveHTTPGateway: ConstructNode() failed: %s", err)
+		return nil, fmt.Errorf("serveHTTPGateway: ConstructNode() failed: %s", err)
 	}
 
 	errc := make(chan error)
@@ -996,11 +1001,11 @@ func serveHTTPGateway(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, e
 func serveHTTPRemoteApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, error) {
 	cfg, err := cctx.GetConfig()
 	if err != nil {
-		return nil, Errorf("serveHTTPRemoteApi: GetConfig() failed: %s", err)
+		return nil, fmt.Errorf("serveHTTPRemoteApi: GetConfig() failed: %s", err)
 	}
 
 	if !cfg.Experimental.Libp2pStreamMounting {
-		return nil, Errorf("serveHTTPRemoteApi: libp2p stream mounting must be enabled")
+		return nil, fmt.Errorf("serveHTTPRemoteApi: libp2p stream mounting must be enabled")
 	}
 
 	rapiAddrs := cfg.Addresses.RemoteAPI
@@ -1008,16 +1013,16 @@ func serveHTTPRemoteApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error,
 	for _, addr := range rapiAddrs {
 		rapiMaddr, err := ma.NewMultiaddr(addr)
 		if err != nil {
-			return nil, Errorf("serveHTTPRemoteApi: invalid remote api address: %q (err: %s)", addr, err)
+			return nil, fmt.Errorf("serveHTTPRemoteApi: invalid remote api address: %q (err: %s)", addr, err)
 		}
 
 		rapiLis, err := manet.Listen(rapiMaddr)
 		if err != nil {
-			return nil, Errorf("serveHTTPRemoteApi: manet.Listen(%s) failed: %s", rapiMaddr, err)
+			return nil, fmt.Errorf("serveHTTPRemoteApi: manet.Listen(%s) failed: %s", rapiMaddr, err)
 		}
 		// we might have listened to /tcp/0 - lets see what we are listing on
 		rapiMaddr = rapiLis.Multiaddr()
-		Printf("Remote API server listening on %s\n", rapiMaddr)
+		fmt.Printf("Remote API server listening on %s\n", rapiMaddr)
 
 		listeners = append(listeners, rapiLis)
 	}
@@ -1031,13 +1036,13 @@ func serveHTTPRemoteApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error,
 
 	node, err := cctx.ConstructNode()
 	if err != nil {
-		return nil, Errorf("serveHTTPRemoteApi: ConstructNode() failed: %s", err)
+		return nil, fmt.Errorf("serveHTTPRemoteApi: ConstructNode() failed: %s", err)
 	}
 
 	// set default listener to remote api endpoint
 	if _, err := node.P2P.ForwardRemote(node.Context(),
 		httpremote.P2PRemoteCallProto, listeners[0].Multiaddr(), false); err != nil {
-		return nil, Errorf("serveHTTPRemoteApi: ForwardRemote() failed: %s", err)
+		return nil, fmt.Errorf("serveHTTPRemoteApi: ForwardRemote() failed: %s", err)
 	}
 
 	errc := make(chan error)
@@ -1062,7 +1067,7 @@ func serveHTTPRemoteApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error,
 func mountFuse(req *cmds.Request, cctx *oldcmds.Context) error {
 	cfg, err := cctx.GetConfig()
 	if err != nil {
-		return Errorf("mountFuse: GetConfig() failed: %s", err)
+		return fmt.Errorf("mountFuse: GetConfig() failed: %s", err)
 	}
 
 	fsdir, found := req.Options[ipfsMountKwd].(string)
@@ -1077,7 +1082,7 @@ func mountFuse(req *cmds.Request, cctx *oldcmds.Context) error {
 
 	node, err := cctx.ConstructNode()
 	if err != nil {
-		return Errorf("mountFuse: ConstructNode() failed: %s", err)
+		return fmt.Errorf("mountFuse: ConstructNode() failed: %s", err)
 	}
 
 	err = nodeMount.Mount(node, fsdir, nsdir)
@@ -1308,4 +1313,62 @@ func doIfNeedUpgradeFactoryToV2(chainid int64, chainCfg *chainconfig.ChainConfig
 	}
 	Println("will re-deploy a vault contract for you")
 	return
+}
+
+// CheckExistLastOnlineReport sync conf and lastOnlineInfo
+func CheckExistLastOnlineReport(cfg *config.Config, configRoot string, chainId int64, reportStatusServ reportstatus.Service) error {
+	lastOnline, err := chain.GetLastOnline()
+	if err != nil {
+		return err
+	}
+
+	// if nil, set config online status config
+	if lastOnline == nil {
+		var reportOnline bool
+		var reportStatusContract bool
+		if cfg.Experimental.StorageHostEnabled {
+			reportOnline = true
+			reportStatusContract = true
+		}
+
+		var onlineServerDomain string
+		if chainId == 199 {
+			onlineServerDomain = config.DefaultServicesConfig().OnlineServerDomain
+		} else {
+			onlineServerDomain = config.DefaultServicesConfigTestnet().OnlineServerDomain
+		}
+
+		err = commands.SyncConfigOnlineCfg(configRoot, onlineServerDomain, reportOnline, reportStatusContract)
+		if err != nil {
+			return err
+		}
+	}
+
+	// if nil, set last online info
+	if lastOnline == nil {
+		err = reportStatusServ.CheckLastOnlineInfo(cfg.Identity.PeerID, cfg.Identity.BttcAddr)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// CheckExistLastOnlineReport sync conf and lastOnlineInfo
+func CheckHubDomainConfig(cfg *config.Config, configRoot string, chainId int64) error {
+	var hubServerDomain string
+	if chainId == 199 {
+		hubServerDomain = config.DefaultServicesConfig().HubDomain
+	} else {
+		hubServerDomain = config.DefaultServicesConfigTestnet().HubDomain
+	}
+
+	if hubServerDomain != cfg.Services.HubDomain {
+		err := commands.SyncHubDomainConfig(configRoot, hubServerDomain)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

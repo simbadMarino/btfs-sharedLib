@@ -95,7 +95,7 @@ var PathCmd = &cmds.Command{
 		Tagline: "Modify the Host storage folder path for BTFS client.",
 		ShortDescription: `
 The default local repository path is located at ~/.btfs folder, in order to
-improve the hard disk space usage, provide the function to change the original
+improve the hard disk space usage, provide the function to change the original 
 storage location, a specified path as a parameter need to be passed.
 `,
 	},

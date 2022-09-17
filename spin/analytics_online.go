@@ -22,7 +22,11 @@ func isReportOnlineEnabled(cfg *config.Config) bool {
 }
 
 func (dc *dcWrap) doSendDataOnline(ctx context.Context, config *config.Config, sm *onlinePb.ReqSignMetrics) error {
-	cb := cgrpc.OnlineClient(config.Services.OnlineServerDomain)
+	onlineService := config.Services.OnlineServerDomain
+	if len(onlineService) <= 0 {
+		onlineService = chain.GetOnlineServer(config.ChainInfo.ChainId)
+	}
+	cb := cgrpc.OnlineClient(onlineService)
 	return cb.WithContext(ctx, func(ctx context.Context, client onlinePb.OnlineServiceClient) error {
 		resp, err := client.UpdateSignMetrics(ctx, sm)
 		if err != nil {
@@ -55,7 +59,7 @@ func (dc *dcWrap) doSendDataOnline(ctx context.Context, config *config.Config, s
 	})
 }
 
-func (dc *dcWrap) sendDataOnline(node *core.IpfsNode, config *config.Config) {
+func (dc *dcWrap) SendDataOnline(node *core.IpfsNode, config *config.Config) {
 	sm, errs, err := dc.doPrepDataOnline(node)
 	if errs == nil {
 		errs = make([]error, 0)
@@ -176,7 +180,7 @@ func (dc *dcWrap) collectionAgentOnline(node *core.IpfsNode) {
 			//fmt.Println("")
 			//fmt.Println("--- online agent ---")
 
-			dc.sendDataOnline(node, cfg)
+			dc.SendDataOnline(node, cfg)
 		}
 	}
 }

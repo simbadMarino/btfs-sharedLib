@@ -2,7 +2,6 @@ package hub
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -31,10 +30,6 @@ const (
 // if valid, and if local is true and mode is empty, return prefix for storing such
 // information into local datastore.
 func CheckValidMode(mode string, local bool) (hubpb.HostsReq_Mode, string, error) {
-	if json.Valid([]byte(mode)) {
-		return -1, "mixture", nil
-	}
-
 	if mode == HubModeAll && local {
 		return -1, "", nil
 	}
@@ -61,9 +56,10 @@ func QueryHosts(ctx context.Context, node *core.IpfsNode, mode string) ([]*hubpb
 	err = grpc.HubQueryClient(config.Services.HubDomain).WithContext(ctx, func(ctx context.Context,
 		client hubpb.HubQueryServiceClient) error {
 		resp, err = client.GetHosts(ctx, &hubpb.HostsReq{
-			Id:      node.Identity.Pretty(),
-			Mode:    hrm,
-			Version: version.CurrentVersionNumber,
+			Id:         node.Identity.Pretty(),
+			Mode:       hrm,
+			Version:    version.CurrentVersionNumber,
+			NewVersion: hubpb.HubRouter_V2,
 		})
 		if err != nil {
 			return err
@@ -81,16 +77,23 @@ func QueryHosts(ctx context.Context, node *core.IpfsNode, mode string) ([]*hubpb
 }
 
 // QueryStats queries the BTFS-Hub to retrieve the latest storage stats on this host.
-func QueryStats(ctx context.Context, node *core.IpfsNode) (*hubpb.StatsResp, error) {
+func QueryStats(ctx context.Context, node *core.IpfsNode, v2 bool) (*hubpb.StatsResp, error) {
 	config, err := node.Repo.Config()
 	if err != nil {
 		return nil, err
 	}
+
+	newVersion := hubpb.HubRouter_V2
+	if !v2 {
+		newVersion = hubpb.HubRouter_V1
+	}
+
 	var resp *hubpb.StatsResp
 	err = grpc.HubQueryClient(config.Services.HubDomain).WithContext(ctx, func(ctx context.Context,
 		client hubpb.HubQueryServiceClient) error {
 		resp, err = client.GetStats(ctx, &hubpb.StatsReq{
-			Id: node.Identity.Pretty(),
+			Id:         node.Identity.Pretty(),
+			NewVersion: newVersion,
 		})
 		if err != nil {
 			return err
