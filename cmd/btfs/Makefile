@@ -34,27 +34,29 @@ android-armv7a:
 	GOARCH=arm \
 	GOARM=7 \
 	CC=$(NDK_BIN)/armv7a-linux-androideabi21-clang \
-	go build -buildmode=c-shared -o $(ANDROID_OUT)/armeabi-v7a/libfoo.so .
+	go build -buildmode=c-shared -ldflags="-s -w"  -o $(ANDROID_OUT)/armeabi-v7a/libbtfs.so .
+	#upx -9 -k $(ANDROID_OUT)/armeabi-v7a/libbtfs.so
 
 android-arm64:
 	CGO_ENABLED=1 \
 	GOOS=android \
 	GOARCH=arm64 \
 	CC=$(NDK_BIN)/aarch64-linux-android21-clang \
-	go build -buildmode=c-shared -o $(ANDROID_OUT)/arm64-v8a/libfoo.so .
+	go build -buildmode=c-shared -ldflags="-s -w" -o $(ANDROID_OUT)/arm64-v8a/libbtfs.so .
+	#upx -9 -k $(ANDROID_OUT)/arm64-v8a/libbtfs.so
 
 android-x86:
 	CGO_ENABLED=1 \
 	GOOS=android \
 	GOARCH=386 \
 	CC=$(NDK_BIN)/i686-linux-android21-clang \
-	go build -buildmode=c-shared -o $(ANDROID_OUT)/x86/libfoo.so .
-
+	go build -buildmode=c-shared -ldflags="-s -w" -o $(ANDROID_OUT)/x86/libbtfs.so .
+	
 android-x86_64:
 	CGO_ENABLED=1 \
 	GOOS=android \
 	GOARCH=amd64 \
 	CC=$(NDK_BIN)/x86_64-linux-android21-clang \
-	go build -buildmode=c-shared -o $(ANDROID_OUT)/x86_64/libfoo.so .
+	go build -buildmode=c-shared -ldflags="-s -w" -o $(ANDROID_OUT)/x86_64/libbtfs.so .
 
 android: android-armv7a android-arm64 android-x86 android-x86_64

@@ -10,7 +10,8 @@ import (
 // present, this function returns that value. Otherwise, it returns the default
 // repo path.
 func BestKnownPath() (string, error) {
-	btfsPath := "~/Documents/.btfs"
+	//btfsPath := "~/Documents/.btfs" //iOS path
+	btfsPath := "~/.btfs" //Android path
 	if os.Getenv("BTFS_PATH") != "" {
 		btfsPath = os.Getenv("BTFS_PATH")
 	}

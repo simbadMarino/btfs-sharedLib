@@ -18,7 +18,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	logging "github.com/ipfs/go-log"
-	"github.com/mitchellh/go-homedir"
+	"github.com/simbadMarino/go-homedir"
 )
 
 const (
@@ -95,7 +95,7 @@ var PathCmd = &cmds.Command{
 		Tagline: "Modify the Host storage folder path for BTFS client.",
 		ShortDescription: `
 The default local repository path is located at ~/.btfs folder, in order to
-improve the hard disk space usage, provide the function to change the original 
+improve the hard disk space usage, provide the function to change the original
 storage location, a specified path as a parameter need to be passed.
 `,
 	},
@@ -490,6 +490,7 @@ func CheckDirEmpty(dirname string) bool {
 }
 
 func SetEnvVariables() {
+	os.Setenv("HOME","/data/data/com.justshare/files") // TODO: Make this an if only for Android
 	if CheckExist(PropertiesFileName) {
 		btfsPath = ReadProperties(PropertiesFileName)
 		btfsPath = strings.Trim(btfsPath, " \n\r")
