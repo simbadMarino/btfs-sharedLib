@@ -142,6 +142,7 @@ func mainRet(args []string) int {
 	buildEnv := func(ctx context.Context, req *cmds.Request) (cmds.Environment, error) {
 		checkDebug(req)
 		repoPath, err := getRepoPath(req)
+		Println("2 RepoPath",repoPath)
 		if err != nil {
 			return nil, err
 		}
@@ -188,6 +189,13 @@ func mainRet(args []string) int {
 	Println("5", args)
 
 	err = cli.Run(ctx, Root, os.Args, os.Stdin, os.Stdout, os.Stderr, buildEnv, makeExecutor)
+//	Println("ctx:",ctx)
+	//Println("Root",Root)
+	//Println("os.Args",os.Args)
+	//Println("os.Stdin",os.Stdin)
+	//Println(os.Stderr,os.Stderr)
+	//Println("buildEnv",buildEnv)
+	//Println("makeExecutor",makeExecutor)
 	if err != nil {
 		Println("6", err)
 		return 1
@@ -330,6 +338,7 @@ func getRepoPath(req *cmds.Request) (string, error) {
 	}
 
 	repoPath, err := fsrepo.BestKnownPath()
+	Println("1 repoPath:",repoPath)
 	if err != nil {
 		return "", err
 	}

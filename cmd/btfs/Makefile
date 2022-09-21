@@ -26,37 +26,39 @@ ios-x86_64:
 ios: ios-arm64 ios-x86_64
 	lipo $(IOS_OUT)/x86_64.a $(IOS_OUT)/arm64.a -create -output $(IOS_OUT)/btfs.a
 	cp $(IOS_OUT)/arm64.h $(IOS_OUT)/btfs.h
-	
+
 
 android-armv7a:
 	CGO_ENABLED=1 \
 	GOOS=android \
 	GOARCH=arm \
 	GOARM=7 \
+	CGO_CFLAGS="-fembed-bitcode" \
 	CC=$(NDK_BIN)/armv7a-linux-androideabi21-clang \
-	go build -buildmode=c-shared -ldflags="-s -w"  -o $(ANDROID_OUT)/armeabi-v7a/libbtfs.so .
-	#upx -9 -k $(ANDROID_OUT)/armeabi-v7a/libbtfs.so
+	go build -buildmode=c-shared -trimpath -ldflags="-s -w"   -o $(ANDROID_OUT)/armeabi-v7a/libbtfs.so .
+	
 
 android-arm64:
 	CGO_ENABLED=1 \
 	GOOS=android \
 	GOARCH=arm64 \
+	CGO_CFLAGS="-fembed-bitcode" \
 	CC=$(NDK_BIN)/aarch64-linux-android21-clang \
-	go build -buildmode=c-shared -ldflags="-s -w" -o $(ANDROID_OUT)/arm64-v8a/libbtfs.so .
-	#upx -9 -k $(ANDROID_OUT)/arm64-v8a/libbtfs.so
+	go build -buildmode=c-shared -trimpath -ldflags="-s -w"  -o $(ANDROID_OUT)/arm64-v8a/libbtfs.so .
+	
 
 android-x86:
 	CGO_ENABLED=1 \
 	GOOS=android \
 	GOARCH=386 \
 	CC=$(NDK_BIN)/i686-linux-android21-clang \
-	go build -buildmode=c-shared -ldflags="-s -w" -o $(ANDROID_OUT)/x86/libbtfs.so .
-	
+	go build -buildmode=c-shared -trimpath -ldflags="-s -w"  -o $(ANDROID_OUT)/x86/libbtfs.so .
+
 android-x86_64:
 	CGO_ENABLED=1 \
 	GOOS=android \
 	GOARCH=amd64 \
 	CC=$(NDK_BIN)/x86_64-linux-android21-clang \
-	go build -buildmode=c-shared -ldflags="-s -w" -o $(ANDROID_OUT)/x86_64/libbtfs.so .
+	go build -buildmode=c-shared -trimpath -ldflags="-s -w"  -o $(ANDROID_OUT)/x86_64/libbtfs.so .
 
 android: android-armv7a android-arm64 android-x86 android-x86_64
