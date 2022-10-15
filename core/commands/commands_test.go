@@ -91,6 +91,7 @@ func TestCommands(t *testing.T) {
 		"/config",
 		"/config/edit",
 		"/config/replace",
+		"/config/reset",
 		"/config/show",
 		//"/config/profile",
 		//"/config/profile/apply",
@@ -328,6 +329,8 @@ func TestCommands(t *testing.T) {
 		"/statuscontract/reportlist",
 		"/statuscontract/lastinfo",
 		"/statuscontract/config",
+		"/statuscontract/report_online_server",
+		"/statuscontract/report_status_contract",
 	}
 
 	cmdSet := make(map[string]struct{})

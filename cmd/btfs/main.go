@@ -79,13 +79,12 @@ func main() {
 func mainC(in *C.char) *C.char {
 	args := strings.Split(C.GoString(in), " ")
 	args = append([]string{"btfs"}, args...)
+	Println("args:", args)
 	exitCode := mainRet(args)
 	return C.CString("exit code:" + strconv.Itoa(exitCode))
 }
-//export mainCMod
-func mainCMod(in *C.char) *C.char{
-	return C.CString(C.GoString(in))
-}
+
+
 
 func mainRet(args []string) int {
 	rand.Seed(time.Now().UnixNano())
@@ -94,6 +93,7 @@ func mainRet(args []string) int {
 
 	// we'll call this local helper to output errors.
 	// this is so we control how to print errors in one place.
+	Println("1")
 	printErr := func(err error) {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err.Error())
 	}
@@ -105,6 +105,7 @@ func mainRet(args []string) int {
 	}
 	defer stopFunc() // to be executed as late as possible
 
+	Println("2")
 	intrh, ctx := util.SetupInterruptHandler(ctx)
 	defer intrh.Close()
 
@@ -137,14 +138,17 @@ func mainRet(args []string) int {
 	// so we need to make sure it's stable
 	os.Args[0] = "ipfs"
 
+	Println("3", args)
 	buildEnv := func(ctx context.Context, req *cmds.Request) (cmds.Environment, error) {
 		checkDebug(req)
 		repoPath, err := getRepoPath(req)
+		Println("2 RepoPath",repoPath)
 		if err != nil {
 			return nil, err
 		}
 		log.Debugf("config path is %s", repoPath)
 
+		Println("4")
 		plugins, err := loadPlugins(repoPath)
 		if err != nil {
 			return nil, err
@@ -182,12 +186,22 @@ func mainRet(args []string) int {
 	}
 
 	os.Args = args
+	Println("5", args)
 
 	err = cli.Run(ctx, Root, os.Args, os.Stdin, os.Stdout, os.Stderr, buildEnv, makeExecutor)
+//	Println("ctx:",ctx)
+	//Println("Root",Root)
+	//Println("os.Args",os.Args)
+	//Println("os.Stdin",os.Stdin)
+	//Println(os.Stderr,os.Stderr)
+	//Println("buildEnv",buildEnv)
+	//Println("makeExecutor",makeExecutor)
 	if err != nil {
+		Println("6", err)
 		return 1
 	}
 
+	Println("7")
 	// everything went better than expected :)
 	return 0
 }
@@ -324,6 +338,7 @@ func getRepoPath(req *cmds.Request) (string, error) {
 	}
 
 	repoPath, err := fsrepo.BestKnownPath()
+	Println("1 repoPath:",repoPath)
 	if err != nil {
 		return "", err
 	}

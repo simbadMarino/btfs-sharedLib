@@ -2,7 +2,7 @@ package fsrepo
 
 import (
 	"os"
-
+	"runtime"
 	"github.com/mitchellh/go-homedir"
 )
 
@@ -11,6 +11,12 @@ import (
 // repo path.
 func BestKnownPath() (string, error) {
 	btfsPath := "~/Documents/.btfs"
+	if runtime.GOOS == "darwin" { //TODO: Leave only ./btfs path by defining properly the $HOME dir for iOS in path.go file
+		btfsPath = "~/Documents/.btfs" //iOS path
+	}
+	if runtime.GOOS == "android" {
+		btfsPath = "~/.btfs" //Android path
+	}
 	if os.Getenv("BTFS_PATH") != "" {
 		btfsPath = os.Getenv("BTFS_PATH")
 	}

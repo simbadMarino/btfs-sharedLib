@@ -269,14 +269,14 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	}
 
 	// let the user know we're going.
-	fmt.Printf("Initializing daemon...\n")
+	Printf("Initializing daemon...\n")
 
 	defer func() {
 		if _err != nil {
 			// Print an extra line before any errors. This could go
 			// in the commands lib but doesn't really make sense for
 			// all commands.
-			fmt.Println()
+			Println()
 		}
 	}()
 
@@ -358,8 +358,8 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	}
 
 	// Print self information for logging and debugging purposes
-	fmt.Printf("Repo location: %s\n", cctx.ConfigRoot)
-	fmt.Printf("Peer identity: %s\n", cfg.Identity.PeerID)
+	Printf("Repo location: %s\n", cctx.ConfigRoot)
+	Printf("Peer identity: %s\n", cfg.Identity.PeerID)
 
 	privKey, err := cp.ToPrivKey(cfg.Identity.PrivKey)
 	if err != nil {
@@ -382,8 +382,8 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 
 	address0x, _ := singer.EthereumAddress()
 
-	fmt.Println("the address of Bttc format is: ", address0x)
-	fmt.Println("the address of Tron format is: ", keys.Base58Address)
+	Println("the address of Bttc format is: ", address0x)
+	Println("the address of Tron format is: ", keys.Base58Address)
 
 	// guide server init
 	optionApiAddr, _ := req.Options[commands.ApiOption].(string)
@@ -401,7 +401,7 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	configRoot := cctx.ConfigRoot
 	statestore, err := chain.InitStateStore(configRoot)
 	if err != nil {
-		fmt.Println("init statestore err: ", err)
+		Println("init statestore err: ", err)
 		return err
 	}
 	defer func() {
@@ -421,18 +421,18 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	needUpdateFactory := false
 	needUpdateFactory, err = doIfNeedUpgradeFactoryToV2(chainid, chainCfg, statestore, repo, cfg, configRoot)
 	if err != nil {
-		fmt.Printf("upgrade vault contract failed, err=%s\n", err)
+		Printf("upgrade vault contract failed, err=%s\n", err)
 		return err
 	}
 	if needUpdateFactory { // no error means upgrade preparation done, re-init the statestore
 		statestore, err = chain.InitStateStore(configRoot)
 		if err != nil {
-			fmt.Println("init statestore err: ", err)
+			Println("init statestore err: ", err)
 			return err
 		}
 		err = chain.StoreChainIdIfNotExists(chainid, statestore)
 		if err != nil {
-			fmt.Printf("save chainid failed, err: %s\n", err)
+			Printf("save chainid failed, err: %s\n", err)
 			return
 		}
 	}
@@ -447,7 +447,7 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	// Sync the with the given Ethereum backend:
 	isSynced, _, err := transaction.IsSynced(context.Background(), chainInfo.Backend, chain.MaxDelay)
 	if err != nil {
-		return fmt.Errorf("is synced: %w", err)
+		return Errorf("is synced: %w", err)
 	}
 
 	if !isSynced {
@@ -467,21 +467,28 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	/*settleinfo*/
 	_, err = chain.InitSettlement(context.Background(), statestore, chainInfo, deployGasPrice, chainInfo.ChainID)
 	if err != nil {
-		fmt.Println("init settlement err: ", err)
+		Println("init settlement err: ", err)
 		return err
 	}
 
 	// init report status contract
-	err = reportstatus.Init(chainInfo.TransactionService, cfg, configRoot, chainCfg.StatusAddress, chainInfo.ChainID)
+	reportStatusServ := reportstatus.Init(chainInfo.TransactionService, cfg, chainCfg.StatusAddress)
+	err = CheckExistLastOnlineReport(cfg, configRoot, chainid, reportStatusServ)
 	if err != nil {
-		fmt.Println("init report status, err: ", err)
+		Println("init report status, err: ", err)
+		return err
+	}
+
+	err = CheckHubDomainConfig(cfg, configRoot, chainid)
+	if err != nil {
+		fmt.Println("check report status, err: ", err)
 		return err
 	}
 
 	// init ip2location db
 	if err := bindata.Init(); err != nil {
 		// log init ip2location err
-		fmt.Println("init ip2location err: ", err)
+		Println("init ip2location err: ", err)
 		log.Errorf("init ip2location err:%+v", err)
 	}
 
@@ -564,8 +571,8 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	//Check if there is a swarm.key at btfs loc. This would still print fingerprint if they created a swarm.key with the same values
 	spath := filepath.Join(cctx.ConfigRoot, "swarm.key")
 	if node.PNetFingerprint != nil && util.FileExists(spath) {
-		fmt.Println("Swarm is limited to private network of peers with the swarm key")
-		fmt.Printf("Swarm key fingerprint: %x\n", node.PNetFingerprint)
+		Println("Swarm is limited to private network of peers with the swarm key")
+		Printf("Swarm key fingerprint: %x\n", node.PNetFingerprint)
 	}
 
 	printSwarmAddrs(node)
@@ -652,7 +659,7 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	prometheus.MustRegister(&corehttp.IpfsNodeCollector{Node: node})
 
 	// The daemon is *finally* ready.
-	fmt.Printf("Daemon is ready\n")
+	Printf("Daemon is ready\n")
 	notifyReady()
 
 	runStartupTest, _ := req.Options[enableStartupTest].(bool)
@@ -680,8 +687,8 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	go func() {
 		<-req.Context.Done()
 		notifyStopping()
-		fmt.Println("Received interrupt signal, shutting down...")
-		fmt.Println("(Hit ctrl-c again to force-shutdown the daemon.)")
+		Println("Received interrupt signal, shutting down...")
+		Println("(Hit ctrl-c again to force-shutdown the daemon.)")
 	}()
 
 	// collect long-running errors and block for shutdown
@@ -700,12 +707,12 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 func serveHTTPApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, error) {
 	cfg, err := cctx.GetConfig()
 	if err != nil {
-		return nil, fmt.Errorf("serveHTTPApi: GetConfig() failed: %s", err)
+		return nil, Errorf("serveHTTPApi: GetConfig() failed: %s", err)
 	}
 
 	listeners, err := sockets.TakeListeners("io.ipfs.api")
 	if err != nil {
-		return nil, fmt.Errorf("serveHTTPApi: socket activation failed: %s", err)
+		return nil, Errorf("serveHTTPApi: socket activation failed: %s", err)
 	}
 
 	apiAddrs := make([]string, 0, 2)
@@ -741,11 +748,11 @@ func serveHTTPApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, error
 
 	for _, listener := range listeners {
 		// we might have listened to /tcp/0 - let's see what we are listing on
-		fmt.Printf("API server listening on %s\n", listener.Multiaddr())
+		Printf("API server listening on %s\n", listener.Multiaddr())
 		// Browsers require TCP.
 		switch listener.Addr().Network() {
 		case "tcp", "tcp4", "tcp6":
-			fmt.Printf("Dashboard: http://%s/dashboard\n", listener.Addr())
+			Printf("Dashboard: http://%s/dashboard\n", listener.Addr())
 		}
 	}
 
@@ -869,7 +876,7 @@ func getChainID(req *cmds.Request, cfg *config.Config, stateStorer storage.State
 // printSwarmAddrs prints the addresses of the host
 func printSwarmAddrs(node *core.IpfsNode) {
 	if !node.IsOnline {
-		fmt.Println("Swarm not listening, running in offline mode.")
+		Println("Swarm not listening, running in offline mode.")
 		return
 	}
 
@@ -883,7 +890,7 @@ func printSwarmAddrs(node *core.IpfsNode) {
 	}
 	sort.Strings(lisAddrs)
 	for _, addr := range lisAddrs {
-		fmt.Printf("Swarm listening on %s\n", addr)
+		Printf("Swarm listening on %s\n", addr)
 	}
 
 	var addrs []string
@@ -892,7 +899,7 @@ func printSwarmAddrs(node *core.IpfsNode) {
 	}
 	sort.Strings(addrs)
 	for _, addr := range addrs {
-		fmt.Printf("Swarm announcing %s\n", addr)
+		Printf("Swarm announcing %s\n", addr)
 	}
 }
 
@@ -944,7 +951,7 @@ func serveHTTPGateway(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, e
 	}
 
 	for _, listener := range listeners {
-		fmt.Printf("Gateway (%s) server listening on %s\n", gwType, listener.Multiaddr())
+		Printf("Gateway (%s) server listening on %s\n", gwType, listener.Multiaddr())
 	}
 
 	cmdctx := *cctx
@@ -1082,8 +1089,8 @@ func mountFuse(req *cmds.Request, cctx *oldcmds.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("BTFS mounted at: %s\n", fsdir)
-	fmt.Printf("BTNS mounted at: %s\n", nsdir)
+	Printf("BTFS mounted at: %s\n", fsdir)
+	Printf("BTNS mounted at: %s\n", nsdir)
 	return nil
 }
 
@@ -1134,7 +1141,7 @@ func merge(cs ...<-chan error) <-chan error {
 func YesNoPrompt(prompt string) bool {
 	var s string
 	for i := 0; i < 3; i++ {
-		fmt.Printf("%s ", prompt)
+		Printf("%s ", prompt)
 		fmt.Scanf("%s", &s)
 		switch s {
 		case "y", "Y":
@@ -1144,7 +1151,7 @@ func YesNoPrompt(prompt string) bool {
 		case "":
 			return false
 		}
-		fmt.Println("Please press either 'y' or 'n'")
+		Println("Please press either 'y' or 'n'")
 	}
 
 	return false
@@ -1155,10 +1162,10 @@ func printVersion() {
 	if version.CurrentCommit != "" {
 		v += "-" + version.CurrentCommit
 	}
-	fmt.Printf("go-btfs version: %s\n", v)
-	fmt.Printf("Repo version: %d\n", fsrepo.RepoVersion)
-	fmt.Printf("System version: %s\n", runtime.GOARCH+"/"+runtime.GOOS)
-	fmt.Printf("Golang version: %s\n", runtime.Version())
+	Printf("go-btfs version: %s\n", v)
+	Printf("Repo version: %d\n", fsrepo.RepoVersion)
+	Printf("System version: %s\n", runtime.GOARCH+"/"+runtime.GOOS)
+	Printf("Golang version: %s\n", runtime.Version())
 }
 
 func getBtfsBinaryPath() (string, error) {
@@ -1183,7 +1190,7 @@ func getBtfsBinaryPath() (string, error) {
 func functest(statusServerDomain, peerId, hValue string) {
 	btfsBinaryPath, err := getBtfsBinaryPath()
 	if err != nil {
-		fmt.Printf("Get btfs path failed, BTFS daemon test skipped\n")
+		Printf("Get btfs path failed, BTFS daemon test skipped\n")
 		os.Exit(findBTFSBinaryFailed)
 	}
 
@@ -1196,36 +1203,36 @@ func functest(statusServerDomain, peerId, hValue string) {
 		for i := 0; i < 2; i++ {
 			err := get_functest(btfsBinaryPath)
 			if err != nil {
-				fmt.Printf("BTFS daemon get file test failed! Reason: %v\n", err)
+				Printf("BTFS daemon get file test failed! Reason: %v\n", err)
 				SendError(err.Error(), statusServerDomain, peerId, hValue)
 			} else {
-				fmt.Printf("BTFS daemon get file test succeeded!\n")
+				Printf("BTFS daemon get file test succeeded!\n")
 				test_success = true
 				break
 			}
 		}
 		if !test_success {
-			fmt.Printf("BTFS daemon get file test failed twice! exiting\n")
+			Printf("BTFS daemon get file test failed twice! exiting\n")
 			os.Exit(getFileTestFailed)
 		}
 		test_success = false
 		// try up to two times
 		for i := 0; i < 2; i++ {
 			if err := add_functest(btfsBinaryPath, peerId); err != nil {
-				fmt.Printf("BTFS daemon add file test failed! Reason: %v\n", err)
+				Printf("BTFS daemon add file test failed! Reason: %v\n", err)
 				SendError(err.Error(), statusServerDomain, peerId, hValue)
 			} else {
-				fmt.Printf("BTFS daemon add file test succeeded!\n")
+				Printf("BTFS daemon add file test succeeded!\n")
 				test_success = true
 				break
 			}
 		}
 		if !test_success {
-			fmt.Printf("BTFS daemon add file test failed twice! exiting\n")
+			Printf("BTFS daemon add file test failed twice! exiting\n")
 			os.Exit(addFileTestFailed)
 		}
 	} else {
-		fmt.Printf("BTFS daemon test skipped\n")
+		Printf("BTFS daemon test skipped\n")
 	}
 }
 
@@ -1258,7 +1265,7 @@ func doIfNeedUpgradeFactoryToV2(chainid int64, chainCfg *chainconfig.ChainConfig
 		return
 	}
 
-	fmt.Println("prepare upgrading your vault contract")
+	Println("prepare upgrading your vault contract")
 
 	oldVault, err := vault.GetStoredVaultAddr(statestore)
 	if err != nil {
@@ -1281,10 +1288,10 @@ func doIfNeedUpgradeFactoryToV2(chainid int64, chainCfg *chainconfig.ChainConfig
 	var bkConfig string
 	bkConfig, err = repo.BackUpConfigV2(bkSuffix)
 	if err != nil {
-		fmt.Printf("backup config file failed, err: %s\n", err)
+		Printf("backup config file failed, err: %s\n", err)
 		return
 	}
-	fmt.Printf("backup config file successfully to %s\n", bkConfig)
+	Printf("backup config file successfully to %s\n", bkConfig)
 
 	// update factory address and other chain info to config file.
 	// note that we only changed the `CurrentFactory`, so we won't overide other chaininfo field in the config file.
@@ -1302,8 +1309,66 @@ func doIfNeedUpgradeFactoryToV2(chainid int64, chainCfg *chainconfig.ChainConfig
 
 	zeroaddr := common.Address{}
 	if oldVault != zeroaddr {
-		fmt.Printf("your old vault address is %s\n", oldVault)
+		Printf("your old vault address is %s\n", oldVault)
 	}
-	fmt.Println("will re-deploy a vault contract for you")
+	Println("will re-deploy a vault contract for you")
 	return
+}
+
+// CheckExistLastOnlineReport sync conf and lastOnlineInfo
+func CheckExistLastOnlineReport(cfg *config.Config, configRoot string, chainId int64, reportStatusServ reportstatus.Service) error {
+	lastOnline, err := chain.GetLastOnline()
+	if err != nil {
+		return err
+	}
+
+	// if nil, set config online status config
+	if lastOnline == nil {
+		var reportOnline bool
+		var reportStatusContract bool
+		if cfg.Experimental.StorageHostEnabled {
+			reportOnline = true
+			reportStatusContract = true
+		}
+
+		var onlineServerDomain string
+		if chainId == 199 {
+			onlineServerDomain = config.DefaultServicesConfig().OnlineServerDomain
+		} else {
+			onlineServerDomain = config.DefaultServicesConfigTestnet().OnlineServerDomain
+		}
+
+		err = commands.SyncConfigOnlineCfg(configRoot, onlineServerDomain, reportOnline, reportStatusContract)
+		if err != nil {
+			return err
+		}
+	}
+
+	// if nil, set last online info
+	if lastOnline == nil {
+		err = reportStatusServ.CheckLastOnlineInfo(cfg.Identity.PeerID, cfg.Identity.BttcAddr)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// CheckExistLastOnlineReport sync conf and lastOnlineInfo
+func CheckHubDomainConfig(cfg *config.Config, configRoot string, chainId int64) error {
+	var hubServerDomain string
+	if chainId == 199 {
+		hubServerDomain = config.DefaultServicesConfig().HubDomain
+	} else {
+		hubServerDomain = config.DefaultServicesConfigTestnet().HubDomain
+	}
+
+	if hubServerDomain != cfg.Services.HubDomain {
+		err := commands.SyncHubDomainConfig(configRoot, hubServerDomain)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

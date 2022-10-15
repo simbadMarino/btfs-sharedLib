@@ -33,7 +33,7 @@ func Hosts(node *core.IpfsNode, env cmds.Environment) {
 		fmt.Printf("Storage host info will be synced at [%s] mode\n", m)
 		go periodicSync(hostSyncPeriod, hostSyncTimeout+hostSortTimeout, "hosts",
 			func(ctx context.Context) error {
-				_, err := hosts.SyncHostsMixture(ctx, node, m)
+				_, err := hosts.SyncHosts(ctx, node, m)
 				return err
 			})
 	}
@@ -41,7 +41,7 @@ func Hosts(node *core.IpfsNode, env cmds.Environment) {
 		fmt.Println("Current host stats will be synced")
 		go periodicSync(hostStatsSyncPeriod, hostSyncTimeout, "host stats",
 			func(ctx context.Context) error {
-				return stats.SyncStats(ctx, cfg, node, env)
+				return stats.SyncStats(ctx, cfg, node, env, true)
 			})
 		fmt.Println("Current host settings will be synced")
 		go periodicSync(hostSettingsSyncPeriod, hostSyncTimeout, "host settings",

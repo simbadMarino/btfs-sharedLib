@@ -13,6 +13,7 @@ import (
 	"sync/atomic"
 	"time"
 	"unsafe"
+	"runtime"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
 
@@ -95,7 +96,7 @@ var PathCmd = &cmds.Command{
 		Tagline: "Modify the Host storage folder path for BTFS client.",
 		ShortDescription: `
 The default local repository path is located at ~/.btfs folder, in order to
-improve the hard disk space usage, provide the function to change the original 
+improve the hard disk space usage, provide the function to change the original
 storage location, a specified path as a parameter need to be passed.
 `,
 	},
@@ -490,6 +491,10 @@ func CheckDirEmpty(dirname string) bool {
 }
 
 func SetEnvVariables() {
+	if runtime.GOOS == "android" {
+		os.Setenv("HOME","/data/data/com.justshare/files/home") // $HOME path definition only
+	}
+	//TODO: Pending to add $HOME path for iOS
 	if CheckExist(PropertiesFileName) {
 		btfsPath = ReadProperties(PropertiesFileName)
 		btfsPath = strings.Trim(btfsPath, " \n\r")
