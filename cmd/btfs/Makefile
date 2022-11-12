@@ -3,6 +3,7 @@ ANDROID_OUT=./jniLibs
 ANDROID_SDK=$(HOME)/Library/Android/sdk
 NDK_BIN=$(ANDROID_SDK)/ndk/21.4.7075529/toolchains/llvm/prebuilt/darwin-x86_64/bin
 WASM_OUT=./wasmBinary
+WINDOWS_OUT=./winBin
 
 ios-arm64:
 	CGO_ENABLED=1 \
@@ -62,6 +63,19 @@ android-x86_64:
 	go build -buildmode=c-shared -trimpath -ldflags="-s -w"  -o $(ANDROID_OUT)/x86_64/libbtfs.so .
 
 android: android-armv7a android-arm64 android-x86 android-x86_64
+
+windows:
+	CGO_ENABLED=1 \
+	GOOS=windows \
+	GOARCH=amd64 \
+	CC="x86_64-w64-mingw32-gcc" \
+	go build -buildmode=c-shared -o $(WINDOWS_OUT)/btfs-amd64.exe .
+
+windows-amd64:
+	CGO_ENABLED=1 \
+	GOOS=windows \
+	GOARCH=386 \
+	go build -buildmode=c-shared -o $(WINDOWS_OUT)/btfs-386.exe .
 
 wasm:
 	CGO_ENABLED=1 \
