@@ -20,6 +20,7 @@ import (
 	"github.com/dustin/go-humanize"
 	logging "github.com/ipfs/go-log"
 	"github.com/mitchellh/go-homedir"
+	"github.com/shirou/gopsutil/v3/disk"
 )
 
 const (
@@ -96,7 +97,7 @@ var PathCmd = &cmds.Command{
 		Tagline: "Modify the Host storage folder path for BTFS client.",
 		ShortDescription: `
 The default local repository path is located at ~/.btfs folder, in order to
-improve the hard disk space usage, provide the function to change the original
+improve the hard disk space usage, provide the function to change the original 
 storage location, a specified path as a parameter need to be passed.
 `,
 	},
@@ -153,18 +154,18 @@ storage location, a specified path as a parameter need to be passed.
 			return err
 		}
 
-		// usage, err := disk.UsageWithContext(req.Context, filepath.Dir(StorePath))
-		// if err != nil {
-		// 	return err
-		// }
-		// promisedStorageSize, err := humanize.ParseBytes(req.Arguments[1])
-		// if err != nil {
-		// 	return err
-		// }
-		// if usage.Free < promisedStorageSize {
-		// 	return fmt.Errorf("Not enough disk space, expect: ge %v bytes, actual: %v bytes",
-		// 		promisedStorageSize, usage.Free)
-		// }
+		usage, err := disk.UsageWithContext(req.Context, filepath.Dir(StorePath))
+		if err != nil {
+			return err
+		}
+		promisedStorageSize, err := humanize.ParseBytes(req.Arguments[1])
+		if err != nil {
+			return err
+		}
+		if usage.Free < promisedStorageSize {
+			return fmt.Errorf("Not enough disk space, expect: ge %v bytes, actual: %v bytes",
+				promisedStorageSize, usage.Free)
+		}
 		go func() {
 			if e := os.Unsetenv(BtfsPathFlag); e != nil {
 				log.Error(e)
@@ -247,13 +248,13 @@ var PathCapacityCmd = &cmds.Command{
 			return fmt.Errorf("path %s is not empty", path)
 		}
 		valid := true
-		// usage, err := disk.UsageWithContext(req.Context, filepath.Dir(path))
-		// if err != nil {
-		// 	return err
-		// }
-		humanizedFreeSpace := humanize.Bytes(1000000000)
+		usage, err := disk.UsageWithContext(req.Context, filepath.Dir(path))
+		if err != nil {
+			return err
+		}
+		humanizedFreeSpace := humanize.Bytes(usage.Free)
 		return cmds.EmitOnce(res, &PathCapacity{
-			FreeSpace:          1000000000,
+			FreeSpace:          usage.Free,
 			Valid:              valid,
 			HumanizedFreeSpace: humanizedFreeSpace,
 		})

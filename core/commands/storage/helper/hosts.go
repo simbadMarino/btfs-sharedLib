@@ -16,6 +16,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	ds "github.com/ipfs/go-datastore"
 	"github.com/ipfs/go-datastore/query"
+	"github.com/shirou/gopsutil/v3/disk"
 )
 
 const (
@@ -197,11 +198,11 @@ func CheckAndValidateHostStorageMax(ctx context.Context, cfgRoot string, r repo.
 	if err != nil {
 		return 0, err
 	}
-	// du, err := disk.UsageWithContext(ctx, cfgRoot)
-	// if err != nil {
-	// 	return 0, err
-	// }
-	totalAvailable := su + 1000000000
+	du, err := disk.UsageWithContext(ctx, cfgRoot)
+	if err != nil {
+		return 0, err
+	}
+	totalAvailable := su + du.Free
 
 	// Setting a new max storage, check if it exceeds available space
 	if newMax != nil {
