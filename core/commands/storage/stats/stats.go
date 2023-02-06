@@ -20,6 +20,7 @@ import (
 	nodepb "github.com/tron-us/go-btfs-common/protos/node"
 
 	ds "github.com/ipfs/go-datastore"
+	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/tron-us/protobuf/proto"
 )
 
@@ -76,20 +77,20 @@ func SyncStats(ctx context.Context, cfg *config.Config, node *core.IpfsNode, env
 	if err != nil {
 		return err
 	}
-	// cfgRoot, err := cmdenv.GetConfigRoot(env)
-	// if err != nil {
-	// 	return err
-	// }
-	// du, err := disk.UsageWithContext(ctx, cfgRoot)
-	// if err != nil {
-	// 	return err
-	// }
+	cfgRoot, err := cmdenv.GetConfigRoot(env)
+	if err != nil {
+		return err
+	}
+	du, err := disk.UsageWithContext(ctx, cfgRoot)
+	if err != nil {
+		return err
+	}
 	hs := &nodepb.StorageStat_Host{
 		Online:               cfg.Experimental.StorageHostEnabled,
 		StorageUsed:          int64(stat.RepoSize),
 		StorageCap:           int64(stat.StorageMax),
-		StorageDiskTotal:     int64(100000000000),
-		StorageDiskAvailable: int64(100000000000),
+		StorageDiskTotal:     int64(du.Total),
+		StorageDiskAvailable: int64(du.Free),
 	}
 	hs.StorageStat_HostStats = sr.StorageStat_HostStats
 	return SaveHostStatsIntoDatastore(ctx, node, node.Identity.Pretty(), hs)
@@ -104,20 +105,20 @@ func GetNowStats(ctx context.Context, cfg *config.Config, node *core.IpfsNode, e
 	if err != nil {
 		return nil, err
 	}
-	//cfgRoot, err := cmdenv.GetConfigRoot(env)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//du, err := disk.UsageWithContext(ctx, cfgRoot)
-	//if err != nil {
-	//	return nil, err
-	//}
+	cfgRoot, err := cmdenv.GetConfigRoot(env)
+	if err != nil {
+		return nil, err
+	}
+	du, err := disk.UsageWithContext(ctx, cfgRoot)
+	if err != nil {
+		return nil, err
+	}
 	hs = &nodepb.StorageStat_Host{
 		Online:               cfg.Experimental.StorageHostEnabled,
 		StorageUsed:          int64(stat.RepoSize),
 		StorageCap:           int64(stat.StorageMax),
-		StorageDiskTotal:     int64(100000000000),
-		StorageDiskAvailable: int64(100000000000),
+		StorageDiskTotal:     int64(du.Total),
+		StorageDiskAvailable: int64(du.Free),
 	}
 	hs.StorageStat_HostStats = sr.StorageStat_HostStats
 	return hs, nil
@@ -169,20 +170,20 @@ This command get node stats in the network from the local node data store.`,
 			return err
 		}
 
-		// cfgRoot, err := cmdenv.GetConfigRoot(env)
-		// if err != nil {
-		// 	return err
-		// }
-		// du, err := disk.UsageWithContext(req.Context, cfgRoot)
-		// if err != nil {
-		// 	return err
-		// }
+		cfgRoot, err := cmdenv.GetConfigRoot(env)
+		if err != nil {
+			return err
+		}
+		du, err := disk.UsageWithContext(req.Context, cfgRoot)
+		if err != nil {
+			return err
+		}
 
 		hs.Online = cfg.Experimental.StorageHostEnabled
 		hs.StorageUsed = int64(stat.RepoSize)
 		hs.StorageCap = int64(stat.StorageMax)
-		hs.StorageDiskTotal = int64(100000000000)
-		hs.StorageDiskAvailable = int64(1000000000)
+		hs.StorageDiskTotal = int64(du.Total)
+		hs.StorageDiskAvailable = int64(du.Free)
 
 		// Only host stats for now
 		return cmds.EmitOnce(res, &nodepb.StorageStat{

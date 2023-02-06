@@ -86,6 +86,9 @@ environment variable:
 		cctx := env.(*oldcmds.Context)
 		daemonLocked, err := fsrepo.LockedByOtherProcess(cctx.ConfigRoot)
 		if err != nil {
+			fmt.Println(`What causes this error: there is already one daemon process running in background
+			Solution: kill it first and run btfs daemon again.
+			If the user has the need to start multiple nodes on the same machine, the configuration needs to be modified.`)
 			return err
 		}
 
@@ -209,7 +212,6 @@ func doInit(out io.Writer, repoRoot string, empty bool, nBitsForKeypair int, con
 func storeChainId(conf *config.Config, repoRoot string) error {
 	statestore, err := chain.InitStateStore(repoRoot)
 	if err != nil {
-		Println("init statestore err: ", err)
 		fmt.Println("init statestore err: ", err)
 		return err
 	}
@@ -218,7 +220,6 @@ func storeChainId(conf *config.Config, repoRoot string) error {
 
 	err = chain.StoreChainIdToDisk(conf.ChainInfo.ChainId, statestore)
 	if err != nil {
-		Println("init StoreChainId err: ", err)
 		fmt.Println("init StoreChainId err: ", err)
 		return err
 	}
@@ -235,7 +236,7 @@ func addChainInfo(conf *config.Config) error {
 	}
 
 	conf.ChainInfo.CurrentFactory = chainCfg.CurrentFactory.Hex()
-	conf.ChainInfo.PriceOracleAddress = chainCfg.PriceOracleAddress.Hex()
+	// conf.ChainInfo.PriceOracleAddress = chainCfg.PriceOracleAddress.Hex()
 	conf.ChainInfo.Endpoint = chainCfg.Endpoint
 	return nil
 }
