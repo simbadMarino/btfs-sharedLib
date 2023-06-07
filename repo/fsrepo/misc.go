@@ -11,7 +11,7 @@ import (
 // repo path.
 func BestKnownPath() (string, error) {
 	btfsPath := "~/Documents/.btfs"
-	if runtime.GOOS == "darwin" { //TODO: Leave only ./btfs path by defining properly the $HOME dir for iOS in path.go file
+	if runtime.GOOS == "ios" { //TODO: Leave only ./btfs path by defining properly the $HOME dir for iOS in path.go file
 		btfsPath = "~/Documents/.btfs" //iOS path
 	}
 	if runtime.GOOS == "android" {

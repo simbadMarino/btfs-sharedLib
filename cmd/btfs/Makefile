@@ -1,13 +1,14 @@
 # go/Makefile
 ANDROID_OUT=./jniLibs
 ANDROID_SDK=$(HOME)/Library/Android/sdk
-NDK_BIN=$(ANDROID_SDK)/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/bin
+NDK_BIN=$(ANDROID_SDK)/ndk/22.1.7171670/toolchains/llvm/prebuilt/darwin-x86_64/bin
 WASM_OUT=./wasmBinary
 WINDOWS_OUT=./winBin
 
 ios-arm64:
+	echo -----COMPILING FOR iOS ARM 64--------
 	CGO_ENABLED=1 \
-	GOOS=darwin \
+	GOOS=ios \
 	GOARCH=arm64 \
 	SDK=iphoneos \
 	SDK_PATH=`xcrun --sdk iphoneos --show-sdk-path` \
@@ -15,6 +16,7 @@ ios-arm64:
 	CC=$(PWD)/clangwrap.sh \
 	CGO_CFLAGS="-fembed-bitcode" \
 	go build -v -buildmode=c-archive -ldflags="-s -w" -tags ios -o $(IOS_OUT)/arm64.a .
+
 
 ios-x86_64:
 	CGO_ENABLED=1 \
@@ -39,6 +41,7 @@ android-armv7a:
 	GOARM=6 \
 	CGO_CFLAGS="-fembed-bitcode" \
 	CC=$(NDK_BIN)/armv7a-linux-androideabi21-clang \
+	CXX=$(NDK_BIN)/armv7a-linux-androideabi21-clang++ \
 	go build -v -buildmode=c-shared -trimpath -ldflags="-s -w"   -o $(ANDROID_OUT)/armeabi-v7a/libbtfs.so .
 
 
@@ -48,24 +51,20 @@ android-arm64:
 	GOARCH=arm64 \
 	CGO_CFLAGS="-fembed-bitcode" \
 	CC=$(NDK_BIN)/aarch64-linux-android21-clang \
+	CXX=$(NDK_BIN)/aarch64-linux-android21-clang++ \
 	go build -v -buildmode=c-shared -trimpath -ldflags="-s -w"  -o $(ANDROID_OUT)/arm64-v8a/libbtfs.so .
 
 
-android-x86:
-	CGO_ENABLED=1 \
-	GOOS=android \
-	GOARCH=386 \
-	CC=$(NDK_BIN)/i686-linux-android21-clang \
-	go build -v -buildmode=c-shared -trimpath -ldflags="-s -w"  -o $(ANDROID_OUT)/x86/libbtfs.so .
 
 android-x86_64:
 	CGO_ENABLED=1 \
 	GOOS=android \
 	GOARCH=amd64 \
 	CC=$(NDK_BIN)/x86_64-linux-android21-clang \
+	CXX=$(NDK_BIN)/x86_64-linux-android21-clang++ \
 	go build -v -buildmode=c-shared -trimpath -ldflags="-s -w"  -o $(ANDROID_OUT)/x86_64/libbtfs.so .
 
-android: android-armv7a android-arm64 android-x86 android-x86_64
+android: android-armv7a android-arm64 android-x86_64
 
 windows:
 	CGO_ENABLED=1 \
