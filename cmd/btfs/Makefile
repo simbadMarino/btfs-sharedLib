@@ -14,7 +14,7 @@ ios-arm64:
 	CARCH="arm64" \
 	CC=$(PWD)/clangwrap.sh \
 	CGO_CFLAGS="-fembed-bitcode" \
-	go build -v -buildmode=c-archive -ldflags="-s -w" -gcflags=all="-l -B" -tags ios -o $(IOS_OUT)/arm64.a .
+	go build -v -buildmode=c-archive -ldflags="-s -w" -tags ios -o $(IOS_OUT)/arm64.a .
 
 
 ios-x86_64:
@@ -25,7 +25,7 @@ ios-x86_64:
 	SDK=iphonesimulator \
 	CGO_CFLAGS="-Wno-undef-prefix" \
 	CC=$(PWD)/clangwrap.sh \
-	go build -v -buildmode=c-archive -ldflags="-s -w" -gcflags=all="-l -B" -tags ios -o $(IOS_OUT)/x86_64.a .
+	go build -v -buildmode=c-archive -ldflags="-s -w" -tags ios -o $(IOS_OUT)/x86_64.a .
 
 
 ios: ios-arm64 ios-x86_64
