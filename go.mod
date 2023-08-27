@@ -89,7 +89,7 @@ require (
 	github.com/libp2p/go-socket-activation v0.1.0
 	github.com/libp2p/go-testutil v0.1.0
 	github.com/looplab/fsm v0.1.0
-	github.com/markbates/pkger v0.17.0
+	github.com/markbates/pkger v0.17.1
 	github.com/mholt/archiver/v3 v3.3.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mr-tron/base58 v1.2.0
