@@ -1214,7 +1214,7 @@ default. This:
 
 * Ensures that every dapp gets its own browser origin.
 * Makes it easier to write websites that "just work" with IPFS because absolute paths will now work (though you should still use relative links because they're better).
-  
+
 Paths addressing the gateway by IP address (`http://127.0.0.1:5001/ipfs/CID`) will not be altered as IP addresses can't have subdomains.
 
 Note: cURL doesn't follow redirects by default. To avoid breaking cURL and other clients that don't support redirects, go-ipfs will return the requested file along with the redirect. Browsers will follow the redirect and abort the download while cURL will ignore the redirect and finish the download.
@@ -1243,7 +1243,7 @@ This feature will be enabled by default in 0.6.0.
 
 ##### IPNS with base32 PIDs
 
-IPNS names can now be expressed as special multibase CIDs. E.g., 
+IPNS names can now be expressed as special multibase CIDs. E.g.,
 
 > /ipns/bafzbeibxfjp4gaxc4cdn57257cyvc7jfa4rlp4e5min6geg44m57g6nx7e
 
@@ -1341,7 +1341,7 @@ IPFS now allows rapid reading and writing of blocks in [`.car` format](https://g
 ~$ ipfs dag export QmQPeNsJPyVWPFDVHb77w8G42Fvo15z4bG2X8D2GhfbSXc \
 | xz > welcome_to_ipfs.car.xz
 
- 0s  6.73 KiB / ? [-------=-------------------------------------] 5.16 MiB/s 0s 
+ 0s  6.73 KiB / ? [-------=-------------------------------------] 5.16 MiB/s 0s
 
 ```
 Then on another `ipfs` instance, not even connected to the network:
@@ -1369,7 +1369,7 @@ To enable structured logging, set the `IPFS_LOGGING_FMT` environment variable to
 
 Note: while we've switched to using Zap as the logging backend, most of go-ipfs still logs strings.
 
-##### Systemd Support 
+##### Systemd Support
 
 For Linux users, this release includes support for two systemd features: socket activation and startup/shutdown notifications. This makes it possible to:
 
@@ -1426,7 +1426,7 @@ type Plugin interface {
 }
 ```
 
-to 
+to
 
 ```go
 type Environment struct {
@@ -1903,8 +1903,7 @@ As usual, this release contains several Windows specific fixes and improvements:
   - fastpath CBOR ([ipfs/go-ipld-cbor#64](https://github.com/ipfs/go-ipld-cbor/pull/64))
 - github.com/ipfs/go-ipld-format (v0.0.2 -> v0.2.0):
   - fix: change the batch size to avoid buffering too much ([ipfs/go-ipld-format#56](https://github.com/ipfs/go-ipld-format/pull/56))
-  - doc: add a lead maintainer ([ipfs/go-ipld-format#54](https://github.com/ipfs/go-ipld-format/pull/54))
-- github.com/ipfs/go-ipld-git (v0.0.2 -> v0.0.3):
+
   - Use RFC3339 to format dates, fixes #16 ([ipfs/go-ipld-git#32](https://github.com/ipfs/go-ipld-git/pull/32))
   - doc: add a lead maintainer ([ipfs/go-ipld-git#41](https://github.com/ipfs/go-ipld-git/pull/41))
 - github.com/ipfs/go-ipns (v0.0.1 -> v0.0.2):
@@ -2436,7 +2435,7 @@ This release includes fixes for the following regressions:
    networking module, causing it to announce the wrong addresses and sometimes
    complain about not being able to determine the IP address
    ([ipfs/go-ipfs#6415](https://github.com/ipfs/go-ipfs/pull/6415)).
-   
+
 It also includes fixes for:
 
 1. Pins not being persisted after `ipfs block add --pin`
@@ -2721,13 +2720,13 @@ rce is stdin.
   -p,               --progress            bool   - Stream progress data.
   -t,               --trickle             bool   - Use trickle-dag format for da
 g generation.
-  -n,               --only-hash           bool   - Only chunk and hash - do not 
+  -n,               --only-hash           bool   - Only chunk and hash - do not
 write to disk.
   -w,               --wrap-with-directory bool   - Wrap files with a directory o
 bject.
   -s,               --chunker             string - Chunking algorithm, size-[byt
 es] or rabin-[min]-[avg]-[max]. Default: size-262144.
-  --pin                                   bool   - Pin this object when adding. 
+  --pin                                   bool   - Pin this object when adding.
 Default: true.
   --raw-leaves                            bool   - Use raw blocks for leaf nodes
 . (experimental).
@@ -3225,7 +3224,7 @@ performance issues that we've now fixed in this release. Specifically:
 * We've fixed quite a number of performance issues that only show up when
   rapidly forming new connections. This will actually help _all_ nodes but will
   especially help relays.
-  
+
 If you've enabled relay _hop_ (`Swarm.EnableRelayHop`) in go-ipfs 0.4.19 and it
 hasn't burned down your machine yet, this release should improve things
 significantly. However, relays are still under heavy load so running an open
@@ -4292,7 +4291,7 @@ bafybeicg2rebjoofv4kbyovkw7af3rpiitvnl6i7ckcywaq6xjcxnc2mby
 
 The refactored `ipfs p2p` command allows forwarding TCP streams through two IPFS
 nodes from one host to another. It's `ssh -L` but for IPFS. You can find
-documentation 
+documentation
 [here](https://github.com/ipfs/go-ipfs/blob/master/docs/experimental-features.md#ipfs-p2p).
 It's still experimental but we don't expect too many breaking changes at this
 point (it will very likely be stabilized in the next release). Quick summary of
@@ -5930,7 +5929,7 @@ few other improvements to other parts of the codebase. Notably:
 	- 81% coverage on blockstore  ([ipfs/go-ipfs#3074](https://github.com/ipfs/go-ipfs/pull/3074))
 	- 80% coverage of unixfs/mod  ([ipfs/go-ipfs#3096](https://github.com/ipfs/go-ipfs/pull/3096))
 	- 82% coverage on blocks  ([ipfs/go-ipfs#3086](https://github.com/ipfs/go-ipfs/pull/3086))
-	- 87% coverage on unixfs   ([ipfs/go-ipfs#3492](https://github.com/ipfs/go-ipfs/pull/3492)) 
+	- 87% coverage on unixfs   ([ipfs/go-ipfs#3492](https://github.com/ipfs/go-ipfs/pull/3492))
 	- Improve coverage on routing/offline  ([ipfs/go-ipfs#3516](https://github.com/ipfs/go-ipfs/pull/3516))
 	- Add test for flags package   ([ipfs/go-ipfs#3449](https://github.com/ipfs/go-ipfs/pull/3449))
 	- improve test coverage on merkledag package  ([ipfs/go-ipfs#3113](https://github.com/ipfs/go-ipfs/pull/3113))

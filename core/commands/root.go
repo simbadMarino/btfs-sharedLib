@@ -3,18 +3,18 @@ package commands
 import (
 	"errors"
 
-	"github.com/bittorrent/go-btfs/core/commands/bttc"
-	"github.com/bittorrent/go-btfs/core/commands/cheque"
+	//"github.com/bittorrent/go-btfs/core/commands/bttc"
+	//"github.com/bittorrent/go-btfs/core/commands/cheque"
 	cmdenv "github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	dag "github.com/bittorrent/go-btfs/core/commands/dag"
 	name "github.com/bittorrent/go-btfs/core/commands/name"
 	ocmd "github.com/bittorrent/go-btfs/core/commands/object"
 	settlement "github.com/bittorrent/go-btfs/core/commands/settlements"
-	"github.com/bittorrent/go-btfs/core/commands/storage"
-	"github.com/bittorrent/go-btfs/core/commands/storage/challenge"
-	"github.com/bittorrent/go-btfs/core/commands/storage/upload/upload"
-	unixfs "github.com/bittorrent/go-btfs/core/commands/unixfs"
-	"github.com/bittorrent/go-btfs/core/commands/vault"
+	//"github.com/bittorrent/go-btfs/core/commands/storage"
+	//"github.com/bittorrent/go-btfs/core/commands/storage/challenge"
+	//"github.com/bittorrent/go-btfs/core/commands/storage/upload/upload"
+	//unixfs "github.com/bittorrent/go-btfs/core/commands/unixfs"
+	//"github.com/bittorrent/go-btfs/core/commands/vault"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	logging "github.com/ipfs/go-log"
@@ -129,13 +129,13 @@ The CLI will exit with one of the following values:
 var CommandsDaemonCmd = CommandsCmd(Root)
 
 var rootSubcommands = map[string]*cmds.Command{
-	"add":        AddCmd,
-	"bitswap":    BitswapCmd,
-	"block":      BlockCmd,
-	"cat":        CatCmd,
+	//"add":        AddCmd,
+	//"bitswap":    BitswapCmd,
+	//"block":      BlockCmd,
+	//"cat":        CatCmd,
 	"commands":   CommandsDaemonCmd,
-	"files":      FilesCmd,
-	"filestore":  FileStoreCmd,
+	//"files":      FilesCmd,
+	//"filestore":  FileStoreCmd,
 	"get":        GetCmd,
 	"pubsub":     PubsubCmd,
 	"repo":       RepoCmd,
@@ -150,7 +150,7 @@ var rootSubcommands = map[string]*cmds.Command{
 	"id":         IDCmd,
 	"key":        KeyCmd,
 	"log":        LogCmd,
-	"ls":         LsCmd,
+	//"ls":         LsCmd,
 	"mount":      MountCmd,
 	"name":       name.NameCmd,
 	"object":     ocmd.ObjectCmd,
@@ -160,24 +160,24 @@ var rootSubcommands = map[string]*cmds.Command{
 	"refs":       RefsCmd,
 	"resolve":    ResolveCmd,
 	"swarm":      SwarmCmd,
-	"tar":        TarCmd,
-	"file":       unixfs.UnixFSCmd,
+	//"tar":        TarCmd,
+	//"file":       unixfs.UnixFSCmd,
 	"urlstore":   urlStoreCmd,
 	"version":    VersionCmd,
 	"shutdown":   daemonShutdownCmd,
 	"restart":    restartCmd,
 	"cid":        CidCmd,
-	"rm":         RmCmd,
-	"storage":    storage.StorageCmd,
+	//"rm":         RmCmd,
+	//"storage":    storage.StorageCmd,
 	"metadata":   MetadataCmd,
 	"guard":      GuardCmd,
-	"cheque":     cheque.ChequeCmd,
-	"vault":      vault.VaultCmd,
-	"bttc":       bttc.BttcCmd,
+	//"cheque":     cheque.ChequeCmd,
+	//"vault":      vault.VaultCmd,
+	//"bttc":       bttc.BttcCmd,
 	"settlement": settlement.SettlementCmd,
 	//"update":    ExternalBinary(),
 	"network":        NetworkCmd,
-	"statuscontract": StatusContractCmd,
+	//"statuscontract": StatusContractCmd,
 //	"bittorrent":     bittorrentCmd,
 }
 
@@ -231,7 +231,7 @@ var rootROSubcommands = map[string]*cmds.Command{
 var RootRemote = &cmds.Command{}
 
 var rootRemoteSubcommands = map[string]*cmds.Command{
-	"storage": &cmds.Command{
+	/*"storage": &cmds.Command{
 		Subcommands: map[string]*cmds.Command{
 			"challenge": &cmds.Command{
 				Subcommands: map[string]*cmds.Command{
@@ -252,7 +252,7 @@ var rootRemoteSubcommands = map[string]*cmds.Command{
 				},
 			},
 		},
-	},
+	},*/
 	"p2p": &cmds.Command{
 		Subcommands: map[string]*cmds.Command{
 			"handshake": P2phandshakeCmd,
