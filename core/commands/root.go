@@ -178,7 +178,7 @@ var rootSubcommands = map[string]*cmds.Command{
 	//"update":    ExternalBinary(),
 	"network":        NetworkCmd,
 	"statuscontract": StatusContractCmd,
-	"bittorrent":     bittorrentCmd,
+//	"bittorrent":     bittorrentCmd,
 }
 
 // RootRO is the readonly version of Root
