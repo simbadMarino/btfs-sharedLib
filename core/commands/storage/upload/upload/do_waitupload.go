@@ -18,7 +18,7 @@ import (
 
 	"github.com/alecthomas/units"
 	"github.com/cenkalti/backoff/v4"
-	"github.com/gogo/protobuf/proto"
+	"github.com/bittorrent/protobuf/proto"
 )
 
 const (

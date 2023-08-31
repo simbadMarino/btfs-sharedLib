@@ -12,7 +12,7 @@ import (
 	ipns_pb "github.com/bittorrent/go-btns/pb"
 	ipath "github.com/bittorrent/interface-go-btfs-core/path"
 	"github.com/cespare/xxhash"
-	"github.com/gogo/protobuf/proto"
+	"github.com/bittorrent/protobuf/proto"
 	"github.com/ipfs/go-cid"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"

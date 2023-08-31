@@ -12,7 +12,7 @@ import (
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	guardpb "github.com/bittorrent/go-btfs-common/protos/guard"
 
-	"github.com/gogo/protobuf/proto"
+	"github.com/bittorrent/protobuf/proto"
 )
 
 var StorageUploadRecvContractCmd = &cmds.Command{

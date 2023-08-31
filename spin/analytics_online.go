@@ -13,7 +13,7 @@ import (
 	"github.com/bittorrent/go-btfs/core"
 
 	"github.com/cenkalti/backoff/v4"
-	"github.com/gogo/protobuf/proto"
+	"github.com/bittorrent/protobuf/proto"
 	ic "github.com/libp2p/go-libp2p/core/crypto"
 )
 

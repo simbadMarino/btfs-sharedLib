@@ -9,7 +9,7 @@ import (
 	dag "github.com/bittorrent/go-btfs/core/commands/dag"
 	name "github.com/bittorrent/go-btfs/core/commands/name"
 	ocmd "github.com/bittorrent/go-btfs/core/commands/object"
-	settlement "github.com/bittorrent/go-btfs/core/commands/settlements"
+	//settlement "github.com/bittorrent/go-btfs/core/commands/settlements"
 	//"github.com/bittorrent/go-btfs/core/commands/storage"
 	//"github.com/bittorrent/go-btfs/core/commands/storage/challenge"
 	//"github.com/bittorrent/go-btfs/core/commands/storage/upload/upload"
@@ -170,13 +170,13 @@ var rootSubcommands = map[string]*cmds.Command{
 	//"rm":         RmCmd,
 	//"storage":    storage.StorageCmd,
 	"metadata":   MetadataCmd,
-	"guard":      GuardCmd,
+	//"guard":      GuardCmd,
 	//"cheque":     cheque.ChequeCmd,
 	//"vault":      vault.VaultCmd,
 	//"bttc":       bttc.BttcCmd,
-	"settlement": settlement.SettlementCmd,
+	//"settlement": settlement.SettlementCmd,
 	//"update":    ExternalBinary(),
-	"network":        NetworkCmd,
+	//"network":        NetworkCmd,
 	//"statuscontract": StatusContractCmd,
 //	"bittorrent":     bittorrentCmd,
 }

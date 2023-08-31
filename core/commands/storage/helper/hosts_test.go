@@ -15,7 +15,7 @@ import (
 
 	"github.com/alecthomas/units"
 	config "github.com/bittorrent/go-btfs-config"
-	"github.com/gogo/protobuf/proto"
+	"github.com/bittorrent/protobuf/proto"
 )
 
 func TestHostsSaveGet(t *testing.T) {

@@ -14,7 +14,7 @@ import (
 	pb "github.com/bittorrent/go-btfs-common/protos/status"
 	config "github.com/bittorrent/go-btfs-config"
 	iface "github.com/bittorrent/interface-go-btfs-core"
-	"github.com/gogo/protobuf/proto"
+	"github.com/bittorrent/protobuf/proto"
 	"github.com/ipfs/go-bitswap"
 	logging "github.com/ipfs/go-log"
 	ic "github.com/libp2p/go-libp2p/core/crypto"

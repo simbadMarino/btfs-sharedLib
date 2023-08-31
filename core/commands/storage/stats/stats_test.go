@@ -9,7 +9,7 @@ import (
 
 	nodepb "github.com/bittorrent/go-btfs-common/protos/node"
 
-	"github.com/gogo/protobuf/proto"
+	"github.com/bittorrent/protobuf/proto"
 )
 
 func TestHostStatsSaveGet(t *testing.T) {

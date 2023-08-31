@@ -9,7 +9,7 @@ import (
 	ipns "github.com/bittorrent/go-btns"
 	pb "github.com/bittorrent/go-btns/pb"
 	ft "github.com/bittorrent/go-unixfs"
-	proto "github.com/gogo/protobuf/proto"
+	proto "github.com/bittorrent/protobuf/proto"
 	ds "github.com/ipfs/go-datastore"
 	dsquery "github.com/ipfs/go-datastore/query"
 	pin "github.com/ipfs/go-ipfs-pinner"

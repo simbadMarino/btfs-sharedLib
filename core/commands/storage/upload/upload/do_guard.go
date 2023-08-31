@@ -16,7 +16,7 @@ import (
 	cgrpc "github.com/bittorrent/go-btfs-common/utils/grpc"
 	config "github.com/bittorrent/go-btfs-config"
 
-	"github.com/gogo/protobuf/proto"
+	"github.com/bittorrent/protobuf/proto"
 	cidlib "github.com/ipfs/go-cid"
 )
 

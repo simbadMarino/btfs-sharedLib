@@ -15,7 +15,7 @@ import (
 	"github.com/bittorrent/go-btns"
 	pb "github.com/bittorrent/go-btns/pb"
 
-	"github.com/gogo/protobuf/proto"
+	"github.com/bittorrent/protobuf/proto"
 	ds "github.com/ipfs/go-datastore"
 	"github.com/ipfs/go-path"
 	"github.com/jbenet/goprocess"
