@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"encoding/base64"
-	"encoding/hex"
+	//"encoding/hex"
 	"errors"
 	_ "expvar"
 	"fmt"
@@ -23,7 +23,7 @@ import (
 
 	"github.com/bittorrent/go-btfs/chain/tokencfg"
 
-	"github.com/bittorrent/go-btfs/guide"
+	//"github.com/bittorrent/go-btfs/guide"
 
 	version "github.com/bittorrent/go-btfs"
 	cmds "github.com/bittorrent/go-btfs-cmds"
@@ -398,7 +398,7 @@ If the user need to start multiple nodes on the same machine, the configuration 
 	SimpleMode := cfg.SimpleMode
 	if SimpleMode == false {
 		// guide server init
-		optionApiAddr, _ := req.Options[commands.ApiOption].(string)
+	/*	optionApiAddr, _ := req.Options[commands.ApiOption].(string)
 		guide.SetServerAddr(cfg.Addresses.API, optionApiAddr)
 		guide.SetInfo(&guide.Info{
 			BtfsVersion: version.CurrentVersionNumber,
@@ -407,7 +407,7 @@ If the user need to start multiple nodes on the same machine, the configuration 
 			PrivateKey:  hex.EncodeToString(pkbytesOri[4:]),
 		})
 		guide.StartServer()
-		defer guide.TryShutdownServer()
+		defer guide.TryShutdownServer()*/
 	}
 
 	//chain init
@@ -645,7 +645,7 @@ If the user need to start multiple nodes on the same machine, the configuration 
 
 	if SimpleMode == false {
 		// if the guide server was started, shutdown it
-		guide.TryShutdownServer()
+	//	guide.TryShutdownServer()
 	}
 
 	// construct api endpoint - every time
