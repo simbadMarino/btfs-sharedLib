@@ -37,7 +37,7 @@ import (
 	oldcmds "github.com/bittorrent/go-btfs/commands"
 	"github.com/bittorrent/go-btfs/core"
 	commands "github.com/bittorrent/go-btfs/core/commands"
-	"github.com/bittorrent/go-btfs/core/commands/cmdenv"
+//	"github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	"github.com/bittorrent/go-btfs/core/commands/storage/path"
 	corehttp "github.com/bittorrent/go-btfs/core/corehttp"
 	httpremote "github.com/bittorrent/go-btfs/core/corehttp/remote"
@@ -55,7 +55,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	cp "github.com/bittorrent/go-btfs-common/crypto"
-	nodepb "github.com/bittorrent/go-btfs-common/protos/node"
+	//nodepb "github.com/bittorrent/go-btfs-common/protos/node"
 	multierror "github.com/hashicorp/go-multierror"
 	util "github.com/ipfs/go-ipfs-util"
 	mprome "github.com/ipfs/go-metrics-prometheus"
@@ -719,15 +719,15 @@ If the user need to start multiple nodes on the same machine, the configuration 
 			node.Repo.SetConfigKey("Experimental.Analytics", dc)
 		}
 		// Spin jobs in the background
-		spin.RenterSessions(req, env)
+		/*spin.RenterSessions(req, env)
 		api, err := cmdenv.GetApi(env, req)
 		if err != nil {
 			return err
-		}
+		}*/
 
-		spin.Analytics(api, cctx.ConfigRoot, node, version.CurrentVersionNumber, hValue)
+		/*spin.Analytics(api, cctx.ConfigRoot, node, version.CurrentVersionNumber, hValue)
 		spin.Hosts(node, env)
-		spin.Contracts(node, req, env, nodepb.ContractStat_HOST.String())
+		spin.Contracts(node, req, env, nodepb.ContractStat_HOST.String())*/
 	}
 
 	// Give the user some immediate feedback when they hit C-c

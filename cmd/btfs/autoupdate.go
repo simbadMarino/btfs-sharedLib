@@ -19,7 +19,7 @@ import (
 
 	btfs_version "github.com/bittorrent/go-btfs"
 	"github.com/bittorrent/go-btfs-api"
-	"github.com/mholt/archiver/v3"
+	//"github.com/mholt/archiver/v3"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 )
@@ -234,11 +234,11 @@ updateLoop:
 				fmt.Printf("Download %s latest compressed file success!\n", key)
 
 				// Unarchive the tar.gz or .zip binary file
-				err = archiver.Unarchive(pathMap["pathCompressed"], defaultBtfsPath)
+				/*err = archiver.Unarchive(pathMap["pathCompressed"], defaultBtfsPath)
 				if err != nil {
 					log.Errorf("Unarchive of %s latest binary file error, reasons: [%v]", key, err)
 					continue updateLoop
-				}
+				}*/
 
 				// Delete the archive file.
 				err = removeCompressedFile(pathMap["pathCompressed"])

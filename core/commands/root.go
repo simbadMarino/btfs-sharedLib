@@ -141,7 +141,7 @@ var rootSubcommands = map[string]*cmds.Command{
 	"repo":       RepoCmd,
 	"stats":      StatsCmd,
 	"bootstrap":  BootstrapCmd,
-	"test":       TestCmd,
+	//"test":       TestCmd,
 	"config":     ConfigCmd,
 	"dag":        dag.DagCmd,
 	"dht":        DhtCmd,
@@ -156,7 +156,7 @@ var rootSubcommands = map[string]*cmds.Command{
 	"object":     ocmd.ObjectCmd,
 	"pin":        PinCmd,
 	"ping":       PingCmd,
-	"p2p":        P2PCmd,
+	//"p2p":        P2PCmd,
 	"refs":       RefsCmd,
 	"resolve":    ResolveCmd,
 	"swarm":      SwarmCmd,
@@ -252,12 +252,12 @@ var rootRemoteSubcommands = map[string]*cmds.Command{
 				},
 			},
 		},
-	},*/
+	},
 	"p2p": &cmds.Command{
 		Subcommands: map[string]*cmds.Command{
 			"handshake": P2phandshakeCmd,
 		},
-	},
+	},*/
 }
 
 func init() {
