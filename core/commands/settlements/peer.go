@@ -9,7 +9,7 @@ import (
 	"time"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
-	"github.com/bittorrent/go-btfs/chain"
+	//"github.com/bittorrent/go-btfs/chain"
 	"github.com/bittorrent/go-btfs/settlement"
 )
 

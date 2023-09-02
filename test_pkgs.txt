@@ -26,10 +26,6 @@ github.com/bittorrent/go-btfs/peering
 github.com/bittorrent/go-btfs/repo
 github.com/bittorrent/go-btfs/repo/fsrepo
 github.com/bittorrent/go-btfs/repo/fsrepo/migrations
-github.com/bittorrent/go-btfs/settlement/swap
-github.com/bittorrent/go-btfs/settlement/swap/bttc
-github.com/bittorrent/go-btfs/settlement/swap/erc20
-github.com/bittorrent/go-btfs/settlement/swap/vault
 github.com/bittorrent/go-btfs/statestore/leveldb
 github.com/bittorrent/go-btfs/statestore/mock
 github.com/bittorrent/go-btfs/test/integration

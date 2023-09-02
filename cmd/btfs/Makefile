@@ -4,6 +4,7 @@ ANDROID_SDK=$(HOME)/Library/Android/sdk
 NDK_BIN=$(ANDROID_SDK)/ndk/21.4.7075529/toolchains/llvm/prebuilt/darwin-x86_64/bin
 WASM_OUT=./wasmBinary
 WINDOWS_OUT=./winBin
+LINUX_OUT=./linuxBin
 
 ios-arm64:
 	CGO_ENABLED=1 \

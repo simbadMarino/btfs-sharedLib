@@ -1,8 +1,9 @@
 package loader
 
 import (
-	pluginbadgerds "github.com/bittorrent/go-btfs/plugin/plugins/badgerds"
+	//pluginbadgerds "github.com/bittorrent/go-btfs/plugin/plugins/badgerds"
 	pluginflatfs "github.com/bittorrent/go-btfs/plugin/plugins/flatfs"
+//	pluginipldgit "github.com/bittorrent/go-btfs/plugin/plugins/git"
 	pluginlevelds "github.com/bittorrent/go-btfs/plugin/plugins/levelds"
 )
 
@@ -11,7 +12,8 @@ import (
 // To change it, modify the plugin/loader/preload.sh
 
 func init() {
-	Preload(pluginbadgerds.Plugins...)
+	//Preload(pluginipldgit.Plugins...)
+	//Preload(pluginbadgerds.Plugins...)
 	Preload(pluginflatfs.Plugins...)
 	Preload(pluginlevelds.Plugins...)
 }

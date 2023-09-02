@@ -36,7 +36,6 @@
     ["ipfs/go-ds-flatfs", "go-ds-flatfs", "a filesystem-based datastore"],
     ["ipfs/go-ds-measure", "go-ds-measure", "a metric-collecting database adapter"],
     ["ipfs/go-ds-leveldb", "go-ds-leveldb", "a leveldb based datastore"],
-    ["ipfs/go-ds-badger", "go-ds-badger", "a badgerdb based datastore"],
 
     "Namesys",
     ["ipfs/go-ipns", "go-ipns", "IPNS datastructures and validation logic"],
