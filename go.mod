@@ -3,7 +3,6 @@ module github.com/bittorrent/go-btfs
 go 1.18
 
 require (
-	bazil.org/fuse v0.0.0-20200117225306-7b5117fecadc
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137
 	github.com/bittorrent/go-btfs-api v0.5.0
 	github.com/bittorrent/go-btfs-chunker v0.4.0

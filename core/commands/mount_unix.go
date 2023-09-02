@@ -8,7 +8,7 @@ import (
 	"io"
 
 	cmdenv "github.com/bittorrent/go-btfs/core/commands/cmdenv"
-	nodeMount "github.com/bittorrent/go-btfs/fuse/node"
+	//nodeMount "github.com/bittorrent/go-btfs/fuse/node"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	config "github.com/bittorrent/go-btfs-config"
@@ -107,10 +107,10 @@ baz
 			nsdir = cfg.Mounts.IPNS // NB: be sure to not redeclare!
 		}
 
-		err = nodeMount.Mount(nd, fsdir, nsdir)
+		/*err = nodeMount.Mount(nd, fsdir, nsdir)
 		if err != nil {
 			return err
-		}
+		}*/
 
 		var output config.Mounts
 		output.IPFS = fsdir

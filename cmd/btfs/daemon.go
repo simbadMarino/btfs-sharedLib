@@ -43,7 +43,7 @@ import (
 	httpremote "github.com/bittorrent/go-btfs/core/corehttp/remote"
 	corerepo "github.com/bittorrent/go-btfs/core/corerepo"
 	libp2p "github.com/bittorrent/go-btfs/core/node/libp2p"
-	nodeMount "github.com/bittorrent/go-btfs/fuse/node"
+	//nodeMount "github.com/bittorrent/go-btfs/fuse/node"
 	//"github.com/bittorrent/go-btfs/repo"
 	fsrepo "github.com/bittorrent/go-btfs/repo/fsrepo"
 	//"github.com/bittorrent/go-btfs/reportstatus"
@@ -1130,15 +1130,15 @@ func mountFuse(req *cmds.Request, cctx *oldcmds.Context) error {
 		nsdir = cfg.Mounts.IPNS
 	}
 
-	node, err := cctx.ConstructNode()
+	/*node, err := cctx.ConstructNode()
 	if err != nil {
 		return fmt.Errorf("mountFuse: ConstructNode() failed: %s", err)
-	}
+	}*/
 
-	err = nodeMount.Mount(node, fsdir, nsdir)
+	/*err = nodeMount.Mount(node, fsdir, nsdir)
 	if err != nil {
 		return err
-	}
+	}*/
 	fmt.Printf("BTFS mounted at: %s\n", fsdir)
 	fmt.Printf("BTNS mounted at: %s\n", nsdir)
 	return nil

@@ -84,3 +84,15 @@ wasm:
 	GOOS=js \
 	GOARCH=wasm \
 	go build -o $(WASM_OUT)/btfs.wasm .
+
+
+ios-arm64_noarchive:
+	CGO_ENABLED=1 \
+	GOOS=ios \
+	GOARCH=arm64 \
+	SDK=iphoneos \
+	SDK_PATH=`xcrun --sdk iphoneos --show-sdk-path` \
+	CARCH="arm64" \
+	CC=$(PWD)/clangwrap.sh \
+	CGO_CFLAGS="-fembed-bitcode" \
+	go build -v -ldflags="-s -w" -tags ios -o $(IOS_OUT)/arm64.a .
