@@ -4,6 +4,7 @@ ANDROID_SDK=$(HOME)/Library/Android/sdk
 NDK_BIN=$(ANDROID_SDK)/ndk/21.4.7075529/toolchains/llvm/prebuilt/darwin-x86_64/bin
 WASM_OUT=./wasmBinary
 WINDOWS_OUT=./winBin
+LINUX_OUT=./linuxBin
 
 ios-arm64:
 	CGO_ENABLED=1 \
@@ -41,7 +42,7 @@ android-armv7a:
 	CGO_CFLAGS="-fembed-bitcode" \
 	CC=$(NDK_BIN)/armv7a-linux-androideabi21-clang \
 	CXX=$(NDK_BIN)/armv7a-linux-androideabi21-clang++ \
-	go build -v -buildmode=c-shared -trimpath -ldflags="-s -w" -gcflags=all="-l -B"  -o $(ANDROID_OUT)/armeabi-v7a/libbtfs.so . 
+	go build -v -buildmode=c-shared -trimpath -ldflags="-s -w" -gcflags=all="-l -B"  -o $(ANDROID_OUT)/armeabi-v7a/libbtfs.so .
 
 
 android-arm64:
@@ -83,3 +84,13 @@ wasm:
 	GOOS=js \
 	GOARCH=wasm \
 	go build -o $(WASM_OUT)/btfs.wasm .
+
+
+darwin_m1_macos:
+	CGO_ENABLED=1 \
+	GOOS=ios \
+	GOARCH=arm64 \
+	CARCH="arm64" \
+	SDK=macos \
+	CGO_CFLAGS="-fembed-bitcode" \
+	go build -v -trimpath -ldflags="-s -w" -tags ios -o $(IOS_OUT)/btfs_macOS .
