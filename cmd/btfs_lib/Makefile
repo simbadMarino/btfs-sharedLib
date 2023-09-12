@@ -67,6 +67,8 @@ android-x86_64:
 
 android: android-armv7a android-arm64 android-x86_64
 
+all: ios-arm64 android-armv7a android-arm64 android-x86_64
+
 # windows-amd64:
 # 	CGO_ENABLED=1 \
 # 	GOOS=windows \
