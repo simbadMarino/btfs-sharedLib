@@ -3,7 +3,7 @@ package settlement
 import (
 	"context"
 	"errors"
-	"github.com/bittorrent/go-btfs/chain/tokencfg"
+	//"github.com/bittorrent/go-btfs/chain/tokencfg"
 	"github.com/bittorrent/go-btfs/utils"
 	"math/big"
 	"time"

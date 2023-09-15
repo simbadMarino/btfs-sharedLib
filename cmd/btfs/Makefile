@@ -105,7 +105,7 @@ wasm:
 	CGO_ENABLED=1 \
 	GOOS=js \
 	GOARCH=wasm \
-	go build -o $(WASM_OUT)/btfs.wasm .
+	go build -v -tags="nofuse purego" -o $(WASM_OUT)/btfs.wasm .
 
 
 darwin_m1_macos:
