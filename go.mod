@@ -292,7 +292,9 @@ require (
 
 replace github.com/ipfs/go-path => github.com/bittorrent/go-path v0.4.1
 
-replace github.com/syndtr/goleveldb => github.com/0xProject/goleveldb v1.0.1-0.20191115233130-f7c4e9105e6b
+replace github.com/syndtr/goleveldb => github.com/simbadMarino/goleveldb v1.1.2
+
+replace github.com/bittorrent/go-btfs-files => github.com/simbadMarino/go-btfs-files v0.3.5
 
 replace github.com/0xProject/qunit => github.com/rusco/qunit v0.0.0-20191017083352-9fa555c2fcc2
 
