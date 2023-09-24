@@ -34,14 +34,14 @@ var (
 	PropertiesFileName string
 	srcProperties      string
 )
-
+//var btfsrepo embed.FS
 /*
 	can be dir of `btfs` or path like `/private/var/folders/q0/lc8cmwd93gv50ygrsy3bwfyc0000gn/T`,
 
 depends on how `btfs` is called
 */
 func init() {
-	ex, err := os.Executable()
+	/*ex, err := os.Executable()
 	if err != nil {
 		log.Error("err", err)
 		return
@@ -64,7 +64,7 @@ func init() {
 		if err != nil {
 			log.Errorf("error occurred when remove %s", srcProperties)
 		}
-	}
+	}*/
 	SetEnvVariables()
 }
 
@@ -99,7 +99,7 @@ var PathCmd = &cmds.Command{
 		Tagline: "Modify the Host storage folder path for BTFS client.",
 		ShortDescription: `
 The default local repository path is located at ~/.btfs folder, in order to
-improve the hard disk space usage, provide the function to change the original 
+improve the hard disk space usage, provide the function to change the original
 storage location, a specified path as a parameter need to be passed.
 `,
 	},
@@ -497,8 +497,13 @@ func SetEnvVariables() {
 	if runtime.GOOS == "android" {
 		os.Setenv("HOME","/data/data/com.justshare/files/home") // $HOME path definition only
 	}
+
+	if runtime.GOOS == "js" {
+		os.Setenv("HOME","/btfsrepo") // $HOME path definition only
+		os.Setenv(BtfsPathKey,"/btfsrepo") //BTFS_PATH envvar definition
+	}
 	//TODO: Pending to add $HOME path for iOS
-	if CheckExist(PropertiesFileName) {
+	/*if CheckExist(PropertiesFileName) {
 		btfsPath = ReadProperties(PropertiesFileName)
 		btfsPath = strings.Trim(btfsPath, " \n\r")
 		if btfsPath != "" {
@@ -515,7 +520,7 @@ func SetEnvVariables() {
 				}
 			}
 		}
-	}
+	}*/
 }
 
 func CheckExist(pathName string) bool {

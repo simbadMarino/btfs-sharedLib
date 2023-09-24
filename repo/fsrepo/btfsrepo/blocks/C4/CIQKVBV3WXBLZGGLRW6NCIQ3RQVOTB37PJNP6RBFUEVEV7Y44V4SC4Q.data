@@ -1,0 +1,106 @@
+
+»
+³
+# 0.1 - Quick Start
+
+This is a set of short examples with minimal explanation. It is meant as
+a "quick start".
+
+
+Add a file to btfs:
+
+  echo "hello world" >hello
+  btfs add hello
+
+
+View it:
+
+  btfs cat <the-hash-you-got-here>
+
+
+Try a directory:
+
+  mkdir foo
+  mkdir foo/bar
+  echo "baz" > foo/baz
+  echo "baz" > foo/bar/baz
+  btfs add -r foo
+
+
+View things:
+
+  btfs ls <the-hash-here>
+  btfs ls <the-hash-here>/bar
+  btfs cat <the-hash-here>/baz
+  btfs cat <the-hash-here>/bar/baz
+  btfs cat <the-hash-here>/bar
+  btfs ls <the-hash-here>/baz
+
+
+References:
+
+  btfs refs <the-hash-here>
+  btfs refs -r <the-hash-here>
+  btfs refs --help
+
+
+Get:
+
+  btfs get <the-hash-here> -o foo2
+  diff foo foo2
+
+
+Objects:
+
+  btfs object get <the-hash-here>
+  btfs object get <the-hash-here>/foo2
+  btfs object --help
+
+
+Pin + GC:
+
+  btfs pin add <the-hash-here>
+  btfs repo gc
+  btfs ls <the-hash-here>
+  btfs pin rm <the-hash-here>
+  btfs repo gc
+
+
+Daemon:
+
+  btfs daemon  (in another terminal)
+  btfs id
+
+
+Network:
+
+  (must be online)
+  btfs swarm peers
+  btfs id
+  btfs cat <hash-of-remote-object>
+
+
+Mount:
+
+  (warning: fuse is finicky!)
+  btfs mount
+  cd /btfs/<the-hash-here>
+  ls
+
+
+Tool:
+
+  btfs version
+  btfs update
+  btfs commands
+  btfs config --help
+  open http://localhost:5001/webui
+
+
+Browse:
+
+  webui:
+
+    http://localhost:5001/webui
+
+³

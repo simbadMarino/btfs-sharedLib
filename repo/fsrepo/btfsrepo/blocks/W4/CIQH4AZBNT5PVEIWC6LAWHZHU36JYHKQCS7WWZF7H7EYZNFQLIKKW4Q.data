@@ -1,0 +1,54 @@
+
+ÙÑ
+                  BTFS -- BitTorrent File system
+
+BTFS is a global, versioned, peer-to-peer filesystem. It combines good ideas
+from Git, BitTorrent, Kademlia, SFS, and the Web. It is like a single bit-
+torrent swarm, exchanging git objects. BTFS provides an interface as simple
+as the HTTP web, but with permanence built in. You can also mount the world
+at /btfs.
+
+BTFS is a protocol:
+- defines a content-addressed file system
+- coordinates content delivery
+- combines Kademlia + BitTorrent + Git
+
+BTFS is a filesystem:
+- has directories and files
+- mountable filesystem (via FUSE)
+
+BTFS is a web:
+- can be used to view documents like the web
+- files accessible via HTTP at `gateway.btfssoter.io/<path>`
+- hash-addressed content guarantees authenticity
+
+BTFS is modular:
+- connection layer over any network protocol
+- routing layer
+- uses a routing layer DHT (kademlia/coral)
+- uses a path-based naming service
+- uses bittorrent-inspired block exchange
+
+BTFS uses crypto:
+- cryptographic-hash content addressing
+- block-level deduplication
+- file integrity + versioning
+- filesystem-level encryption + signing support
+
+BTFS is p2p:
+- worldwide peer-to-peer file transfers
+- completely decentralized architecture
+- **no** central point of failure
+
+BTFS is a cdn:
+- add a file to the filesystem locally, and it's now available to the world
+- caching-friendly (content-hash naming)
+- bittorrent-based bandwidth distribution
+
+BTFS has a name service:
+- BTNS, an SFS inspired name system
+- global namespace based on PKI
+- serves to build trust chains
+- compatible with other NSes
+- can map DNS, .onion, .bit, etc to BTNS
+Ñ

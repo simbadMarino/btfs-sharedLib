@@ -1,0 +1,233 @@
+{
+  "ChainInfo": {
+    "ChainId": 199
+  },
+  "Identity": {
+    "PeerID": "16Uiu2HAm3LurGQhbJpj7drmipa6sDaYwh6HCSbbtAAyyJt2dYuUf",
+    "PrivKey": "CAISIAHJoKzptYtcU4fEwfHRlIxkGFJI9Ax9QkRASLtbJ+oC",
+    "HexPrivKey": "01c9a0ace9b58b5c5387c4c1f1d1948c64185248f40c7d42444048bb5b27ea02",
+    "Mnemonic": "helmet inspire rebel celery science found under box leave furnace wink agent"
+  },
+  "Datastore": {
+    "StorageMax": "10GB",
+    "StorageGCWatermark": 90,
+    "GCPeriod": "1h",
+    "Spec": {
+      "mounts": [
+        {
+          "child": {
+            "path": "blocks",
+            "shardFunc": "/repo/flatfs/shard/v1/next-to-last/2",
+            "sync": true,
+            "type": "flatfs"
+          },
+          "mountpoint": "/blocks",
+          "prefix": "flatfs.datastore",
+          "type": "measure"
+        },
+        {
+          "child": {
+            "compression": "none",
+            "path": "datastore",
+            "type": "levelds"
+          },
+          "mountpoint": "/",
+          "prefix": "leveldb.datastore",
+          "type": "measure"
+        }
+      ],
+      "type": "mount"
+    },
+    "HashOnRead": false,
+    "BloomFilterSize": 0
+  },
+  "Addresses": {
+    "Swarm": [
+      "/ip4/0.0.0.0/tcp/4001",
+      "/ip6/::/tcp/4001",
+      "/ip4/0.0.0.0/udp/4001/quic",
+      "/ip6/::/udp/4001/quic"
+    ],
+    "Announce": [],
+    "NoAnnounce": [],
+    "API": "/ip4/127.0.0.1/tcp/5001",
+    "Gateway": "/ip4/127.0.0.1/tcp/8080",
+    "RemoteAPI": "/ip4/127.0.0.1/tcp/5101"
+  },
+  "Mounts": {
+    "FuseAllowOther": false,
+    "BTFS": "/btfs",
+    "BTNS": "/btns"
+  },
+  "Discovery": {
+    "MDNS": {
+      "Enabled": true,
+      "Interval": 10
+    }
+  },
+  "Routing": {
+    "Type": "dht",
+    "Routers": null,
+    "Methods": null
+  },
+  "Ipns": {
+    "RepublishPeriod": "",
+    "RecordLifetime": "",
+    "ResolveCacheSize": 128
+  },
+  "Bootstrap": [
+    "/ip4/35.158.193.90/tcp/4001/p2p/16Uiu2HAmLY4kyhMuoBntyXSt2YssZCHjefHEAXrYVc6acB7KEBh3",
+    "/ip4/3.66.57.90/tcp/4001/p2p/16Uiu2HAmFT6NXQkzDZXHxuFC4qFt6D1ALf57AkJV9U54HoafX7FX",
+    "/ip4/15.184.66.135/tcp/4001/p2p/16Uiu2HAmBQcXzrgo9MVD8xZwt4CrLzPRK1yKAVM7eY9GhXMJYHmC",
+    "/ip4/35.83.203.96/tcp/4001/p2p/16Uiu2HAmNnKCdkBKdoPo4sXSLhDgXvPmCi7NCjo8cfcP5RRb4mKL",
+    "/ip4/3.76.64.148/tcp/4001/p2p/16Uiu2HAmFc3snGkwK76yMYMAkHWhq6GD29w7m8Sa7kUciUK5xovu",
+    "/ip4/3.78.178.244/tcp/4001/p2p/16Uiu2HAmHeUHakzYG1YWfWoSriVwKhSHYz88rL3USmgeRpqtWqMw",
+    "/ip4/35.161.203.220/tcp/4001/p2p/QmWJWGxKKaqZUW4xga2BCzT5FBtYDL8Cc5Q5jywd6xPt1g",
+    "/ip4/35.84.213.199/tcp/4001/p2p/QmbVFdiNkvxtc7Nni7yBWAgtHg8MuyhaZ5mDaYR2ZrhhvN",
+    "/ip4/35.84.151.38/tcp/4001/p2p/QmQVQBsM7uoJy8hATjTm51uSAkx2y3iGLhSwA6LWLa7iQJ",
+    "/ip4/16.24.14.84/tcp/4001/p2p/16Uiu2HAmM96uUH53Ab9JBWfuwUBXJvGMbfVbsBXiGZGqStP93DTS",
+    "/ip4/16.24.16.4/tcp/4001/p2p/16Uiu2HAmJ6vEtzmmC6nM6SJwHA9NCPwTRWy7K5WT2UFXDqzJFGSf",
+    "/ip4/3.126.224.22/tcp/4001/p2p/16Uiu2HAmNngtNogFpcAUdc6wdSDmb8ZZQjjoDDWaatBXW1rHsYpu",
+    "/ip4/3.7.220.224/tcp/4001/p2p/16Uiu2HAmRVtFaXksAqb8W4Fyr8g5jkggeGDFdVcp8dQ724NMvpcR",
+    "/ip4/65.1.217.86/tcp/4001/p2p/16Uiu2HAmGwDdvK4jAi1Ahga3zkiuW6HFZKKFNWtqVUFXvaSCNjdg",
+    "/ip4/15.184.108.65/tcp/4001/p2p/16Uiu2HAkzRyGYEba2B3SBXdwp328LNFhRG4qhJVZrN6tsJK5KKu5",
+    "/ip4/52.221.82.136/tcp/4001/p2p/QmYqCq3PasrzLr3PxtLo5D6spEAJ836W9Re9Eo4zUou45U",
+    "/ip4/34.213.53.108/tcp/4001/p2p/QmWm3vBCRuZcJMUT9jDZysoYBb66aokmSReX26UaMk8qq5",
+    "/ip4/15.184.174.48/tcp/4001/p2p/16Uiu2HAm6Bkxj81JQxa67aja7UWznjTgzAAVzPAqZMVD6oGpw7ST",
+    "/ip4/35.164.151.55/tcp/4001/p2p/16Uiu2HAmMgufksaU9aaenq2bNtGnG5QokCS1xdzJwUS6yRtakhbs",
+    "/ip4/54.255.27.251/tcp/4001/p2p/QmURPwdLYesWUDB66EGXvDvwcyV44rVRqV2iGNqKN24eVu",
+    "/ip4/15.184.96.102/tcp/4001/p2p/16Uiu2HAmFVWTvouWpQTRjMb4bUaidfLzsH2RVogcGHb6RwvPSxuT",
+    "/ip4/43.204.199.237/tcp/4001/p2p/16Uiu2HAm3tpaz9zgqB4i2FEwX7dwTJzv88Krpdy3kRecXZos3WdM",
+    "/ip4/35.155.192.241/tcp/4001/p2p/16Uiu2HAm29iAxcKRPNRBVMYCz455uck5o7KmdPJ9GQ5BKvpxxca9",
+    "/ip4/13.213.254.73/tcp/4001/p2p/QmX7RZXh27AX8iv2BKLGMgPBiuUpEy8p4LFXgtXAfaZDn9",
+    "/ip4/3.1.76.240/tcp/4001/p2p/16Uiu2HAmQfh6CYSWG1MM1DnzJ9duM8jxqn6vxNbjGBsmzc3kkctp",
+    "/ip4/13.232.5.9/tcp/4001/p2p/16Uiu2HAmSkFDwHU3snrYD2ib5wWeKcsuFMZWEPt31z5YVJ8ktw1p",
+    "/ip4/3.109.125.91/tcp/4001/p2p/16Uiu2HAkzggX1jKwc1xen5qNPQ5RKNkXQqmH2PYAKGd8JZ15YQmK",
+    "/ip4/3.69.104.217/tcp/4001/p2p/16Uiu2HAm2v2NBTLYmzVnLJoNbLCmdn29Gv8qLixHCJNeE81rUUYe",
+    "/ip4/3.7.21.138/tcp/4001/p2p/16Uiu2HAm7QD77kxSKf1GTM3YkrYp8vkhUwS2ySJPht9jALeaHaft",
+    "/ip4/54.69.57.58/tcp/4001/p2p/16Uiu2HAmNDZWZtyRNZMLQ88933SFcVp2gtb99aQVbADXcCFcjFn9"
+  ],
+  "Gateway": {
+    "HTTPHeaders": {
+      "Access-Control-Allow-Headers": [
+        "X-Requested-With",
+        "Range",
+        "User-Agent"
+      ],
+      "Access-Control-Allow-Methods": [
+        "GET"
+      ],
+      "Access-Control-Allow-Origin": [
+        "*"
+      ]
+    },
+    "RootRedirect": "",
+    "Writable": false,
+    "PathPrefixes": [],
+    "APICommands": [],
+    "NoFetch": false,
+    "NoDNSLink": false,
+    "PublicGateways": null
+  },
+  "API": {
+    "HTTPHeaders": {}
+  },
+  "Swarm": {
+    "AddrFilters": null,
+    "DisableBandwidthMetrics": false,
+    "DisableNatPortMap": false,
+    "EnableAutoRelay": true,
+    "RelayClient": {},
+    "RelayService": {},
+    "Transports": {
+      "Network": {},
+      "Security": {},
+      "Multiplexers": {}
+    },
+    "SwarmKey": "/key/swarm/psk/1.0.0/\n/base16/\n64ef95289a6b998c776927ed6e33ca8c9202ee47df90141d09f5ffeeb64b8a66",
+    "ConnMgr": {
+      "Type": "basic",
+      "LowWater": 10,
+      "HighWater": 900,
+      "GracePeriod": "10s"
+    },
+    "ResourceMgr": {}
+  },
+  "AutoNAT": {},
+  "Pubsub": {
+    "Router": "",
+    "DisableSigning": false
+  },
+  "Peering": {
+    "Peers": null
+  },
+  "DNS": {
+    "Resolvers": null
+  },
+  "Services": {
+    "OnlineServerDomain": "https://online.btfs.io",
+    "HubDomain": "https://score.btfs.io",
+    "EscrowDomain": "https://escrow.btfs.io",
+    "GuardDomain": "https://guard.btfs.io",
+    "ExchangeDomain": "https://exchange.bt.co",
+    "SolidityDomain": "grpc.trongrid.io:50052",
+    "FullnodeDomain": "grpc.trongrid.io:50051",
+    "TrongridDomain": "https://api.trongrid.io",
+    "EscrowPubKeys": [
+      "CAISIQPAfB2Mt2ic+n3JcL4vrKXxBCmB0iNh+5BYiXdJNWed/Q=="
+    ],
+    "GuardPubKeys": [
+      "CAISIQJ16EiwvGko4SaBEEUFyMdNZp1vKsTLgIXCY6fRa3/Obg=="
+    ]
+  },
+  "Provider": {
+    "Strategy": ""
+  },
+  "Reprovider": {
+    "Interval": "12h0m0s",
+    "Strategy": "all"
+  },
+  "Experimental": {
+    "FilestoreEnabled": false,
+    "UrlstoreEnabled": false,
+    "ShardingEnabled": false,
+    "GraphsyncEnabled": false,
+    "Libp2pStreamMounting": true,
+    "P2pHttpProxy": false,
+    "StrategicProviding": false,
+    "StorageHostEnabled": true,
+    "StorageClientEnabled": true,
+    "Analytics": false,
+    "RemoveOnUnpin": false,
+    "HostsSyncEnabled": false,
+    "HostsSyncFlag": true,
+    "HostsSyncMode": "SCORE",
+    "DisableAutoUpdate": false,
+    "HostRepairEnabled": false,
+    "HostChallengeEnabled": false,
+    "ReportOnline": false,
+    "ReportStatusContract": false,
+    "AcceleratedDHTClient": false
+  },
+  "UI": {
+    "Host": {
+      "Initialized": false,
+      "ContractManager": {
+        "LowWater": 100,
+        "HighWater": 300,
+        "Threshold": 10000000
+      }
+    },
+    "Renter": {
+      "Initialized": false
+    },
+    "Wallet": {
+      "Initialized": false
+    }
+  },
+  "Plugins": {
+    "Plugins": null
+  },
+  "Internal": {},
+  "SimpleMode": true
+}
