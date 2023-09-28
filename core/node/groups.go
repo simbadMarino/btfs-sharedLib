@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/bittorrent/go-btfs-common/crypto"
+	"github.com/simbadMarino/go-btfs-common/crypto"
 	"github.com/bittorrent/go-btfs/core/node/libp2p"
 	"github.com/bittorrent/go-btfs/p2p"
 

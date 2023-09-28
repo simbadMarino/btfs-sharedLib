@@ -5,7 +5,7 @@ package contractspb
 
 import (
 	fmt "fmt"
-	node "github.com/bittorrent/go-btfs-common/protos/node"
+	node "github.com/simbadMarino/go-btfs-common/protos/node"
 	_ "github.com/bittorrent/protobuf/gogoproto"
 	proto "github.com/bittorrent/protobuf/proto"
 	golang_proto "github.com/golang/protobuf/proto"

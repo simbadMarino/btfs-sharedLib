@@ -3,12 +3,12 @@ package settlement
 import (
 	"context"
 	"errors"
-	"github.com/bittorrent/go-btfs/chain/tokencfg"
+	//"github.com/bittorrent/go-btfs/chain/tokencfg"
 	"github.com/bittorrent/go-btfs/utils"
 	"math/big"
 	"time"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	//"github.com/bittorrent/go-btfs/chain"
 )
 

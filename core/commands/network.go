@@ -7,7 +7,7 @@ import (
 	"io"
 	"time"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	////"github.com/bittorrent/go-btfs/chain"
 )
 

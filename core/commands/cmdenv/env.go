@@ -7,7 +7,7 @@ import (
 	"github.com/bittorrent/go-btfs/commands"
 	"github.com/bittorrent/go-btfs/core"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	config "github.com/bittorrent/go-btfs-config"
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	options "github.com/bittorrent/interface-go-btfs-core/options"

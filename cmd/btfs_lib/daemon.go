@@ -26,7 +26,7 @@ import (
 	//"github.com/bittorrent/go-btfs/guide"
 
 	version "github.com/bittorrent/go-btfs"
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	config "github.com/bittorrent/go-btfs-config"
 	cserial "github.com/bittorrent/go-btfs-config/serialize"
 	"github.com/bittorrent/go-btfs/bindata"

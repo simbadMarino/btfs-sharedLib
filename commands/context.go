@@ -10,7 +10,7 @@ import (
 	coreapi "github.com/bittorrent/go-btfs/core/coreapi"
 	loader "github.com/bittorrent/go-btfs/plugin/loader"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	config "github.com/bittorrent/go-btfs-config"
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	options "github.com/bittorrent/interface-go-btfs-core/options"

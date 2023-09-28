@@ -1,7 +1,7 @@
 package unixfs
 
 import (
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 )
 
 var UnixFSCmd = &cmds.Command{

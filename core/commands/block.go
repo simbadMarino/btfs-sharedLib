@@ -9,7 +9,7 @@ import (
 	util "github.com/bittorrent/go-btfs/blocks/blockstoreutil"
 	cmdenv "github.com/bittorrent/go-btfs/core/commands/cmdenv"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	files "github.com/bittorrent/go-btfs-files"
 	options "github.com/bittorrent/interface-go-btfs-core/options"
 	path "github.com/bittorrent/interface-go-btfs-core/path"

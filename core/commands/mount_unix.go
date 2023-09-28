@@ -10,7 +10,7 @@ import (
 	cmdenv "github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	//nodeMount "github.com/bittorrent/go-btfs/fuse/node"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	config "github.com/bittorrent/go-btfs-config"
 )
 

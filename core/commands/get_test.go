@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 )
 
 func TestGetOutputPath(t *testing.T) {

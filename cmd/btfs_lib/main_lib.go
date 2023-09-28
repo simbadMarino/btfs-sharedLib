@@ -25,9 +25,9 @@ import (
 	repo "github.com/bittorrent/go-btfs/repo"
 	fsrepo "github.com/bittorrent/go-btfs/repo/fsrepo"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
-	"github.com/bittorrent/go-btfs-cmds/cli"
-	cmdhttp "github.com/bittorrent/go-btfs-cmds/http"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
+	"github.com/simbadMarino/go-btfs-cmds/cli"
+	cmdhttp "github.com/simbadMarino/go-btfs-cmds/http"
 	config "github.com/bittorrent/go-btfs-config"
 	u "github.com/ipfs/go-ipfs-util"
 	logging "github.com/ipfs/go-log"

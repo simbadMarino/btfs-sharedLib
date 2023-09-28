@@ -9,15 +9,16 @@ import (
 	"strconv"
 	"strings"
 
-	shell "github.com/bittorrent/go-btfs-api"
+	//shell "github.com/bittorrent/go-btfs-api"
+	shell "github.com/simbadMarino/go-btfs-api"
 
 	version "github.com/bittorrent/go-btfs"
 	oldcmds "github.com/bittorrent/go-btfs/commands"
 	"github.com/bittorrent/go-btfs/core"
 	corecommands "github.com/bittorrent/go-btfs/core/commands"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
-	cmdsHttp "github.com/bittorrent/go-btfs-cmds/http"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
+	cmdsHttp "github.com/simbadMarino/go-btfs-cmds/http"
 	config "github.com/bittorrent/go-btfs-config"
 	path "github.com/ipfs/go-path"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"

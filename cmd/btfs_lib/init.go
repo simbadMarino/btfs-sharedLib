@@ -21,7 +21,7 @@ import (
 	"github.com/bittorrent/go-btfs/namesys"
 	fsrepo "github.com/bittorrent/go-btfs/repo/fsrepo"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	config "github.com/bittorrent/go-btfs-config"
 	files "github.com/bittorrent/go-btfs-files"
 )

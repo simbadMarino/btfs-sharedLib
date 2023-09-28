@@ -1,7 +1,7 @@
 package name
 
 import (
-	"github.com/bittorrent/go-btfs-cmds"
+	"github.com/simbadMarino/go-btfs-cmds"
 )
 
 type IpnsEntry struct {

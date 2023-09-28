@@ -11,7 +11,7 @@ import (
 	ncmd "github.com/bittorrent/go-btfs/core/commands/name"
 	ns "github.com/bittorrent/go-btfs/namesys"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	options "github.com/bittorrent/interface-go-btfs-core/options"
 	nsopts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
 	path "github.com/bittorrent/interface-go-btfs-core/path"

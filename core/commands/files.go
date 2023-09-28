@@ -13,7 +13,7 @@ import (
 	"github.com/bittorrent/go-btfs/core"
 	"github.com/bittorrent/go-btfs/core/commands/cmdenv"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	"github.com/bittorrent/go-mfs"
 	ft "github.com/bittorrent/go-unixfs"
 	iface "github.com/bittorrent/interface-go-btfs-core"

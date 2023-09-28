@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	core "github.com/bittorrent/go-btfs/core"
 	cmdenv "github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	e "github.com/bittorrent/go-btfs/core/commands/e"

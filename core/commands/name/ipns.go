@@ -10,7 +10,7 @@ import (
 	cmdenv "github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	namesys "github.com/bittorrent/go-btfs/namesys"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	options "github.com/bittorrent/interface-go-btfs-core/options"
 	nsopts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
 	logging "github.com/ipfs/go-log"

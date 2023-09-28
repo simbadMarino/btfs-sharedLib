@@ -10,8 +10,8 @@ import (
 	"github.com/bittorrent/go-btfs/core/commands/storage/helper"
 	"github.com/bittorrent/go-btfs/core/hub"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
-	hubpb "github.com/bittorrent/go-btfs-common/protos/hub"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
+	hubpb "github.com/simbadMarino/go-btfs-common/protos/hub"
 
 	logging "github.com/ipfs/go-log"
 )

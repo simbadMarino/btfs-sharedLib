@@ -9,7 +9,7 @@ import (
 	namesys "github.com/bittorrent/go-btfs/namesys"
 	nsopts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 )
 
 const (

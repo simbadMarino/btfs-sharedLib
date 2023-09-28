@@ -12,13 +12,13 @@ import (
 	"strings"
 
 	version "github.com/bittorrent/go-btfs"
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	////"github.com/bittorrent/go-btfs/chain"
 	"github.com/bittorrent/go-btfs/core"
 	"github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	ke "github.com/bittorrent/go-btfs/core/commands/keyencode"
 
-	"github.com/bittorrent/go-btfs-common/crypto"
+	"github.com/simbadMarino/go-btfs-common/crypto"
 	kb "github.com/libp2p/go-libp2p-kbucket"
 	ic "github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/host"

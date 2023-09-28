@@ -5,7 +5,7 @@ package walletpb
 
 import (
 	fmt "fmt"
-	ledger "github.com/bittorrent/go-btfs-common/protos/ledger"
+	ledger "github.com/simbadMarino/go-btfs-common/protos/ledger"
 	_ "github.com/bittorrent/protobuf/gogoproto"
 	proto "github.com/bittorrent/protobuf/proto"
 	github_com_tron_us_protobuf_types "github.com/bittorrent/protobuf/types"

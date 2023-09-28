@@ -12,7 +12,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/bittorrent/go-btfs-cmds"
+	"github.com/simbadMarino/go-btfs-cmds"
 )
 
 type commandEncoder struct {

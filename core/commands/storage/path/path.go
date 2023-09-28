@@ -15,7 +15,7 @@ import (
 	"unsafe"
 	"runtime"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 
 	"github.com/dustin/go-humanize"
 	logging "github.com/ipfs/go-log"

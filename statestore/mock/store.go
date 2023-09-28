@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/bittorrent/go-btfs/transaction/storage"
+	//"github.com/bittorrent/go-btfs/transaction/storage"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 

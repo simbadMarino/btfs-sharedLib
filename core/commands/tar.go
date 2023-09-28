@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	"github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	tar "github.com/bittorrent/go-btfs/tar"
 

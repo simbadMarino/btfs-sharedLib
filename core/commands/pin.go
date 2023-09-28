@@ -12,7 +12,7 @@ import (
 	cmdenv "github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	e "github.com/bittorrent/go-btfs/core/commands/e"
 
-	cmds "github.com/bittorrent/go-btfs-cmds"
+	cmds "github.com/simbadMarino/go-btfs-cmds"
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	options "github.com/bittorrent/interface-go-btfs-core/options"
 	"github.com/bittorrent/interface-go-btfs-core/path"
