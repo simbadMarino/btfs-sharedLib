@@ -1,6 +1,8 @@
 // cmd/btfs implements the primary CLI binary for btfs
 package main
 
+import "C"
+
 import (
 	"context"
 	"errors"
@@ -10,6 +12,8 @@ import (
 	"net/http"
 	"os"
 	"runtime/pprof"
+	"strconv"
+	"strings"
 	"time"
 
 	util "github.com/bittorrent/go-btfs/cmd/btfs/util"
@@ -68,16 +72,28 @@ func loadPlugins(repoPath string) (*loader.PluginLoader, error) {
 // - output the response
 // - if anything fails, print error, maybe with help
 func main() {
-	os.Exit(mainRet())
+	// os.Exit(mainRet())
 }
 
-func mainRet() int {
+//export mainC
+func mainC(in *C.char) *C.char {
+	args := strings.Split(C.GoString(in), " ")
+	args = append([]string{"btfs"}, args...)
+	fmt.Println("args:", args)
+	exitCode := mainRet(args)
+	return C.CString("exit code:" + strconv.Itoa(exitCode))
+}
+
+
+
+func mainRet(args []string) int {
 	rand.Seed(time.Now().UnixNano())
 	ctx := logging.ContextWithLoggable(context.Background(), loggables.Uuid("session"))
 	var err error
 
 	// we'll call this local helper to output errors.
 	// this is so we control how to print errors in one place.
+	//Println("1")
 	printErr := func(err error) {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err.Error())
 	}
@@ -89,6 +105,7 @@ func mainRet() int {
 	}
 	defer stopFunc() // to be executed as late as possible
 
+	//Println("2")
 	intrh, ctx := util.SetupInterruptHandler(ctx)
 	defer intrh.Close()
 
@@ -121,6 +138,7 @@ func mainRet() int {
 	// so we need to make sure it's stable
 	//os.Args[0] = "ipfs"
 
+	//Println("3", args)
 	buildEnv := func(ctx context.Context, req *cmds.Request) (cmds.Environment, error) {
 		checkDebug(req)
 		repoPath, err := getRepoPath(req)
@@ -129,6 +147,7 @@ func mainRet() int {
 		}
 		log.Debugf("config path is %s", repoPath)
 
+		//Println("4")
 		plugins, err := loadPlugins(repoPath)
 		if err != nil {
 			return nil, err
@@ -165,11 +184,16 @@ func mainRet() int {
 		}, nil
 	}
 
+	os.Args = args
+	//Println("5", args)
+
 	err = cli.Run(ctx, Root, os.Args, os.Stdin, os.Stdout, os.Stderr, buildEnv, makeExecutor)
 	if err != nil {
+		//Println("6", err)
 		return 1
 	}
 
+	//Println("7")
 	// everything went better than expected :)
 	return 0
 }
