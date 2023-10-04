@@ -1,14 +1,20 @@
 #!/bin/sh
-
-# go/clangwrap.sh
-
-SDK_PATH=`xcrun --sdk $SDK --show-sdk-path`
-CLANG=`xcrun --sdk $SDK --find clang`
-
-if [ "$GOARCH" == "amd64" ]; then
-    CARCH="x86_64"
-elif [ "$GOARCH" == "arm64" ]; then
-    CARCH="arm64"
+# This uses the latest available iOS SDK, which is recommended.
+# To select a specific SDK, run 'xcodebuild -showsdks'
+# to see the available SDKs and replace iphoneos with one of them.
+if [ "$GOARCH" == "arm64" ]; then
+	SDK=iphoneos
+	PLATFORM=ios
+	CLANGARCH="arm64"
+else
+	SDK=iphonesimulator
+	PLATFORM=ios-simulator
+	CLANGARCH="x86_64"
 fi
 
-exec $CLANG -arch $CARCH -isysroot $SDK_PATH -mios-version-min=10.0 "$@"
+SDK_PATH=`xcrun --sdk $SDK --show-sdk-path`
+export IPHONEOS_DEPLOYMENT_TARGET=5.1
+# cmd/cgo doesn't support llvm-gcc-4.2, so we have to use clang.
+CLANG=`xcrun --sdk $SDK --find clang`
+
+exec "$CLANG" -arch $CLANGARCH -isysroot "$SDK_PATH" -m${PLATFORM}-version-min=12.0 "$@"

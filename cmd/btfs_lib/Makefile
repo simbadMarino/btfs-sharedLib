@@ -9,12 +9,9 @@ ios-arm64:
 	CGO_ENABLED=1 \
 	GOOS=ios \
 	GOARCH=arm64 \
-	SDK=iphoneos \
-	SDK_PATH=`xcrun --sdk iphoneos --show-sdk-path` \
-	CARCH="arm64" \
 	CC=$(PWD)/clangwrap.sh \
 	CGO_CFLAGS="-fembed-bitcode" \
-	go build -v -buildmode=c-archive -ldflags="-s -w" -gcflags=all="-l -B" -tags ios -o $(IOS_OUT)/arm64.a .
+	go build -v -buildmode=c-archive -ldflags="-s -w" -gcflags=all="-l -B" -tags ios -o $(IOS_OUT)/btfs.a .
 
 
 ios-x86_64:
