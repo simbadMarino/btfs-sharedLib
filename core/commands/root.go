@@ -179,6 +179,12 @@ var rootSubcommands = map[string]*cmds.Command{
 	"network":        NetworkCmd,
 	"statuscontract": StatusContractCmd,
 	"bittorrent":     bittorrentCmd,
+	"multibase":      MbaseCmd,
+	"backup":         BackupCmd,
+	"recovery":       RecoveryCmd,
+	"accesskey":      AccessKeyCmd,
+	"encrypt":        encryptCmd,
+	"decrypt":        decryptCmd,
 }
 
 // RootRO is the readonly version of Root
@@ -195,7 +201,7 @@ var VersionROCmd = &cmds.Command{}
 var rootROSubcommands = map[string]*cmds.Command{
 	"commands": CommandsDaemonROCmd,
 	"cat":      CatCmd,
-	"block": &cmds.Command{
+	"block": {
 		Subcommands: map[string]*cmds.Command{
 			"stat": blockStatCmd,
 			"get":  blockGetCmd,
@@ -231,14 +237,14 @@ var rootROSubcommands = map[string]*cmds.Command{
 var RootRemote = &cmds.Command{}
 
 var rootRemoteSubcommands = map[string]*cmds.Command{
-	"storage": &cmds.Command{
+	"storage": {
 		Subcommands: map[string]*cmds.Command{
-			"challenge": &cmds.Command{
+			"challenge": {
 				Subcommands: map[string]*cmds.Command{
 					"response": challenge.StorageChallengeResponseCmd,
 				},
 			},
-			"upload": &cmds.Command{
+			"upload": {
 				Subcommands: map[string]*cmds.Command{
 					"init":          upload.StorageUploadInitCmd,
 					"supporttokens": upload.StorageUploadSupportTokensCmd,
@@ -246,18 +252,19 @@ var rootRemoteSubcommands = map[string]*cmds.Command{
 					"cheque":        upload.StorageUploadChequeCmd,
 				},
 			},
-			"dcrepair": &cmds.Command{
+			"dcrepair": {
 				Subcommands: map[string]*cmds.Command{
 					"response": upload.HostRepairResponseCmd,
 				},
 			},
 		},
 	},
-	"p2p": &cmds.Command{
+	"p2p": {
 		Subcommands: map[string]*cmds.Command{
 			"handshake": P2phandshakeCmd,
 		},
 	},
+	"decryption": CatCmd,
 }
 
 func init() {
