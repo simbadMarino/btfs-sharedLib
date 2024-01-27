@@ -14,7 +14,7 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	rcmgr "github.com/libp2p/go-libp2p/p2p/host/resource-manager"
-	rcmgrObs "github.com/libp2p/go-libp2p/p2p/host/resource-manager/obs"
+	//rcmgrObs "github.com/libp2p/go-libp2p/p2p/host/resource-manager/obs"
 	"github.com/multiformats/go-multiaddr"
 	"go.opencensus.io/stats/view"
 	"go.uber.org/fx"
@@ -69,7 +69,7 @@ func ResourceManager(cfg config.SwarmConfig) interface{} {
 
 			limiter := rcmgr.NewFixedLimiter(limitConfig)
 
-			str, err := rcmgrObs.NewStatsTraceReporter()
+			str, err := rcmgr.NewStatsTraceReporter()
 			if err != nil {
 				return nil, opts, err
 			}
@@ -90,10 +90,10 @@ func ResourceManager(cfg config.SwarmConfig) interface{} {
 				log.Infof("Setting allowlist to: %v", mas)
 			}
 
-			err = view.Register(rcmgrObs.DefaultViews...)
+			/*err = view.Register(rcmgrObs.DefaultViews...)
 			if err != nil {
 				return nil, opts, fmt.Errorf("registering rcmgr obs views: %w", err)
-			}
+			}*/
 
 			if os.Getenv("LIBP2P_DEBUG_RCMGR") != "" {
 				traceFilePath := filepath.Join(repoPath, NetLimitTraceFilename)
@@ -176,10 +176,10 @@ func NetStat(mgr network.ResourceManager, scope string, percentage int) (NetStat
 		if len(stat.Peers) > 0 {
 			result.Peers = make(map[string]rcmgr.BaseLimit, len(stat.Peers))
 			for p, stat := range stat.Peers {
-				ls := limits.Peers[p.Pretty()]
+				ls := limits.Peers[p.String()]
 				fstat := compareLimits(scopeToLimit(&stat), &ls, percentage)
 				if fstat != nil {
-					result.Peers[p.Pretty()] = *fstat
+					result.Peers[p.String()] = *fstat
 				}
 			}
 		}
@@ -355,7 +355,7 @@ func NetLimitAll(mgr network.ResourceManager) (*NetStatOut, error) {
 		case config.ResourceMgrPeerScopePrefix:
 			result.Peers = make(map[string]rcmgr.BaseLimit)
 			for _, peer := range lister.ListPeers() {
-				ps := peer.Pretty()
+				ps := peer.String()
 				s, err := NetLimit(mgr, config.ResourceMgrPeerScopePrefix+ps)
 				if err != nil {
 					return nil, err
@@ -434,7 +434,7 @@ func NetSetLimit(mgr network.ResourceManager, repo repo.Repo, scope string, limi
 	}
 
 	if cfg.Swarm.ResourceMgr.Limits == nil {
-		cfg.Swarm.ResourceMgr.Limits = &rcmgr.LimitConfig{}
+		cfg.Swarm.ResourceMgr.Limits = &rcmgr.PartialLimitConfig{}
 	}
 	configLimits := cfg.Swarm.ResourceMgr.Limits
 
@@ -487,7 +487,7 @@ func NetSetLimit(mgr network.ResourceManager, repo repo.Repo, scope string, limi
 	}
 
 	if cfg.Swarm.ResourceMgr.Limits == nil {
-		cfg.Swarm.ResourceMgr.Limits = &rcmgr.LimitConfig{}
+		cfg.Swarm.ResourceMgr.Limits = &rcmgr.PartialLimitConfig{}
 	}
 	setConfigFunc()
 
@@ -523,7 +523,7 @@ func NetResetLimit(mgr network.ResourceManager, repo repo.Repo, scope string) (r
 	}
 
 	if cfg.Swarm.ResourceMgr.Limits == nil {
-		cfg.Swarm.ResourceMgr.Limits = &rcmgr.LimitConfig{}
+		cfg.Swarm.ResourceMgr.Limits = &rcmgr.PartialLimitConfig{}
 	}
 	configLimits := cfg.Swarm.ResourceMgr.Limits
 

@@ -8,7 +8,7 @@ import (
 	config "github.com/bittorrent/go-btfs-config"
 	"github.com/libp2p/go-libp2p"
 	smux "github.com/libp2p/go-libp2p/core/network"
-	mplex "github.com/libp2p/go-libp2p/p2p/muxer/mplex"
+	//mplex "github.com/libp2p/go-libp2p/p2p/muxer/mplex"
 	yamux "github.com/libp2p/go-libp2p/p2p/muxer/yamux"
 )
 
@@ -24,7 +24,7 @@ func yamuxTransport() smux.Multiplexer {
 
 func makeSmuxTransportOption(tptConfig config.Transports) (libp2p.Option, error) {
 	const yamuxID = "/yamux/1.0.0"
-	const mplexID = "/mplex/6.7.0"
+	//const mplexID = "/mplex/6.7.0"
 
 	ymxtpt := *yamux.DefaultTransport
 	ymxtpt.AcceptBacklog = 512
@@ -48,7 +48,8 @@ func makeSmuxTransportOption(tptConfig config.Transports) (libp2p.Option, error)
 			case yamuxID:
 				opts = append(opts, libp2p.Muxer(tpt, yamuxTransport()))
 			case mplexID:
-				opts = append(opts, libp2p.Muxer(tpt, mplex.DefaultTransport))
+				opts = append(opts, libp2p.Muxer(tpt, yamuxTransport()))
+				//opts = append(opts, libp2p.Muxer(tpt, mplex.DefaultTransport))
 			default:
 				return nil, fmt.Errorf("unknown muxer: %s", tpt)
 			}
@@ -57,12 +58,8 @@ func makeSmuxTransportOption(tptConfig config.Transports) (libp2p.Option, error)
 	} else {
 		return prioritizeOptions([]priorityOption{{
 			priority:        tptConfig.Multiplexers.Yamux,
-			defaultPriority: 100,
-			opt:             libp2p.Muxer(yamuxID, yamuxTransport()),
-		}, {
-			priority:        tptConfig.Multiplexers.Mplex,
 			defaultPriority: 200,
-			opt:             libp2p.Muxer(mplexID, mplex.DefaultTransport),
+			opt:             libp2p.Muxer(yamuxID, yamuxTransport()),
 		}}), nil
 	}
 }

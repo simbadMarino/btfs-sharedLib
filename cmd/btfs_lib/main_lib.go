@@ -31,7 +31,8 @@ import (
 	config "github.com/bittorrent/go-btfs-config"
 	u "github.com/ipfs/go-ipfs-util"
 	logging "github.com/ipfs/go-log"
-	loggables "github.com/libp2p/go-libp2p-loggables"
+	//loggables "github.com/libp2p/go-libp2p-loggables" //loggables are now depreciated using uuid
+	"github.com/google/uuid"
 	ma "github.com/multiformats/go-multiaddr"
 	madns "github.com/multiformats/go-multiaddr-dns"
 	manet "github.com/multiformats/go-multiaddr/net"
@@ -84,11 +85,19 @@ func mainC(in *C.char) *C.char {
 	return C.CString("exit code:" + strconv.Itoa(exitCode))
 }
 
-
+func newUUID(key string) logging.Metadata {
+	ids := "#UUID-ERROR#"
+	if id, err := uuid.NewRandom(); err == nil {
+		ids = id.String()
+	}
+	return logging.Metadata{
+		key: ids,
+	}
+}
 
 func mainRet(args []string) int {
 	rand.Seed(time.Now().UnixNano())
-	ctx := logging.ContextWithLoggable(context.Background(), loggables.Uuid("session"))
+	ctx := logging.ContextWithLoggable(context.Background(), newUUID("session"))
 	var err error
 
 	// we'll call this local helper to output errors.

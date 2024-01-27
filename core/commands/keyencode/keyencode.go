@@ -30,7 +30,8 @@ func KeyEncoderFromString(formatLabel string) (KeyEncoder, error) {
 func (enc KeyEncoder) FormatID(id peer.ID) string {
 	if enc.baseEnc == nil {
 		//nolint deprecated
-		return peer.Encode(id)
+		//using id.String instead of deprecated Encode function
+		return id.String()
 	}
 	if s, err := peer.ToCid(id).StringOfBase(enc.baseEnc.Encoding()); err != nil {
 		panic(err)
