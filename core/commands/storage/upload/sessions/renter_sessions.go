@@ -90,7 +90,7 @@ type RenterSession struct {
 
 func GetRenterSession(ctxParams *uh.ContextParams, ssId string, hash string, shardHashes []string) (*RenterSession,
 	error) {
-	k := fmt.Sprintf(RenterSessionInMemKey, ctxParams.N.Identity.Pretty(), ssId)
+	k := fmt.Sprintf(RenterSessionInMemKey, ctxParams.N.Identity.String(), ssId)
 	var rs *RenterSession
 	if tmp, ok := renterSessionsInMem.Get(k); ok {
 		log.Debugf("get renter_session:%s from cache.", k)
@@ -99,7 +99,7 @@ func GetRenterSession(ctxParams *uh.ContextParams, ssId string, hash string, sha
 		log.Debugf("new renter_session:%s.", k)
 		ctx, cancel := helper.NewGoContext(ctxParams.Ctx)
 		rs = &RenterSession{
-			PeerId:      ctxParams.N.Identity.Pretty(),
+			PeerId:      ctxParams.N.Identity.String(),
 			SsId:        ssId,
 			Hash:        hash,
 			ShardHashes: shardHashes,
@@ -129,7 +129,7 @@ func GetRenterSession(ctxParams *uh.ContextParams, ssId string, hash string, sha
 
 func GetRenterSessionWithToken(ctxParams *uh.ContextParams, ssId string, hash string, shardHashes []string, token common.Address) (*RenterSession,
 	error) {
-	k := fmt.Sprintf(RenterSessionInMemKey, ctxParams.N.Identity.Pretty(), ssId)
+	k := fmt.Sprintf(RenterSessionInMemKey, ctxParams.N.Identity.String(), ssId)
 	var rs *RenterSession
 	if tmp, ok := renterSessionsInMem.Get(k); ok {
 		log.Debugf("get renter_session:%s from cache.", k)
@@ -138,7 +138,7 @@ func GetRenterSessionWithToken(ctxParams *uh.ContextParams, ssId string, hash st
 		log.Debugf("new renter_session:%s.", k)
 		ctx, cancel := helper.NewGoContext(ctxParams.Ctx)
 		rs = &RenterSession{
-			PeerId:      ctxParams.N.Identity.Pretty(),
+			PeerId:      ctxParams.N.Identity.String(),
 			SsId:        ssId,
 			Hash:        hash,
 			ShardHashes: shardHashes,

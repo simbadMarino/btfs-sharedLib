@@ -21,7 +21,7 @@ import (
 	cid "github.com/ipfs/go-cid"
 	cidenc "github.com/ipfs/go-cidutil/cidenc"
 	ipld "github.com/ipfs/go-ipld-format"
-	mdag "github.com/ipfs/go-merkledag"
+	mdag "github.com/ipfs/boxo/ipld/merkledag"
 	traverse "github.com/ipfs/go-merkledag/traverse"
 	ipfspath "github.com/ipfs/go-path"
 	gocarv2 "github.com/ipld/go-car/v2"
@@ -383,10 +383,9 @@ Maximum supported CAR version: 1
 				// if err := api.Pin().Add(req.Context, rp, options.Pin.Recursive(true)); err != nil {
 
 				ret := RootMeta{Cid: c}
-
 				if block, err := node.Blockstore.Get(ctx, c); err != nil {
 					ret.PinErrorMsg = err.Error()
-				} else if nd, err := ipld.Decode(block); err != nil {
+				} else if nd, err := ipld.Decode(block); err != nil { //TODO: Figure out how to fix
 					ret.PinErrorMsg = err.Error()
 				} else if err := node.Pinning.Pin(req.Context, nd, true); err != nil {
 					ret.PinErrorMsg = err.Error()
@@ -494,7 +493,7 @@ func importWorker(req *cmds.Request, re cmds.ResponseEmitter, api iface.CoreAPI,
 				}
 
 				// the double-decode is suboptimal, but we need it for batching
-				nd, err := ipld.Decode(block)
+				nd, err := ipld.Decode(block) //TODO: Figure out how to fix
 				if err != nil {
 					return err
 				}

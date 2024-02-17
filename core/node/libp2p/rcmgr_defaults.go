@@ -1,7 +1,7 @@
 package libp2p
 
 import (
-	"math"
+	"fmt"
 
 	"github.com/dustin/go-humanize"
 	"github.com/libp2p/go-libp2p"
@@ -12,41 +12,14 @@ import (
 	"github.com/bittorrent/go-btfs/core/node/libp2p/fd"
 )
 
-// We are doing some magic when parsing config files (we are using a map[string]interface{} to compare config files).
-// When you don't have a type the JSON Parse function cast numbers to float64 by default,
-// losing precision when writing the final number. So if we use math.MaxInt as our infinite number,
-// after writing the config file we will have 9223372036854776000 instead of 9223372036854775807,
-// making the parsing process fail.
-const bigEnough = math.MaxInt / 2
-
-var infiniteBaseLimit = rcmgr.BaseLimit{
-	Streams:         bigEnough,
-	StreamsInbound:  bigEnough,
-	StreamsOutbound: bigEnough,
-	Conns:           bigEnough,
-	ConnsInbound:    bigEnough,
-	ConnsOutbound:   bigEnough,
-	FD:              bigEnough,
-	Memory:          bigEnough,
-}
-
-var noLimitIncrease = rcmgr.BaseLimitIncrease{
-	ConnsInbound:    0,
-	ConnsOutbound:   0,
-	Conns:           0,
-	StreamsInbound:  0,
-	StreamsOutbound: 0,
-	Streams:         0,
-	Memory:          0,
-	FDFraction:      0,
-}
+var infiniteResourceLimits = rcmgr.InfiniteLimits.ToPartialLimitConfig().System
 
 // This file defines implicit limit defaults used when Swarm.ResourceMgr.Enabled
 
 // createDefaultLimitConfig creates LimitConfig to pass to libp2p's resource manager.
-// The defaults follow the documentation in docs/config.md.
+// The defaults follow the documentation in docs/libp2p-resource-management.md.
 // Any changes in the logic here should be reflected there.
-func createDefaultLimitConfig(cfg config.SwarmConfig) (limitConfig rcmgr.ConcreteLimitConfig, err error) {
+func createDefaultLimitConfig(cfg config.SwarmConfig) (limitConfig rcmgr.ConcreteLimitConfig, logMessageForStartup string, err error) {
 	maxMemoryDefaultString := humanize.Bytes(uint64(memory.TotalMemory()) / 2)
 	maxMemoryString := cfg.ResourceMgr.MaxMemory.WithDefault(maxMemoryDefaultString)
 	maxMemory, err := humanize.ParseBytes(maxMemoryString)
@@ -152,9 +125,9 @@ func createDefaultLimitConfig(cfg config.SwarmConfig) (limitConfig rcmgr.Concret
 			maxInboundConns = connmgrHighWaterTimesTwo
 		}
 
-		if maxInboundConns < config.DefaultResourceMgrMinInboundConns {
+		/*if maxInboundConns < config.DefaultResourceMgrMinInboundConns {
 			maxInboundConns = config.DefaultResourceMgrMinInboundConns
-		}
+		}*/
 
 		// Scale System.StreamsInbound as well, but use the existing ratio of StreamsInbound to ConnsInbound
 		if partialLimits.System.StreamsInbound > rcmgr.DefaultLimit {

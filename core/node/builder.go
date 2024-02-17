@@ -18,6 +18,7 @@ import (
 	ci "github.com/libp2p/go-libp2p/core/crypto"
 	peer "github.com/libp2p/go-libp2p/core/peer"
 )
+//Pretty() depretiated and changed to String() as per https://github.com/libp2p/go-libp2p/pull/256
 
 type BuildCfg struct {
 	// If online is set, the node will have networking enabled
@@ -179,7 +180,7 @@ func defaultRepo(dstore repo.Datastore) (repo.Repo, error) {
 
 	c.Bootstrap = cfg.DefaultBootstrapAddresses
 	c.Addresses.Swarm = []string{"/ip4/0.0.0.0/tcp/4001", "/ip4/0.0.0.0/udp/4001/quic"}
-	c.Identity.PeerID = pid.Pretty()
+	c.Identity.PeerID = pid.String()	//Pretty() depretiated and changed to String() as per https://github.com/libp2p/go-libp2p/pull/2565
 	c.Identity.PrivKey = base64.StdEncoding.EncodeToString(privkeyb)
 
 	return &repo.Mock{

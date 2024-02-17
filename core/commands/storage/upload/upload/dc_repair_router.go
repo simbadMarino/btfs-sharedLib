@@ -169,7 +169,7 @@ returns the repairer's signed contract to the invoker.`,
 		}
 
 		ctxParams, err := uh.ExtractContextParams(req, env)
-		repairId := ctxParams.N.Identity.Pretty()
+		repairId := ctxParams.N.Identity.String()
 		fileHash := req.Arguments[0]
 		if requestFileHash == fileHash {
 			return fmt.Errorf("file {%s} has been repairing on the host {%s}", fileHash, repairId)
@@ -246,7 +246,7 @@ returns the repairer's signed contract to the invoker.`,
 			return err
 		}
 
-		logger.Info("repair lost shards done", zap.String("peerId", ctxParams.N.Identity.Pretty()))
+		logger.Info("repair lost shards done", zap.String("peerId", ctxParams.N.Identity.String()))
 		return nil
 	},
 }
@@ -258,7 +258,7 @@ func doRepair(ctxParams *uh.ContextParams, res cmds.ResponseEmitter, params *Rep
 	eg.Go(func() error {
 		repairContractResp, err := submitSignedRepairContract(ctxParams, params)
 		if err != nil {
-			logger.Error("submit repair contract error", zap.Error(err), zap.String("peerId", ctxParams.N.Identity.Pretty()))
+			logger.Error("submit repair contract error", zap.Error(err), zap.String("peerId", ctxParams.N.Identity.String()))
 			return err
 		}
 		if repairContractResp.Status == guardpb.RepairContractResponse_BOTH_SIGNED {
@@ -459,7 +459,7 @@ func downloadAndSignContracts(contract *guardpb.Contract, rss *sessions.RenterSe
 			repairPid := rss.CtxParams.N.Identity
 			contract.ContractMeta.HostPid = host
 			contract.State = guardpb.Contract_RENEWED
-			contract.PreparerPid = repairPid.Pretty()
+			contract.PreparerPid = repairPid.String()
 			sign, err := crypto.Sign(rss.CtxParams.N.PrivateKey, &contract.ContractMeta)
 			if err != nil {
 				return err

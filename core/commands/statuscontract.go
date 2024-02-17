@@ -62,7 +62,7 @@ var TotalCmd = &cmds.Command{
 		if err != nil {
 			return err
 		}
-		peerId := n.Identity.Pretty()
+		peerId := n.Identity.String()
 
 		list, err := chain.GetReportStatusListOK()
 		if err != nil {
@@ -135,7 +135,7 @@ var ReportListCmd = &cmds.Command{
 		if err != nil {
 			return err
 		}
-		peerId := n.Identity.Pretty()
+		peerId := n.Identity.String()
 
 		from, err := strconv.Atoi(req.Arguments[0])
 		if err != nil {

@@ -79,7 +79,7 @@ func doRecv(req *cmds.Request, env cmds.Environment) (contractId string, err err
 	if err != nil {
 		return
 	}
-	if !valid || guardContract.ContractMeta.GetHostPid() != requestPid.Pretty() {
+	if !valid || guardContract.ContractMeta.GetHostPid() != requestPid.String() {
 		err = errors.New("invalid guard contract bytes")
 		return
 	}

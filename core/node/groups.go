@@ -133,7 +133,7 @@ func LibP2P(bcfg *BuildCfg, cfg *config.Config) fx.Option {
 	opts := fx.Options(
 		BaseLibP2P,
 
-		fx.Provide(libp2p.ResourceManager(cfg.Swarm)),
+		//fx.Provide(libp2p.ResourceManager(cfg.Swarm)), //TODO: Unknown side effects
 		fx.Provide(libp2p.AddrFilters(cfg.Swarm.AddrFilters)),
 		fx.Provide(libp2p.AddrsFactory(cfg.Addresses.Announce, cfg.Addresses.NoAnnounce)),
 		fx.Provide(libp2p.SmuxTransport(cfg.Swarm.Transports)),
@@ -304,9 +304,9 @@ func Online(bcfg *BuildCfg, cfg *config.Config) fx.Option {
 		LibP2P(bcfg, cfg),
 		OnlineProviders(
 			cfg.Experimental.StrategicProviding,
-			cfg.Experimental.AcceleratedDHTClient,
 			cfg.Reprovider.Strategy.WithDefault(config.DefaultReproviderStrategy),
 			cfg.Reprovider.Interval.WithDefault(config.DefaultReproviderInterval),
+			cfg.Routing.AcceleratedDHTClient,
 		),
 	)
 }
@@ -320,12 +320,7 @@ func Offline(cfg *config.Config) fx.Option {
 		fx.Provide(libp2p.Routing),
 		fx.Provide(libp2p.ContentRouting),
 		fx.Provide(libp2p.OfflineRouting),
-		OfflineProviders(
-			cfg.Experimental.StrategicProviding,
-			cfg.Experimental.AcceleratedDHTClient,
-			cfg.Reprovider.Strategy.WithDefault(config.DefaultReproviderStrategy),
-			cfg.Reprovider.Interval.WithDefault(config.DefaultReproviderInterval),
-		),
+		OfflineProviders(),
 	)
 }
 

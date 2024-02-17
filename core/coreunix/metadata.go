@@ -24,7 +24,7 @@ import (
 	pin "github.com/ipfs/go-ipfs-pinner"
 	posinfo "github.com/ipfs/go-ipfs-posinfo"
 	ipld "github.com/ipfs/go-ipld-format"
-	dag "github.com/ipfs/go-merkledag"
+	dag "github.com/ipfs/boxo/ipld/merkledag"
 )
 
 // MetaModifier contains the options to the `metadata` command.

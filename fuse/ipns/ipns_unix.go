@@ -22,7 +22,7 @@ import (
 	path "github.com/bittorrent/interface-go-btfs-core/path"
 	cid "github.com/ipfs/go-cid"
 	logging "github.com/ipfs/go-log"
-	dag "github.com/ipfs/go-merkledag"
+	dag "github.com/ipfs/boxo/ipld/merkledag"
 )
 
 func init() {
@@ -218,7 +218,7 @@ func (r *Root) ReadDirAll(ctx context.Context) ([]fuse.Dirent, error) {
 	var listing []fuse.Dirent
 	for alias, k := range r.Keys {
 		ent := fuse.Dirent{
-			Name: k.ID().Pretty(),
+			Name: k.ID().String(),
 			Type: fuse.DT_Dir,
 		}
 		link := fuse.Dirent{

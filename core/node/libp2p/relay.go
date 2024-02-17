@@ -37,9 +37,9 @@ func RelayService(enable bool, relayOpts config.RelayService) func() (opts Libp2
 				BufferSize:             int(relayOpts.BufferSize.WithDefault(int64(def.BufferSize))),
 				ReservationTTL:         relayOpts.ReservationTTL.WithDefault(def.ReservationTTL),
 				MaxReservations:        int(relayOpts.MaxReservations.WithDefault(int64(def.MaxReservations))),
-				MaxReservationsPerIP:   int(relayOpts.MaxReservations.WithDefault(int64(def.MaxReservationsPerIP))),
-				MaxReservationsPerPeer: int(relayOpts.MaxReservations.WithDefault(int64(def.MaxReservationsPerPeer))),
-				MaxReservationsPerASN:  int(relayOpts.MaxReservations.WithDefault(int64(def.MaxReservationsPerASN))),
+				MaxReservationsPerIP:   int(relayOpts.MaxReservationsPerIP.WithDefault(int64(def.MaxReservationsPerIP))),
+				MaxReservationsPerPeer: int(relayOpts.MaxReservationsPerPeer.WithDefault(int64(def.MaxReservationsPerPeer))),
+				MaxReservationsPerASN:  int(relayOpts.MaxReservationsPerASN.WithDefault(int64(def.MaxReservationsPerASN))),
 			})))
 		}
 		return
@@ -53,9 +53,6 @@ func MaybeAutoRelay(staticRelays []string, cfgPeering config.Peering, enabled bo
 
 	if len(staticRelays) > 0 {
 		return fx.Provide(func() (opts Libp2pOpts, err error) {
-			opts.Opts = append(opts.Opts, libp2p.EnableAutoRelay(
-				autorelay.WithCircuitV1Support(),
-			))
 			if len(staticRelays) > 0 {
 				static := make([]peer.AddrInfo, 0, len(staticRelays))
 				for _, s := range staticRelays {
@@ -66,9 +63,7 @@ func MaybeAutoRelay(staticRelays []string, cfgPeering config.Peering, enabled bo
 					}
 					static = append(static, *addr)
 				}
-				opts.Opts = append(opts.Opts, libp2p.EnableAutoRelay(
-					autorelay.WithStaticRelays(static),
-				))
+				opts.Opts = append(opts.Opts, libp2p.EnableAutoRelayWithStaticRelays(static))
 			}
 			return
 		})
@@ -78,29 +73,33 @@ func MaybeAutoRelay(staticRelays []string, cfgPeering config.Peering, enabled bo
 	return fx.Options(
 		// Provide AutoRelay option
 		fx.Provide(func() (opts Libp2pOpts, err error) {
-			opts.Opts = append(opts.Opts, libp2p.EnableAutoRelay(autorelay.WithPeerSource(func(ctx context.Context, numPeers int) <-chan peer.AddrInfo {
-				// TODO(9257): make this code smarter (have a state and actually try to grow the search outward) instead of a long running task just polling our K cluster.
-				r := make(chan peer.AddrInfo)
-				go func() {
-					defer close(r)
-					for ; numPeers != 0; numPeers-- {
-						select {
-						case v, ok := <-peerChan:
-							if !ok {
-								return
+			opts.Opts = append(opts.Opts,
+				libp2p.EnableAutoRelayWithPeerSource(
+					func(ctx context.Context, numPeers int) <-chan peer.AddrInfo {
+						// TODO(9257): make this code smarter (have a state and actually try to grow the search outward) instead of a long running task just polling our K cluster.
+						r := make(chan peer.AddrInfo)
+						go func() {
+							defer close(r)
+							for ; numPeers != 0; numPeers-- {
+								select {
+								case v, ok := <-peerChan:
+									if !ok {
+										return
+									}
+									select {
+									case r <- v:
+									case <-ctx.Done():
+										return
+									}
+								case <-ctx.Done():
+									return
+								}
 							}
-							select {
-							case r <- v:
-							case <-ctx.Done():
-								return
-							}
-						case <-ctx.Done():
-							return
-						}
-					}
-				}()
-				return r
-			}, 0)))
+						}()
+						return r
+					},
+					autorelay.WithMinInterval(0),
+				))
 			return
 		}),
 		autoRelayFeeder(cfgPeering, peerChan),
