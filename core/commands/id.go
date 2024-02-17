@@ -254,8 +254,15 @@ func printSelf(keyEnc ke.KeyEncoder, node *core.IpfsNode, env cmds.Environment) 
 			info.Addresses = append(info.Addresses, a.String())
 		}
 		sort.Strings(info.Addresses)
-		info.Protocols = node.PeerHost.Mux().Protocols()
-		sort.Strings(info.Protocols)
+		protocolIDs := node.PeerHost.Mux().Protocols() //TODO: Confirm if this is working or not when testing!!
+		
+		// Convert protocol.ID slice to string slice
+		//info.Protocols := make([]string, len(protocolIDs))
+		for i, protocolID := range protocolIDs {
+			info.Protocols[i] = string(protocolID)
+		}
+
+
 	}
 	info.ProtocolVersion = "btfs/0.1.0" //identify.LibP2PVersion
 	info.AgentVersion = version.UserAgent

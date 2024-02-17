@@ -22,7 +22,7 @@ import (
 	offline "github.com/ipfs/go-ipfs-exchange-offline"
 	offlineroute "github.com/ipfs/go-ipfs-routing/offline"
 	"github.com/libp2p/go-libp2p/core/routing"
-	id "github.com/libp2p/go-libp2p/p2p/protocol/identify"
+	//id "github.com/libp2p/go-libp2p/p2p/protocol/identify"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -87,7 +87,7 @@ func VersionOption() ServeOption {
 		mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "Commit: %s\n", version.CurrentCommit)
 			fmt.Fprintf(w, "Client Version: %s\n", version.UserAgent)
-			fmt.Fprintf(w, "Protocol Version: %s\n", id.DefaultProtocolVersion)
+			//fmt.Fprintf(w, "Protocol Version: %s\n", id.DefaultProtocolVersion) //TODO: Removed as per https://github.com/libp2p/go-libp2p/pull/461
 		})
 		return mux, nil
 	}
