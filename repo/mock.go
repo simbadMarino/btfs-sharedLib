@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	keystore "github.com/bittorrent/go-btfs/keystore"
+	rcmgr "github.com/libp2p/go-libp2p/p2p/host/resource-manager"
 
 	config "github.com/bittorrent/go-btfs-config"
 	filestore "github.com/ipfs/go-filestore"
@@ -24,6 +25,10 @@ type Mock struct {
 
 func (m *Mock) Config() (*config.Config, error) {
 	return &m.C, nil // FIXME threadsafety
+}
+
+func (m *Mock) UserResourceOverrides() (rcmgr.PartialLimitConfig, error) {
+	return rcmgr.PartialLimitConfig{}, nil
 }
 
 func (m *Mock) SetConfig(updated *config.Config) error {
