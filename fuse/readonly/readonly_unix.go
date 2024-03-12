@@ -16,12 +16,12 @@ import (
 	core "github.com/bittorrent/go-btfs/core"
 	ft "github.com/bittorrent/go-unixfs"
 	uio "github.com/bittorrent/go-unixfs/io"
+	mdag "github.com/ipfs/boxo/ipld/merkledag"
+	path "github.com/ipfs/boxo/path"
+	"github.com/ipfs/boxo/path/resolver"
 	"github.com/ipfs/go-cid"
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
-	mdag "github.com/ipfs/go-merkledag"
-	path "github.com/ipfs/go-path"
-	"github.com/ipfs/go-path/resolver"
 	ipldprime "github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
@@ -63,13 +63,14 @@ func (s *Root) Lookup(ctx context.Context, name string) (fs.Node, error) {
 		return nil, fuse.ENOENT
 	}
 
-	p, err := path.ParsePath(name)
+	p, err := path.NewPath(name)
 	if err != nil {
 		log.Debugf("fuse failed to parse path: %q: %s", name, err)
 		return nil, fuse.ENOENT
 	}
-
-	nd, ndLnk, err := resolver.NewBasicResolver(s.Ipfs.UnixFSFetcherFactory).ResolvePath(ctx, p)
+	ip, _err := path.NewImmutablePath(p)
+	log.Debug(_err)
+	nd, ndLnk, err := resolver.NewBasicResolver(s.Ipfs.UnixFSFetcherFactory).ResolvePath(ctx, ip)
 	if err != nil {
 		// todo: make this error more versatile.
 		return nil, fuse.ENOENT

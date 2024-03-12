@@ -7,12 +7,12 @@ import (
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	caopts "github.com/bittorrent/interface-go-btfs-core/options"
 	"github.com/bittorrent/interface-go-btfs-core/path"
-	pin "github.com/ipfs/go-ipfs-pinner"
+	pin "github.com/ipfs/boxo/pinning/pinner"
 
-	bserv "github.com/ipfs/go-blockservice"
+	bserv "github.com/ipfs/boxo/blockservice"
+	offline "github.com/ipfs/boxo/exchange/offline"
+	"github.com/ipfs/boxo/ipld/merkledag"
 	"github.com/ipfs/go-cid"
-	offline "github.com/ipfs/go-ipfs-exchange-offline"
-	"github.com/ipfs/go-merkledag"
 )
 
 type PinAPI CoreAPI
@@ -30,7 +30,7 @@ func (api *PinAPI) Add(ctx context.Context, p path.Path, opts ...caopts.PinAddOp
 
 	defer api.blockstore.PinLock(ctx).Unlock(ctx)
 
-	err = api.pinning.Pin(ctx, dagNode, settings.Recursive)
+	err = api.pinning.Pin(ctx, dagNode, settings.Recursive, "")
 	if err != nil {
 		return fmt.Errorf("pin: %s", err)
 	}
@@ -54,7 +54,7 @@ func (api *PinAPI) Ls(ctx context.Context, opts ...caopts.PinLsOption) (<-chan c
 		return nil, fmt.Errorf("invalid type '%s', must be one of {direct, indirect, recursive, all}", settings.Type)
 	}
 
-	return api.pinLsAll(ctx, settings.Type), nil
+	return api.pinLsAll(ctx, settings.Type, settings.Detailed), nil
 }
 
 func (api *PinAPI) IsPinned(ctx context.Context, p path.Path, opts ...caopts.PinIsPinnedOption) (string, bool, error) {
@@ -126,6 +126,7 @@ func (api *PinAPI) Update(ctx context.Context, from path.Path, to path.Path, opt
 }
 
 type pinStatus struct {
+	err      error
 	cid      cid.Cid
 	ok       bool
 	badNodes []coreiface.BadPinNode
@@ -158,10 +159,7 @@ func (api *PinAPI) Verify(ctx context.Context) (<-chan coreiface.PinStatus, erro
 	bs := api.blockstore
 	DAG := merkledag.NewDAGService(bserv.New(bs, offline.Exchange(bs)))
 	getLinks := merkledag.GetLinksWithDAG(DAG)
-	recPins, err := api.pinning.RecursiveKeys(ctx)
-	if err != nil {
-		return nil, err
-	}
+	//recPins := api.pinning.RecursiveKeys(ctx, false)
 
 	var checkPin func(root cid.Cid) *pinStatus
 	checkPin = func(root cid.Cid) *pinStatus {
@@ -193,8 +191,18 @@ func (api *PinAPI) Verify(ctx context.Context) (<-chan coreiface.PinStatus, erro
 	out := make(chan coreiface.PinStatus)
 	go func() {
 		defer close(out)
-		for _, c := range recPins {
-			out <- checkPin(c)
+		for p := range api.pinning.RecursiveKeys(ctx, false) {
+			var res *pinStatus
+			if p.Err != nil {
+				res = &pinStatus{err: p.Err}
+			} else {
+				res = checkPin(p.Pin.Key)
+			}
+			select {
+			case <-ctx.Done():
+				return
+			case out <- res:
+			}
 		}
 	}()
 
@@ -204,6 +212,7 @@ func (api *PinAPI) Verify(ctx context.Context) (<-chan coreiface.PinStatus, erro
 type pinInfo struct {
 	pinType string
 	path    path.Resolved
+	name    string
 	err     error
 }
 
@@ -220,114 +229,101 @@ func (p *pinInfo) Err() error {
 }
 
 // pinLsAll is an internal function for returning a list of pins
-func (api *PinAPI) pinLsAll(ctx context.Context, typeStr string) <-chan coreiface.Pin {
+func (api *PinAPI) pinLsAll(ctx context.Context, typeStr string, detailed bool) <-chan coreiface.Pin {
 	out := make(chan coreiface.Pin)
+	emittedSet := cid.NewSet()
 
-	keys := cid.NewSet()
-
-	AddToResultKeys := func(keyList []cid.Cid, typeStr string) error {
-		for _, c := range keyList {
-			if keys.Visit(c) {
-				select {
-				case out <- &pinInfo{
-					pinType: typeStr,
-					path:    path.IpldPath(c),
-				}:
-				case <-ctx.Done():
-					return ctx.Err()
-				}
+	AddToResultKeys := func(c cid.Cid, name, typeStr string) error {
+		if emittedSet.Visit(c) {
+			select {
+			case out <- &pinInfo{
+				pinType: typeStr,
+				name:    name,
+				path:    path.IpldPath(c),
+			}:
+			case <-ctx.Done():
+				return ctx.Err()
 			}
 		}
 		return nil
 	}
 
-	VisitKeys := func(keyList []cid.Cid) {
-		for _, c := range keyList {
-			keys.Visit(c)
-		}
-	}
-
 	go func() {
 		defer close(out)
 
+		var rkeys []cid.Cid
+		var err error
 		if typeStr == "recursive" || typeStr == "all" {
-			rkeys, err := api.pinning.RecursiveKeys(ctx)
-			if err != nil {
-				out <- &pinInfo{err: err}
-				return
-			}
-			if err := AddToResultKeys(rkeys, "recursive"); err != nil {
-				out <- &pinInfo{err: err}
-				return
-			}
-		}
-		if typeStr == "direct" || typeStr == "all" {
-			dkeys, err := api.pinning.DirectKeys(ctx)
-			if err != nil {
-				out <- &pinInfo{err: err}
-				return
-			}
-			if err := AddToResultKeys(dkeys, "direct"); err != nil {
-				out <- &pinInfo{err: err}
-				return
-			}
-		}
-		if typeStr == "all" {
-			set := cid.NewSet()
-			rkeys, err := api.pinning.RecursiveKeys(ctx)
-			if err != nil {
-				out <- &pinInfo{err: err}
-				return
-			}
-			for _, k := range rkeys {
-				err := merkledag.Walk(
-					ctx, merkledag.GetLinksWithDAG(api.dag), k,
-					set.Visit,
-					merkledag.SkipRoot(), merkledag.Concurrent(),
-				)
-				if err != nil {
+			for streamedCid := range api.pinning.RecursiveKeys(ctx, detailed) {
+				if streamedCid.Err != nil {
+					out <- &pinInfo{err: streamedCid.Err}
+					return
+				}
+				if err = AddToResultKeys(streamedCid.Pin.Key, streamedCid.Pin.Name, "recursive"); err != nil {
 					out <- &pinInfo{err: err}
 					return
 				}
+				rkeys = append(rkeys, streamedCid.Pin.Key)
 			}
-			if err := AddToResultKeys(set.Keys(), "indirect"); err != nil {
-				out <- &pinInfo{err: err}
-				return
+		}
+		if typeStr == "direct" || typeStr == "all" {
+			for streamedCid := range api.pinning.DirectKeys(ctx, detailed) {
+				if streamedCid.Err != nil {
+					out <- &pinInfo{err: streamedCid.Err}
+					return
+				}
+				if err = AddToResultKeys(streamedCid.Pin.Key, streamedCid.Pin.Name, "direct"); err != nil {
+					out <- &pinInfo{err: err}
+					return
+				}
 			}
 		}
 		if typeStr == "indirect" {
 			// We need to first visit the direct pins that have priority
 			// without emitting them
 
-			dkeys, err := api.pinning.DirectKeys(ctx)
-			if err != nil {
-				out <- &pinInfo{err: err}
-				return
+			for streamedCid := range api.pinning.DirectKeys(ctx, detailed) {
+				if streamedCid.Err != nil {
+					out <- &pinInfo{err: streamedCid.Err}
+					return
+				}
+				emittedSet.Add(streamedCid.Pin.Key)
 			}
-			VisitKeys(dkeys)
 
-			rkeys, err := api.pinning.RecursiveKeys(ctx)
-			if err != nil {
-				out <- &pinInfo{err: err}
-				return
+			for streamedCid := range api.pinning.RecursiveKeys(ctx, detailed) {
+				if streamedCid.Err != nil {
+					out <- &pinInfo{err: streamedCid.Err}
+					return
+				}
+				emittedSet.Add(streamedCid.Pin.Key)
+				rkeys = append(rkeys, streamedCid.Pin.Key)
 			}
-			VisitKeys(rkeys)
-
-			set := cid.NewSet()
+		}
+		if typeStr == "indirect" || typeStr == "all" {
+			walkingSet := cid.NewSet()
 			for _, k := range rkeys {
-				err := merkledag.Walk(
+				err = merkledag.Walk(
 					ctx, merkledag.GetLinksWithDAG(api.dag), k,
-					set.Visit,
+					func(c cid.Cid) bool {
+						if !walkingSet.Visit(c) {
+							return false
+						}
+						if emittedSet.Has(c) {
+							return true // skipped
+						}
+						err := AddToResultKeys(c, "", "indirect")
+						if err != nil {
+							out <- &pinInfo{err: err}
+							return false
+						}
+						return true
+					},
 					merkledag.SkipRoot(), merkledag.Concurrent(),
 				)
 				if err != nil {
 					out <- &pinInfo{err: err}
 					return
 				}
-			}
-			if err := AddToResultKeys(set.Keys(), "indirect"); err != nil {
-				out <- &pinInfo{err: err}
-				return
 			}
 		}
 	}()

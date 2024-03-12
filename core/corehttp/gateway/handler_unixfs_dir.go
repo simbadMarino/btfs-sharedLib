@@ -14,7 +14,6 @@ import (
 	ipath "github.com/bittorrent/interface-go-btfs-core/path"
 	"github.com/dustin/go-humanize"
 	cid "github.com/ipfs/go-cid"
-	path "github.com/ipfs/go-path"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
@@ -158,7 +157,8 @@ func (i *handler) serveDirectory(ctx context.Context, w http.ResponseWriter, r *
 	backLink := originalURLPath
 
 	// don't go further up than /ipfs/$hash/
-	pathSplit := path.SplitList(contentPath.String())
+	//pathSplit := path.SplitList(contentPath.String())
+	pathSplit := strings.Split(contentPath.String(), "/")
 	switch {
 	// skip backlink when listing a content root
 	case len(pathSplit) == 3: // url: /ipfs/$hash

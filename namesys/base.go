@@ -6,7 +6,7 @@ import (
 	"time"
 
 	opts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
-	path "github.com/ipfs/go-path"
+	path "github.com/ipfs/boxo/path"
 )
 
 type onceResult struct {

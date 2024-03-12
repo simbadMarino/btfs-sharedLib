@@ -6,6 +6,8 @@ import (
 	"io"
 	"math"
 	"os"
+
+	//"path"
 	"strings"
 	"time"
 
@@ -17,13 +19,15 @@ import (
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	files "github.com/bittorrent/go-btfs-files"
 	"github.com/bittorrent/interface-go-btfs-core/options"
+
 	path "github.com/bittorrent/interface-go-btfs-core/path"
+	mdag "github.com/ipfs/boxo/ipld/merkledag"
+	traverse "github.com/ipfs/boxo/ipld/merkledag/traverse"
+	ipldlegacy "github.com/ipfs/go-ipld-legacy"
+
 	cid "github.com/ipfs/go-cid"
 	cidenc "github.com/ipfs/go-cidutil/cidenc"
 	ipld "github.com/ipfs/go-ipld-format"
-	mdag "github.com/ipfs/boxo/ipld/merkledag"
-	traverse "github.com/ipfs/go-merkledag/traverse"
-	ipfspath "github.com/ipfs/go-path"
 	gocarv2 "github.com/ipld/go-car/v2"
 	mh "github.com/multiformats/go-multihash"
 
@@ -263,9 +267,9 @@ var DagResolveCmd = &cmds.Command{
 					return err
 				}
 			}
-			p := enc.Encode(out.Cid)
+			p := path.New(enc.Encode(out.Cid))
 			if out.RemPath != "" {
-				p = ipfspath.Join([]string{p, out.RemPath})
+				p = path.Join(p, out.RemPath)
 			}
 
 			fmt.Fprint(w, p)
@@ -323,7 +327,7 @@ Maximum supported CAR version: 1
 		if err != nil {
 			return err
 		}
-
+		blockDecoder := ipldlegacy.NewDecoder()
 		// on import ensure we do not reach out to the network for any reason
 		// if a pin based on what is imported + what is in the blockstore
 		// isn't possible: tough luck
@@ -385,9 +389,9 @@ Maximum supported CAR version: 1
 				ret := RootMeta{Cid: c}
 				if block, err := node.Blockstore.Get(ctx, c); err != nil {
 					ret.PinErrorMsg = err.Error()
-				} else if nd, err := ipld.Decode(block); err != nil { //TODO: Figure out how to fix
+				} else if nd, err := blockDecoder.DecodeNode(ctx, block); err != nil { //TODO: Figure out how to fix
 					ret.PinErrorMsg = err.Error()
-				} else if err := node.Pinning.Pin(req.Context, nd, true); err != nil {
+				} else if err := node.Pinning.Pin(req.Context, nd, true, ""); err != nil {
 					ret.PinErrorMsg = err.Error()
 				} else if err := node.Pinning.Flush(req.Context); err != nil {
 					ret.PinErrorMsg = err.Error()
@@ -449,7 +453,7 @@ func importWorker(req *cmds.Request, re cmds.ResponseEmitter, api iface.CoreAPI,
 	// it is simply a way to relieve pressure on the blockstore
 	// similar to pinner.Pin/pinner.Flush
 	batch := ipld.NewBatch(req.Context, api.Dag())
-
+	blockDecoder := ipldlegacy.NewDecoder()
 	roots := make(map[cid.Cid]struct{})
 
 	it := req.Files.Entries()
@@ -493,7 +497,7 @@ func importWorker(req *cmds.Request, re cmds.ResponseEmitter, api iface.CoreAPI,
 				}
 
 				// the double-decode is suboptimal, but we need it for batching
-				nd, err := ipld.Decode(block) //TODO: Figure out how to fix
+				nd, err := blockDecoder.DecodeNode(req.Context, block)
 				if err != nil {
 					return err
 				}

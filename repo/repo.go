@@ -8,8 +8,8 @@ import (
 	rcmgr "github.com/libp2p/go-libp2p/p2p/host/resource-manager"
 
 	config "github.com/bittorrent/go-btfs-config"
+	filestore "github.com/ipfs/boxo/filestore"
 	ds "github.com/ipfs/go-datastore"
-	filestore "github.com/ipfs/go-filestore"
 	ma "github.com/multiformats/go-multiaddr"
 )
 

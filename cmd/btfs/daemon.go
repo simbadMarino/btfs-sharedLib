@@ -59,7 +59,7 @@ import (
 	cp "github.com/bittorrent/go-btfs-common/crypto"
 	nodepb "github.com/bittorrent/go-btfs-common/protos/node"
 	multierror "github.com/hashicorp/go-multierror"
-	util "github.com/ipfs/go-ipfs-util"
+	util "github.com/ipfs/boxo/util"
 	mprome "github.com/ipfs/go-metrics-prometheus"
 	goprocess "github.com/jbenet/goprocess"
 	sockets "github.com/libp2p/go-socket-activation"

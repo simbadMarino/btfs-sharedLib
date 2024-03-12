@@ -16,14 +16,14 @@ import (
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	options "github.com/bittorrent/interface-go-btfs-core/options"
 	"github.com/bittorrent/interface-go-btfs-core/path"
-	pin "github.com/ipfs/go-ipfs-pinner"
+	pin "github.com/ipfs/boxo/pinning/pinner"
 
-	bserv "github.com/ipfs/go-blockservice"
+	bserv "github.com/ipfs/boxo/blockservice"
+	offline "github.com/ipfs/boxo/exchange/offline"
+	dag "github.com/ipfs/boxo/ipld/merkledag"
+	verifcid "github.com/ipfs/boxo/verifcid"
 	cid "github.com/ipfs/go-cid"
 	cidenc "github.com/ipfs/go-cidutil/cidenc"
-	offline "github.com/ipfs/go-ipfs-exchange-offline"
-	dag "github.com/ipfs/go-merkledag"
-	verifcid "github.com/ipfs/go-verifcid"
 )
 
 var PinCmd = &cmds.Command{
@@ -637,8 +637,9 @@ var verifyPinCmd = &cmds.Command{
 
 // PinVerifyRes is the result returned for each pin checked in "pin verify"
 type PinVerifyRes struct {
-	Cid string
-	PinStatus
+	Cid       string `json:",omitempty"`
+	Err       string `json:",omitempty"`
+	PinStatus `json:",omitempty"`
 }
 
 // PinStatus is part of PinVerifyRes, do not use directly
@@ -664,10 +665,6 @@ func pinVerify(ctx context.Context, n *core.IpfsNode, opts pinVerifyOpts, enc ci
 	bs := n.Blocks.Blockstore()
 	DAG := dag.NewDAGService(bserv.New(bs, offline.Exchange(bs)))
 	getLinks := dag.GetLinksWithDAG(DAG)
-	recPins, err := n.Pinning.RecursiveKeys(ctx)
-	if err != nil {
-		return nil, err
-	}
 
 	var checkPin func(root cid.Cid) PinStatus
 	checkPin = func(root cid.Cid) PinStatus {
@@ -676,10 +673,10 @@ func pinVerify(ctx context.Context, n *core.IpfsNode, opts pinVerifyOpts, enc ci
 			return status
 		}
 
-		if err := verifcid.ValidateCid(root); err != nil {
+		if err := verifcid.ValidateCid(verifcid.DefaultAllowlist, root); err != nil {
 			status := PinStatus{Ok: false}
 			if opts.explain {
-				status.BadNodes = []BadNode{BadNode{Cid: enc.Encode(key), Err: err.Error()}}
+				status.BadNodes = []BadNode{{Cid: enc.Encode(key), Err: err.Error()}}
 			}
 			visited[key] = status
 			return status
@@ -689,7 +686,7 @@ func pinVerify(ctx context.Context, n *core.IpfsNode, opts pinVerifyOpts, enc ci
 		if err != nil {
 			status := PinStatus{Ok: false}
 			if opts.explain {
-				status.BadNodes = []BadNode{BadNode{Cid: enc.Encode(key), Err: err.Error()}}
+				status.BadNodes = []BadNode{{Cid: enc.Encode(key), Err: err.Error()}}
 			}
 			visited[key] = status
 			return status
@@ -711,11 +708,15 @@ func pinVerify(ctx context.Context, n *core.IpfsNode, opts pinVerifyOpts, enc ci
 	out := make(chan interface{})
 	go func() {
 		defer close(out)
-		for _, cid := range recPins {
-			pinStatus := checkPin(cid)
+		for p := range n.Pinning.RecursiveKeys(ctx, false) {
+			if p.Err != nil {
+				out <- PinVerifyRes{Err: p.Err.Error()}
+				return
+			}
+			pinStatus := checkPin(p.Pin.Key)
 			if !pinStatus.Ok || opts.includeOk {
 				select {
-				case out <- &PinVerifyRes{enc.Encode(cid), pinStatus}:
+				case out <- PinVerifyRes{Cid: enc.Encode(p.Pin.Key), PinStatus: pinStatus}:
 				case <-ctx.Done():
 					return
 				}

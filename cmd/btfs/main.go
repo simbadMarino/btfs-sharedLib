@@ -25,7 +25,7 @@ import (
 	"github.com/bittorrent/go-btfs-cmds/cli"
 	cmdhttp "github.com/bittorrent/go-btfs-cmds/http"
 	config "github.com/bittorrent/go-btfs-config"
-	u "github.com/ipfs/go-ipfs-util"
+	u "github.com/ipfs/boxo/util"
 	logging "github.com/ipfs/go-log"
 	//loggables "github.com/libp2p/go-libp2p-loggables" //loggables are now depreciated using uuid
 	"github.com/google/uuid"

@@ -30,6 +30,7 @@ func (c *Composer) Provide(ctx context.Context, cid cid.Cid, provide bool) error
 	err := c.ProvideRouter.Provide(ctx, cid, provide)
 	if err != nil {
 		log.Debug("composer: calling provide: ", cid, " error: ", err)
+
 	}
 
 	return err

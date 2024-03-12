@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	opts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
-	path "github.com/ipfs/go-path"
+	path "github.com/ipfs/boxo/path"
 	isd "github.com/jbenet/go-is-domain"
 )
 
@@ -78,7 +78,7 @@ func (r *DNSResolver) resolveOnceAsync(ctx context.Context, name string, options
 
 	appendPath := func(p path.Path) (path.Path, error) {
 		if len(segments) > 1 {
-			return path.FromSegments("", strings.TrimRight(p.String(), "/"), segments[1])
+			return path.NewPathFromSegments("", strings.TrimRight(p.String(), "/"), segments[1])
 		}
 		return p, nil
 	}
@@ -122,9 +122,12 @@ func workDomain(ctx context.Context, r *DNSResolver, name string, res chan looku
 	defer close(res)
 
 	txt, err := r.lookupTXT(ctx, name)
+	newPath, err_ := path.NewPath("")
+	log.Debug(err_)
 	if err != nil {
 		// Error is != nil
-		res <- lookupRes{"", err}
+
+		res <- lookupRes{newPath, err}
 		return
 	}
 
@@ -135,11 +138,11 @@ func workDomain(ctx context.Context, r *DNSResolver, name string, res chan looku
 			return
 		}
 	}
-	res <- lookupRes{"", ErrResolveFailed}
+	res <- lookupRes{newPath, ErrResolveFailed}
 }
 
 func parseEntry(txt string) (path.Path, error) {
-	p, err := path.ParseCidToPath(txt) // bare BTFS multihashes
+	p, err := path.NewPath(txt) // bare BTFS multihashes
 	if err == nil {
 		return p, nil
 	}
@@ -150,8 +153,9 @@ func parseEntry(txt string) (path.Path, error) {
 func tryParseDnsLink(txt string) (path.Path, error) {
 	parts := strings.SplitN(txt, "=", 2)
 	if len(parts) == 2 && parts[0] == "dnslink" {
-		return path.ParsePath(parts[1])
+		return path.NewPath(parts[1])
 	}
-
-	return "", errors.New("not a valid dnslink entry")
+	newPath, err_ := path.NewPath("")
+	log.Debug(err_)
+	return newPath, errors.New("not a valid dnslink entry")
 }

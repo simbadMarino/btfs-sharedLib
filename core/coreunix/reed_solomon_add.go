@@ -14,8 +14,8 @@ import (
 	files "github.com/bittorrent/go-btfs-files"
 	"github.com/bittorrent/go-unixfs"
 	uio "github.com/bittorrent/go-unixfs/io"
+	dag "github.com/ipfs/boxo/ipld/merkledag"
 	ipld "github.com/ipfs/go-ipld-format"
-	dag "github.com/ipfs/go-merkledag"
 )
 
 const (

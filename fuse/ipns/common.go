@@ -7,7 +7,7 @@ import (
 	nsys "github.com/bittorrent/go-btfs/namesys"
 
 	ft "github.com/bittorrent/go-unixfs"
-	path "github.com/ipfs/go-path"
+	path "github.com/ipfs/boxo/path"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
 )
 
@@ -19,7 +19,7 @@ func InitializeKeyspace(n *core.IpfsNode, key ci.PrivKey) error {
 
 	emptyDir := ft.EmptyDirNode()
 
-	err := n.Pinning.Pin(ctx, emptyDir, false)
+	err := n.Pinning.Pin(ctx, emptyDir, false, "")
 	if err != nil {
 		return err
 	}

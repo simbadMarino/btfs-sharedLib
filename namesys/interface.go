@@ -36,7 +36,7 @@ import (
 	context "context"
 
 	opts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
-	path "github.com/ipfs/go-path"
+	path "github.com/ipfs/boxo/path"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
 )
 

@@ -7,15 +7,16 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"strings"
 	"time"
 
 	cmdenv "github.com/bittorrent/go-btfs/core/commands/cmdenv"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
+	dag "github.com/ipfs/boxo/ipld/merkledag"
+	path "github.com/ipfs/boxo/path"
 	cid "github.com/ipfs/go-cid"
 	ipld "github.com/ipfs/go-ipld-format"
-	dag "github.com/ipfs/go-merkledag"
-	path "github.com/ipfs/go-path"
 	peer "github.com/libp2p/go-libp2p/core/peer"
 	routing "github.com/libp2p/go-libp2p/core/routing"
 )
@@ -680,7 +681,8 @@ func printEvent(obj *routing.QueryEvent, out io.Writer, verbose bool, override p
 }
 
 func escapeDhtKey(s string) (string, error) {
-	parts := path.SplitList(s)
+	//parts := path.SplitList(s)
+	parts := strings.Split(s, "/")
 	if len(parts) != 3 ||
 		parts[0] != "" ||
 		!(parts[1] == "btns" || parts[1] == "pk") {
@@ -691,5 +693,5 @@ func escapeDhtKey(s string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return path.Join(append(parts[:2], string(k))), nil
+	return path.SegmentsToString(parts[0], parts[1], string(k)), nil
 }

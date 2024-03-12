@@ -11,13 +11,14 @@ import (
 	mock "github.com/bittorrent/go-btfs/core/mock"
 	"github.com/bittorrent/go-btfs/namesys"
 	. "github.com/bittorrent/go-btfs/namesys/republisher"
+	"github.com/ethereum/go-ethereum/log"
 
 	"github.com/bittorrent/go-btns"
 	pb "github.com/bittorrent/go-btns/pb"
 
 	"github.com/gogo/protobuf/proto"
+	"github.com/ipfs/boxo/path"
 	ds "github.com/ipfs/go-datastore"
-	"github.com/ipfs/go-path"
 	"github.com/jbenet/goprocess"
 	"github.com/libp2p/go-libp2p/core/peer"
 	mocknet "github.com/libp2p/go-libp2p/p2p/net/mock"
@@ -64,7 +65,8 @@ func TestRepublish(t *testing.T) {
 
 	// have one node publish a record that is valid for 1 second
 	publisher := nodes[3]
-	p := path.FromString("/btfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn") // does not need to be valid
+	p, err_ := path.NewPath("/btfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn") // does not need to be valid
+	log.Debug(err_.Error())
 	rp := namesys.NewIpnsPublisher(publisher.Routing, publisher.Repo.Datastore())
 	name := "/btns/" + publisher.Identity.String()
 
@@ -162,7 +164,8 @@ func TestLongEOLRepublish(t *testing.T) {
 
 	// have one node publish a record that is valid for 1 second
 	publisher := nodes[3]
-	p := path.FromString("/btfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn") // does not need to be valid
+	p, err_ := path.NewPath("/btfs/QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn") // does not need to be valid
+	log.Debug(err_.Error())
 	rp := namesys.NewIpnsPublisher(publisher.Routing, publisher.Repo.Datastore())
 	name := "/btns/" + publisher.Identity.String()
 

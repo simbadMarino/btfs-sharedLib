@@ -12,9 +12,9 @@ import (
 
 	files "github.com/bittorrent/go-btfs-files"
 	ipath "github.com/bittorrent/interface-go-btfs-core/path"
+	"github.com/ipfs/boxo/path/resolver"
 	cid "github.com/ipfs/go-cid"
 	ipld "github.com/ipfs/go-ipld-format"
-	"github.com/ipfs/go-path/resolver"
 	"github.com/stretchr/testify/assert"
 )
 

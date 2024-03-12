@@ -19,12 +19,12 @@ import (
 	ftutil "github.com/bittorrent/go-unixfs/util"
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	ipath "github.com/bittorrent/interface-go-btfs-core/path"
-	cid "github.com/ipfs/go-cid"
-	bstore "github.com/ipfs/go-ipfs-blockstore"
-	pin "github.com/ipfs/go-ipfs-pinner"
-	posinfo "github.com/ipfs/go-ipfs-posinfo"
-	ipld "github.com/ipfs/go-ipld-format"
+	bstore "github.com/ipfs/boxo/blockstore"
+	posinfo "github.com/ipfs/boxo/filestore/posinfo"
 	dag "github.com/ipfs/boxo/ipld/merkledag"
+	pin "github.com/ipfs/boxo/pinning/pinner"
+	cid "github.com/ipfs/go-cid"
+	ipld "github.com/ipfs/go-ipld-format"
 )
 
 // MetaModifier contains the options to the `metadata` command.

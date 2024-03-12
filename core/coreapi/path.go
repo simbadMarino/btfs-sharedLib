@@ -8,11 +8,11 @@ import (
 	"github.com/bittorrent/go-btfs/namesys/resolve"
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
+	"github.com/ipfs/boxo/fetcher"
+	ipfspath "github.com/ipfs/boxo/path"
+	ipfspathresolver "github.com/ipfs/boxo/path/resolver"
 	"github.com/ipfs/go-cid"
-	"github.com/ipfs/go-fetcher"
 	ipld "github.com/ipfs/go-ipld-format"
-	ipfspath "github.com/ipfs/go-path"
-	ipfspathresolver "github.com/ipfs/go-path/resolver"
 )
 
 // ResolveNode resolves the path `p` using Unixfs resolver, gets and returns the
@@ -36,7 +36,7 @@ func (api *CoreAPI) ResolvePath(ctx context.Context, p path.Path) (path.Resolved
 	if _, ok := p.(path.Resolved); ok {
 		return p.(path.Resolved), nil
 	}
-	ipath := ipfspath.Path(p.String())
+	ipath, _ := ipfspath.NewPath(p.String())
 	ipath, err := resolve.ResolveIPNS(ctx, api.namesys, ipath)
 	if err == resolve.ErrNoNamesys {
 		return nil, coreiface.ErrOffline
@@ -55,8 +55,8 @@ func (api *CoreAPI) ResolvePath(ctx context.Context, p path.Path) (path.Resolved
 	}
 
 	r := ipfspathresolver.NewBasicResolver(dataFetcher)
-
-	node, rest, err := r.ResolveToLastNode(ctx, ipath)
+	ip, _ := ipfspath.NewImmutablePath(ipath)
+	node, rest, err := r.ResolveToLastNode(ctx, ip)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (api *CoreAPI) ResolveIpnsPath(ctx context.Context, p path.Path) (*ipfspath
 		return nil, err
 	}
 
-	ipath := ipfspath.Path(p.String())
+	ipath, _ := ipfspath.NewPath(p.String())
 	ipath, err := resolve.ResolveIPNS(ctx, api.namesys, ipath)
 	if err == resolve.ErrNoNamesys {
 		return nil, coreiface.ErrOffline

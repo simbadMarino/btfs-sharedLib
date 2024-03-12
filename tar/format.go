@@ -11,11 +11,11 @@ import (
 	chunker "github.com/bittorrent/go-btfs-chunker"
 	importer "github.com/bittorrent/go-unixfs/importer"
 	uio "github.com/bittorrent/go-unixfs/io"
+	dag "github.com/ipfs/boxo/ipld/merkledag"
+	"github.com/ipfs/boxo/ipld/merkledag/dagutils"
+	path "github.com/ipfs/boxo/path"
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
-	dag "github.com/ipfs/go-merkledag"
-	"github.com/ipfs/go-merkledag/dagutils"
-	path "github.com/ipfs/go-path"
 )
 
 var log = logging.Logger("tarfmt")
@@ -92,11 +92,11 @@ func ImportTar(ctx context.Context, r io.Reader, ds ipld.DAGService) (*dag.Proto
 // adds a '-' to the beginning of each path element so we can use 'data' as a
 // special link in the structure without having to worry about
 func escapePath(pth string) string {
-	elems := path.SplitList(strings.Trim(pth, "/"))
+	elems := path.StringToSegments(strings.Trim(pth, "/"))
 	for i, e := range elems {
 		elems[i] = "-" + e
 	}
-	return path.Join(elems)
+	return strings.Join(elems, "")
 }
 
 type tarReader struct {

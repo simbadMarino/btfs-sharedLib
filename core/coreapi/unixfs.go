@@ -29,15 +29,14 @@ import (
 	options "github.com/bittorrent/interface-go-btfs-core/options"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
 
-	blockservice "github.com/ipfs/go-blockservice"
+	blockservice "github.com/ipfs/boxo/blockservice"
+	bstore "github.com/ipfs/boxo/blockstore"
+	filestore "github.com/ipfs/boxo/filestore"
+	dag "github.com/ipfs/boxo/ipld/merkledag"
+	dagtest "github.com/ipfs/boxo/ipld/merkledag/test"
 	cid "github.com/ipfs/go-cid"
 	cidutil "github.com/ipfs/go-cidutil"
-	filestore "github.com/ipfs/go-filestore"
-	bstore "github.com/ipfs/go-ipfs-blockstore"
 	ipld "github.com/ipfs/go-ipld-format"
-	dag "github.com/ipfs/go-merkledag"
-	dagtest "github.com/ipfs/go-merkledag/test"
-	"github.com/ipfs/go-path/resolver"
 	"github.com/libp2p/go-libp2p/core/peer"
 	// "github.com/prometheus/common/log"
 )
@@ -306,13 +305,6 @@ func (api *UnixfsAPI) Get(ctx context.Context, p path.Path, opts ...options.Unix
 
 	nd, err := ses.ResolveNode(ctx, p)
 	if err != nil {
-		if e, ok := err.(resolver.ErrNoLink); ok {
-			file, err := api.getReedSolomonFile(ctx, settings, p)
-			if err != nil {
-				return nil, e
-			}
-			return file, nil
-		}
 		return nil, err
 	}
 

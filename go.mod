@@ -42,7 +42,6 @@ require (
 	github.com/ip2location/ip2location-go/v9 v9.0.0
 	github.com/ipfs/boxo v0.17.0
 	github.com/ipfs/go-block-format v0.2.0
-	github.com/ipfs/go-blockservice v0.5.0
 	github.com/ipfs/go-cid v0.4.1
 	github.com/ipfs/go-cidutil v0.1.0
 	github.com/ipfs/go-datastore v0.6.0
@@ -52,29 +51,15 @@ require (
 	github.com/ipfs/go-ds-flatfs v0.5.1
 	github.com/ipfs/go-ds-leveldb v0.5.0
 	github.com/ipfs/go-ds-measure v0.2.0
-	github.com/ipfs/go-fetcher v1.6.1
-	github.com/ipfs/go-filestore v1.2.0
 	github.com/ipfs/go-fs-lock v0.0.7
 	github.com/ipfs/go-graphsync v0.16.0
-	github.com/ipfs/go-ipfs-blockstore v1.3.0
-	github.com/ipfs/go-ipfs-ds-help v1.1.0
-	github.com/ipfs/go-ipfs-exchange-interface v0.2.0
-	github.com/ipfs/go-ipfs-exchange-offline v0.3.0
-	github.com/ipfs/go-ipfs-pinner v0.2.1
-	github.com/ipfs/go-ipfs-posinfo v0.0.1
-	github.com/ipfs/go-ipfs-provider v0.8.0
-	github.com/ipfs/go-ipfs-routing v0.3.0
-	github.com/ipfs/go-ipfs-util v0.0.3
 	github.com/ipfs/go-ipld-cbor v0.1.0
 	github.com/ipfs/go-ipld-format v0.6.0
 	github.com/ipfs/go-ipld-git v0.1.1
 	github.com/ipfs/go-log v1.0.5
-	github.com/ipfs/go-merkledag v0.11.0
 	github.com/ipfs/go-metrics-interface v0.0.1
 	github.com/ipfs/go-metrics-prometheus v0.0.2
-	github.com/ipfs/go-path v0.3.1
 	github.com/ipfs/go-unixfsnode v1.9.0
-	github.com/ipfs/go-verifcid v0.0.2
 	github.com/ipld/go-car v0.4.0
 	github.com/ipld/go-car/v2 v2.13.1
 	github.com/ipld/go-codec-dagpb v1.6.0
@@ -85,7 +70,7 @@ require (
 	github.com/klauspost/reedsolomon v1.9.14
 	github.com/libp2p/go-libp2p v0.32.2
 	github.com/libp2p/go-libp2p-http v0.4.0
-	github.com/libp2p/go-libp2p-kad-dht v0.25.2
+	github.com/libp2p/go-libp2p-kad-dht v0.24.4
 	github.com/libp2p/go-libp2p-kbucket v0.6.3
 	github.com/libp2p/go-libp2p-pubsub v0.10.0
 	github.com/libp2p/go-libp2p-pubsub-router v0.6.0
@@ -159,7 +144,6 @@ require (
 	github.com/benbjohnson/immutable v0.3.0 // indirect
 	github.com/bits-and-blooms/bitset v1.2.2 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
-	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/cgroups v1.1.0 // indirect
 	github.com/deckarep/golang-set/v2 v2.1.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
@@ -181,8 +165,17 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/ipfs/go-bitfield v1.1.0 // indirect
+	github.com/ipfs/go-blockservice v0.5.0 // indirect
+	github.com/ipfs/go-ipfs-blockstore v1.3.0 // indirect
+	github.com/ipfs/go-ipfs-ds-help v1.1.0 // indirect
+	github.com/ipfs/go-ipfs-exchange-interface v0.2.0 // indirect
+	github.com/ipfs/go-ipfs-posinfo v0.0.1 // indirect
+	github.com/ipfs/go-ipfs-util v0.0.3 // indirect
 	github.com/ipfs/go-ipld-legacy v0.2.1 // indirect
 	github.com/ipfs/go-ipns v0.3.0 // indirect
+	github.com/ipfs/go-merkledag v0.11.0 // indirect
+	github.com/ipfs/go-path v0.3.1 // indirect
+	github.com/ipfs/go-verifcid v0.0.2 // indirect
 	github.com/ipld/edelweiss v0.2.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/libp2p/go-libp2p-core v0.20.1 // indirect
@@ -372,7 +365,7 @@ require (
 
 replace github.com/ipfs/go-path => github.com/bittorrent/go-path v0.4.1
 
-replace github.com/ipfs/go-ipld-format => github.com/ipfs/go-ipld-format v0.4.0
+//replace github.com/ipfs/go-ipld-format => github.com/ipfs/go-ipld-format v0.4.0
 
 replace github.com/libp2p/go-libp2p-yamux => github.com/libp2p/go-libp2p-yamux v0.2.8
 

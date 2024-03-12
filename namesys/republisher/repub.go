@@ -12,9 +12,9 @@ import (
 	pb "github.com/bittorrent/go-btns/pb"
 
 	proto "github.com/gogo/protobuf/proto"
+	path "github.com/ipfs/boxo/path"
 	ds "github.com/ipfs/go-datastore"
 	logging "github.com/ipfs/go-log"
-	path "github.com/ipfs/go-path"
 	goprocess "github.com/jbenet/goprocess"
 	gpctx "github.com/jbenet/goprocess/context"
 	ic "github.com/libp2p/go-libp2p/core/crypto"
@@ -136,7 +136,8 @@ func (rp *Republisher) republishEntry(ctx context.Context, priv ic.PrivKey) erro
 		return err
 	}
 
-	p := path.Path(e.GetValue())
+	p, _err := path.NewPath(string(e.GetValue()))
+	log.Debug(_err)
 	prevEol, err := btns.GetEOL(e)
 	if err != nil {
 		return err

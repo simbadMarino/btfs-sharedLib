@@ -12,9 +12,9 @@ import (
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	caopts "github.com/bittorrent/interface-go-btfs-core/options"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
+	pin "github.com/ipfs/boxo/pinning/pinner"
 	blocks "github.com/ipfs/go-block-format"
 	cid "github.com/ipfs/go-cid"
-	pin "github.com/ipfs/go-ipfs-pinner"
 )
 
 type BlockAPI CoreAPI
@@ -55,7 +55,7 @@ func (api *BlockAPI) Put(ctx context.Context, src io.Reader, opts ...caopts.Bloc
 	}
 
 	if settings.Pin {
-		api.pinning.PinWithMode(b.Cid(), pin.Recursive)
+		api.pinning.PinWithMode(ctx, b.Cid(), pin.Recursive, "")
 		if err := api.pinning.Flush(ctx); err != nil {
 			return nil, err
 		}

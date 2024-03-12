@@ -3,10 +3,10 @@ package coreapi
 import (
 	"context"
 
+	dag "github.com/ipfs/boxo/ipld/merkledag"
+	pin "github.com/ipfs/boxo/pinning/pinner"
 	cid "github.com/ipfs/go-cid"
-	pin "github.com/ipfs/go-ipfs-pinner"
 	ipld "github.com/ipfs/go-ipld-format"
-	dag "github.com/ipfs/go-merkledag"
 )
 
 type dagAPI struct {
@@ -24,7 +24,7 @@ func (adder *pinningAdder) Add(ctx context.Context, nd ipld.Node) error {
 		return err
 	}
 
-	adder.pinning.PinWithMode(nd.Cid(), pin.Recursive)
+	adder.pinning.PinWithMode(ctx, nd.Cid(), pin.Recursive, "")
 
 	return adder.pinning.Flush(ctx)
 }
@@ -41,7 +41,7 @@ func (adder *pinningAdder) AddMany(ctx context.Context, nds []ipld.Node) error {
 	for _, nd := range nds {
 		c := nd.Cid()
 		if cids.Visit(c) {
-			adder.pinning.PinWithMode(c, pin.Recursive)
+			adder.pinning.PinWithMode(ctx, c, pin.Recursive, "")
 		}
 	}
 

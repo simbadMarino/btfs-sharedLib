@@ -19,14 +19,14 @@ import (
 	config "github.com/bittorrent/go-btfs-config"
 	files "github.com/bittorrent/go-btfs-files"
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
+	"github.com/ipfs/boxo/blockservice"
+	blockstore "github.com/ipfs/boxo/blockstore"
+	pi "github.com/ipfs/boxo/filestore/posinfo"
+	dag "github.com/ipfs/boxo/ipld/merkledag"
 	blocks "github.com/ipfs/go-block-format"
-	"github.com/ipfs/go-blockservice"
 	"github.com/ipfs/go-cid"
 	"github.com/ipfs/go-datastore"
 	syncds "github.com/ipfs/go-datastore/sync"
-	blockstore "github.com/ipfs/go-ipfs-blockstore"
-	pi "github.com/ipfs/go-ipfs-posinfo"
-	dag "github.com/ipfs/go-merkledag"
 )
 
 // TODO: FIX ME

@@ -8,8 +8,8 @@ import (
 
 	"github.com/bittorrent/go-btfs/namesys"
 
+	"github.com/ipfs/boxo/path"
 	logging "github.com/ipfs/go-log"
-	"github.com/ipfs/go-path"
 )
 
 var log = logging.Logger("nsresolv")
@@ -29,7 +29,9 @@ func ResolveIPNS(ctx context.Context, nsys namesys.NameSystem, p path.Path) (pat
 		// TODO(cryptix): we should be able to query the local cache for the path
 		if nsys == nil {
 			evt.Append(logging.LoggableMap{"error": ErrNoNamesys.Error()})
-			return "", ErrNoNamesys
+			npath, _err := path.NewPath("")
+			log.Debug(_err)
+			return npath, ErrNoNamesys
 		}
 
 		seg := p.Segments()
@@ -37,27 +39,36 @@ func ResolveIPNS(ctx context.Context, nsys namesys.NameSystem, p path.Path) (pat
 		if len(seg) < 2 || seg[1] == "" { // just "/<protocol/>" without further segments
 			err := fmt.Errorf("invalid path %q: btns path missing BTNS ID", p)
 			evt.Append(logging.LoggableMap{"error": err})
-			return "", err
+			npath, _err := path.NewPath("")
+			log.Debug(_err)
+			return npath, err
 		}
 
 		extensions := seg[2:]
-		resolvable, err := path.FromSegments("/", seg[0], seg[1])
+		resolvable, err := path.NewPathFromSegments(seg[0], seg[1])
+		log.Debug(resolvable)
 		if err != nil {
 			evt.Append(logging.LoggableMap{"error": err.Error()})
-			return "", err
+			npath, _err := path.NewPath("")
+			log.Debug(_err)
+			return npath, err
 		}
 
 		respath, err := nsys.Resolve(ctx, resolvable.String())
 		if err != nil {
 			evt.Append(logging.LoggableMap{"error": err.Error()})
-			return "", err
+			npath, _err := path.NewPath("")
+			log.Debug(_err)
+			return npath, err
 		}
 
 		segments := append(respath.Segments(), extensions...)
-		p, err = path.FromSegments("/", segments...)
+		p, err = path.NewPathFromSegments(segments...)
 		if err != nil {
 			evt.Append(logging.LoggableMap{"error": err.Error()})
-			return "", err
+			npath, _err := path.NewPath("")
+			log.Debug(_err)
+			return npath, err
 		}
 	}
 	return p, nil

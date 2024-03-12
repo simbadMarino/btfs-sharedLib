@@ -12,7 +12,7 @@ import (
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	caopts "github.com/bittorrent/interface-go-btfs-core/options"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
-	ipath "github.com/ipfs/go-path"
+	ipath "github.com/ipfs/boxo/path"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
 	peer "github.com/libp2p/go-libp2p/core/peer"
 )
@@ -50,7 +50,7 @@ func (api *NameAPI) Publish(ctx context.Context, p path.Path, opts ...caopts.Nam
 		return nil, err
 	}
 
-	pth, err := ipath.ParsePath(p.String())
+	pth, err := ipath.NewPath(p.String())
 	if err != nil {
 		return nil, err
 	}

@@ -10,10 +10,10 @@ import (
 	pb "github.com/bittorrent/go-btns/pb"
 	ft "github.com/bittorrent/go-unixfs"
 	proto "github.com/gogo/protobuf/proto"
+	path "github.com/ipfs/boxo/path"
+	pin "github.com/ipfs/boxo/pinning/pinner"
 	ds "github.com/ipfs/go-datastore"
 	dsquery "github.com/ipfs/go-datastore/query"
-	pin "github.com/ipfs/go-ipfs-pinner"
-	path "github.com/ipfs/go-path"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
 	peer "github.com/libp2p/go-libp2p/core/peer"
 	routing "github.com/libp2p/go-libp2p/core/routing"
@@ -153,14 +153,15 @@ func (p *IpnsPublisher) updateRecord(ctx context.Context, k ci.PrivKey, value pa
 	}
 
 	seqno := rec.GetSequence() // returns 0 if rec is nil
-	if rec != nil && value != path.Path(rec.GetValue()) {
+	newPath, err := path.NewPath(string(rec.GetValue()))
+	if rec != nil && value != newPath {
 		// Don't bother incrementing the sequence number unless the
 		// value changes.
 		seqno++
 	}
 
 	// Create record
-	entry, err := ipns.Create(k, []byte(value), seqno, eol)
+	entry, err := ipns.Create(k, []byte(value.String()), seqno, eol)
 	if err != nil {
 		return nil, err
 	}
@@ -290,7 +291,7 @@ func InitializeKeyspace(ctx context.Context, pub Publisher, pins pin.Pinner, key
 
 	// pin recursively because this might already be pinned
 	// and doing a direct pin would throw an error in that case
-	err := pins.Pin(ctx, emptyDir, true)
+	err := pins.Pin(ctx, emptyDir, true, "")
 	if err != nil {
 		return err
 	}

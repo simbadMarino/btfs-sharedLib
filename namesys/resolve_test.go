@@ -7,10 +7,10 @@ import (
 	"time"
 
 	ipns "github.com/bittorrent/go-btns"
+	path "github.com/ipfs/boxo/path"
+	mockrouting "github.com/ipfs/boxo/routing/mock"
 	ds "github.com/ipfs/go-datastore"
 	dssync "github.com/ipfs/go-datastore/sync"
-	mockrouting "github.com/ipfs/go-ipfs-routing/mock"
-	path "github.com/ipfs/go-path"
 	testutil "github.com/libp2p/go-libp2p-testing/net"
 )
 
@@ -25,8 +25,8 @@ func TestRoutingResolve(t *testing.T) {
 
 	identity := testutil.RandIdentityOrFatal(t)
 
-	h := path.FromString("/btfs/QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN")
-	err := publisher.Publish(context.Background(), identity.PrivateKey(), h)
+	h, err := path.NewPath("/btfs/QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN")
+	err = publisher.Publish(context.Background(), identity.PrivateKey(), h)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -51,10 +51,10 @@ func TestPrexistingExpiredRecord(t *testing.T) {
 	identity := testutil.RandIdentityOrFatal(t)
 
 	// Make an expired record and put it in the datastore
-	h := path.FromString("/btfs/QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN")
+	h, err := path.NewPath("/btfs/QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN")
 	eol := time.Now().Add(time.Hour * -1)
 
-	entry, err := ipns.Create(identity.PrivateKey(), []byte(h), 0, eol)
+	entry, err := ipns.Create(identity.PrivateKey(), []byte(h.String()), 0, eol)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,9 +85,9 @@ func TestPrexistingRecord(t *testing.T) {
 	identity := testutil.RandIdentityOrFatal(t)
 
 	// Make a good record and put it in the datastore
-	h := path.FromString("/btfs/QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN")
+	h, err := path.NewPath("/btfs/QmZULkCELmmk5XNfCgTnCyFgAVxBRBXyDHGGMVoLFLiXEN")
 	eol := time.Now().Add(time.Hour)
-	entry, err := ipns.Create(identity.PrivateKey(), []byte(h), 0, eol)
+	entry, err := ipns.Create(identity.PrivateKey(), []byte(h.String()), 0, eol)
 	if err != nil {
 		t.Fatal(err)
 	}

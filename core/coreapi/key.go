@@ -10,7 +10,7 @@ import (
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	caopts "github.com/bittorrent/interface-go-btfs-core/options"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
-	ipfspath "github.com/ipfs/go-path"
+	ipfspath "github.com/ipfs/boxo/path"
 	crypto "github.com/libp2p/go-libp2p/core/crypto"
 	peer "github.com/libp2p/go-libp2p/core/peer"
 )
@@ -29,7 +29,7 @@ func (k *key) Name() string {
 
 // Path returns the path of the key.
 func (k *key) Path() path.Path {
-	return path.New(ipfspath.Join([]string{"/btns", coreiface.FormatKeyID(k.peerID)}))
+	return path.New(ipfspath.SegmentsToString("/btns", coreiface.FormatKeyID(k.peerID)))
 }
 
 // ID returns key PeerID

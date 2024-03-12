@@ -13,9 +13,9 @@ import (
 
 	config "github.com/bittorrent/go-btfs-config"
 	uio "github.com/bittorrent/go-unixfs/io"
-	blockstore "github.com/ipfs/go-ipfs-blockstore"
-	offline "github.com/ipfs/go-ipfs-exchange-offline"
-	util "github.com/ipfs/go-ipfs-util"
+	blockstore "github.com/ipfs/boxo/blockstore"
+	offline "github.com/ipfs/boxo/exchange/offline"
+	util "github.com/ipfs/boxo/util"
 	log "github.com/ipfs/go-log"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 	peer "github.com/libp2p/go-libp2p/core/peer"
@@ -305,9 +305,9 @@ func Online(bcfg *BuildCfg, cfg *config.Config, userResourceOverrides rcmgr.Part
 		LibP2P(bcfg, cfg, userResourceOverrides),
 		OnlineProviders(
 			cfg.Experimental.StrategicProviding,
-			cfg.Experimental.AcceleratedDHTClient,
 			cfg.Reprovider.Strategy.WithDefault(config.DefaultReproviderStrategy),
 			cfg.Reprovider.Interval.WithDefault(config.DefaultReproviderInterval),
+			cfg.Experimental.AcceleratedDHTClient,
 		),
 	)
 }
@@ -321,12 +321,13 @@ func Offline(cfg *config.Config) fx.Option {
 		fx.Provide(libp2p.Routing),
 		fx.Provide(libp2p.ContentRouting),
 		fx.Provide(libp2p.OfflineRouting),
-		OfflineProviders(
+		/*OfflineProviders(
 			cfg.Experimental.StrategicProviding,
 			cfg.Experimental.AcceleratedDHTClient,
 			cfg.Reprovider.Strategy.WithDefault(config.DefaultReproviderStrategy),
 			cfg.Reprovider.Interval.WithDefault(config.DefaultReproviderInterval),
-		),
+		),*/
+		OfflineProviders(), //New boxo approach, check if working with BTFS
 	)
 }
 

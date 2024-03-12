@@ -15,10 +15,10 @@ import (
 	"github.com/bittorrent/interface-go-btfs-core/options"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
 	humanize "github.com/dustin/go-humanize"
+	dag "github.com/ipfs/boxo/ipld/merkledag"
 	"github.com/ipfs/go-cid"
 	"github.com/ipfs/go-cidutil/cidenc"
 	ipld "github.com/ipfs/go-ipld-format"
-	dag "github.com/ipfs/go-merkledag"
 )
 
 type Node struct {

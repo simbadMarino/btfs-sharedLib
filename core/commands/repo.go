@@ -17,8 +17,8 @@ import (
 	humanize "github.com/dustin/go-humanize"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
+	bstore "github.com/ipfs/boxo/blockstore"
 	cid "github.com/ipfs/go-cid"
-	bstore "github.com/ipfs/go-ipfs-blockstore"
 )
 
 type RepoVersion struct {

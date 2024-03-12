@@ -13,8 +13,8 @@ import (
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	options "github.com/bittorrent/interface-go-btfs-core/options"
 	nsopts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
+	path "github.com/ipfs/boxo/path"
 	logging "github.com/ipfs/go-log"
-	path "github.com/ipfs/go-path"
 )
 
 var log = logging.Logger("core/commands/btns")
@@ -133,8 +133,8 @@ Resolve the value of a dnslink:
 			if err != nil && (recursive || err != namesys.ErrResolveRecursion) {
 				return err
 			}
-
-			return cmds.EmitOnce(res, &ResolvedPath{path.FromString(output.String())})
+			npath, _ := path.NewPath(output.String())
+			return cmds.EmitOnce(res, &ResolvedPath{npath})
 		}
 
 		output, err := api.Name().Search(req.Context, name, opts...)
@@ -146,7 +146,8 @@ Resolve the value of a dnslink:
 			if v.Err != nil && (recursive || v.Err != namesys.ErrResolveRecursion) {
 				return v.Err
 			}
-			if err := res.Emit(&ResolvedPath{path.FromString(v.Path.String())}); err != nil {
+			npath, _ := path.NewPath(v.Path.String())
+			if err := res.Emit(&ResolvedPath{npath}); err != nil {
 				return err
 			}
 

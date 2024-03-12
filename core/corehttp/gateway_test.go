@@ -19,9 +19,9 @@ import (
 	config "github.com/bittorrent/go-btfs-config"
 	iface "github.com/bittorrent/interface-go-btfs-core"
 	nsopts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
+	path "github.com/ipfs/boxo/path"
 	datastore "github.com/ipfs/go-datastore"
 	syncds "github.com/ipfs/go-datastore/sync"
-	path "github.com/ipfs/go-path"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
 	id "github.com/libp2p/go-libp2p/p2p/protocol/identify"
 )

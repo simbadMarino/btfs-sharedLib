@@ -18,15 +18,15 @@ import (
 	uio "github.com/bittorrent/go-unixfs/io"
 	nsopts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
 	ifacepath "github.com/bittorrent/interface-go-btfs-core/path"
+	"github.com/ipfs/boxo/blockservice"
+	blockstore "github.com/ipfs/boxo/blockstore"
+	bsfetcher "github.com/ipfs/boxo/fetcher/impl/blockservice"
+	"github.com/ipfs/boxo/ipld/merkledag"
+	ipfspath "github.com/ipfs/boxo/path"
+	"github.com/ipfs/boxo/path/resolver"
 	blocks "github.com/ipfs/go-block-format"
-	"github.com/ipfs/go-blockservice"
 	"github.com/ipfs/go-cid"
-	bsfetcher "github.com/ipfs/go-fetcher/impl/blockservice"
-	blockstore "github.com/ipfs/go-ipfs-blockstore"
 	format "github.com/ipfs/go-ipld-format"
-	"github.com/ipfs/go-merkledag"
-	ipfspath "github.com/ipfs/go-path"
-	"github.com/ipfs/go-path/resolver"
 	"github.com/ipfs/go-unixfsnode"
 	car "github.com/ipld/go-car"
 	dagpb "github.com/ipld/go-codec-dagpb"
@@ -314,7 +314,7 @@ func (api *BlocksGateway) getPathRoots(ctx context.Context, contentPath Immutabl
 			// TODO: should we be more explicit here and is this part of the Gateway API contract?
 			// The issue here was that we returned datamodel.ErrWrongKind instead of this resolver error
 			if isErrNotFound(err) {
-				return nil, nil, resolver.ErrNoLink{Name: root, Node: lastPath.Cid()}
+				return nil, nil, &resolver.ErrNoLink{Name: root, Node: lastPath.Cid()}
 			}
 			return nil, nil, err
 		}
@@ -342,7 +342,8 @@ func (api *BlocksGateway) ResolveMutable(ctx context.Context, p ifacepath.Path) 
 		return ImmutablePath{}, err
 	}
 
-	ipath := ipfspath.Path(p.String())
+	ipath, _err := ipfspath.NewPath(p.String())
+	log.Debug(_err)
 	switch ipath.Segments()[0] {
 	case "btns":
 		ipath, err = resolve.ResolveIPNS(ctx, api.namesys, ipath)
@@ -429,7 +430,8 @@ func (api *BlocksGateway) resolvePath(ctx context.Context, p ifacepath.Path) (if
 		return nil, err
 	}
 
-	ipath := ipfspath.Path(p.String())
+	ipath, _err := ipfspath.NewPath(p.String())
+	log.Debug(_err)
 	if ipath.Segments()[0] == "btns" {
 		ipath, err = resolve.ResolveIPNS(ctx, api.namesys, ipath)
 		if err != nil {
@@ -441,7 +443,9 @@ func (api *BlocksGateway) resolvePath(ctx context.Context, p ifacepath.Path) (if
 		return nil, fmt.Errorf("unsupported path namespace: %s", p.Namespace())
 	}
 
-	node, rest, err := api.resolver.ResolveToLastNode(ctx, ipath)
+	ip, _err := ipfspath.NewImmutablePath(ipath)
+	log.Debug(_err)
+	node, rest, err := api.resolver.ResolveToLastNode(ctx, ip)
 	if err != nil {
 		return nil, err
 	}

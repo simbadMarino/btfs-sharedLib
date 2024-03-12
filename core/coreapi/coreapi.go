@@ -25,16 +25,16 @@ import (
 
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	"github.com/bittorrent/interface-go-btfs-core/options"
-	bserv "github.com/ipfs/go-blockservice"
-	"github.com/ipfs/go-fetcher"
-	blockstore "github.com/ipfs/go-ipfs-blockstore"
-	exchange "github.com/ipfs/go-ipfs-exchange-interface"
-	offlinexch "github.com/ipfs/go-ipfs-exchange-offline"
-	pin "github.com/ipfs/go-ipfs-pinner"
-	provider "github.com/ipfs/go-ipfs-provider"
-	offlineroute "github.com/ipfs/go-ipfs-routing/offline"
+	bserv "github.com/ipfs/boxo/blockservice"
+	blockstore "github.com/ipfs/boxo/blockstore"
+	exchange "github.com/ipfs/boxo/exchange"
+	offlinexch "github.com/ipfs/boxo/exchange/offline"
+	"github.com/ipfs/boxo/fetcher"
+	dag "github.com/ipfs/boxo/ipld/merkledag"
+	pin "github.com/ipfs/boxo/pinning/pinner"
+	provider "github.com/ipfs/boxo/provider"
+	offlineroute "github.com/ipfs/boxo/routing/offline"
 	ipld "github.com/ipfs/go-ipld-format"
-	dag "github.com/ipfs/go-merkledag"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 	record "github.com/libp2p/go-libp2p-record"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
@@ -222,7 +222,7 @@ func (api *CoreAPI) WithOptions(opts ...options.ApiOption) (coreiface.CoreAPI, e
 		if err != nil {
 			return nil, fmt.Errorf("error constructing namesys: %w", err)
 		}
-		subApi.provider = provider.NewOfflineProvider()
+		subApi.provider = provider.NewNoopProvider()
 
 		subApi.peerstore = nil
 		subApi.peerHost = nil

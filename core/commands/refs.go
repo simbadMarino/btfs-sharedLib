@@ -12,10 +12,10 @@ import (
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	iface "github.com/bittorrent/interface-go-btfs-core"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
+	merkledag "github.com/ipfs/boxo/ipld/merkledag"
 	cid "github.com/ipfs/go-cid"
 	cidenc "github.com/ipfs/go-cidutil/cidenc"
 	ipld "github.com/ipfs/go-ipld-format"
-	merkledag "github.com/ipfs/go-merkledag"
 )
 
 var refsEncoderMap = cmds.EncoderMap{
