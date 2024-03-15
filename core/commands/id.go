@@ -24,6 +24,7 @@ import (
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/peer"
 	pstore "github.com/libp2p/go-libp2p/core/peerstore"
+	"github.com/libp2p/go-libp2p/core/protocol"
 )
 
 const offlineIdErrorMessage = `'btfs id' currently cannot query information on remote
@@ -41,7 +42,7 @@ type IdOutput struct {
 	Addresses       []string
 	AgentVersion    string
 	ProtocolVersion string
-	Protocols       []string
+	Protocols       []protocol.ID
 	DaemonProcessID int
 	TronAddress     string
 	BttcAddress     string
@@ -142,7 +143,7 @@ EXAMPLE:
 				output = strings.Replace(output, "<pver>", out.ProtocolVersion, -1)
 				output = strings.Replace(output, "<pubkey>", out.PublicKey, -1)
 				output = strings.Replace(output, "<addrs>", strings.Join(out.Addresses, "\n"), -1)
-				output = strings.Replace(output, "<protocols>", strings.Join(out.Protocols, "\n"), -1)
+				output = strings.Replace(output, "<protocols>", strings.Join(protocol.ConvertToStrings(out.Protocols), "\n"), -1)
 				output = strings.Replace(output, "\\n", "\n", -1)
 				output = strings.Replace(output, "\\t", "\t", -1)
 				fmt.Fprint(w, output)
@@ -188,16 +189,9 @@ func printPeer(keyEnc ke.KeyEncoder, ps pstore.Peerstore, p peer.ID, node *core.
 	sort.Strings(info.Addresses)
 
 	protocols, _ := ps.GetProtocols(p) // don't care about errors here.
-	for _, p := range protocols {
-		info.Protocols = append(info.Protocols, string(p))
-	}
-	sort.Strings(info.Protocols)
+	info.Protocols = append(info.Protocols, protocols...)
+	sort.Slice(info.Protocols, func(i, j int) bool { return info.Protocols[i] < info.Protocols[j] })
 
-	if v, err := ps.Get(p, "ProtocolVersion"); err == nil {
-		if vs, ok := v.(string); ok {
-			info.ProtocolVersion = vs
-		}
-	}
 	if v, err := ps.Get(p, "AgentVersion"); err == nil {
 		if vs, ok := v.(string); ok {
 			info.AgentVersion = vs
@@ -254,15 +248,8 @@ func printSelf(keyEnc ke.KeyEncoder, node *core.IpfsNode, env cmds.Environment) 
 			info.Addresses = append(info.Addresses, a.String())
 		}
 		sort.Strings(info.Addresses)
-		protocolIDs := node.PeerHost.Mux().Protocols() //TODO: Confirm if this is working or not when testing!!
-		
-		// Convert protocol.ID slice to string slice
-		//info.Protocols := make([]string, len(protocolIDs))
-		for i, protocolID := range protocolIDs {
-			info.Protocols[i] = string(protocolID)
-		}
-
-
+		info.Protocols = node.PeerHost.Mux().Protocols()
+		sort.Slice(info.Protocols, func(i, j int) bool { return info.Protocols[i] < info.Protocols[j] })
 	}
 	info.ProtocolVersion = "btfs/0.1.0" //identify.LibP2PVersion
 	info.AgentVersion = version.UserAgent
