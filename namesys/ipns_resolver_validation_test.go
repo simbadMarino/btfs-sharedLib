@@ -60,6 +60,8 @@ func testResolverValidation(t *testing.T, keyType int) {
 	priv, id, _, ipnsDHTPath := genKeys(t, keyType)
 	ts := time.Now()
 	p := []byte("/btfs/QmfM2r8seH2GiRaC4esTjeraXEachRt8ZsSeGaWTPLyMoG")
+	p_string := "/btfs/QmfM2r8seH2GiRaC4esTjeraXEachRt8ZsSeGaWTPLyMoG"
+	path_test, _ := path.NewPath(p_string)
 	entry, err := createIPNSRecordWithEmbeddedPublicKey(priv, p, 1, ts.Add(time.Hour))
 	if err != nil {
 		t.Fatal(err)
@@ -76,7 +78,8 @@ func testResolverValidation(t *testing.T, keyType int) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if resp != path.Path(p) {
+
+	if resp != path_test {
 		t.Fatalf("Mismatch between published path %s and resolved path %s", p, resp)
 	}
 	// Create expired entry

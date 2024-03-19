@@ -29,8 +29,7 @@ func ResolveIPNS(ctx context.Context, nsys namesys.NameSystem, p path.Path) (pat
 		// TODO(cryptix): we should be able to query the local cache for the path
 		if nsys == nil {
 			evt.Append(logging.LoggableMap{"error": ErrNoNamesys.Error()})
-			npath, _err := path.NewPath("")
-			log.Debug(_err)
+			npath, _ := path.NewPath("")
 			return npath, ErrNoNamesys
 		}
 
@@ -39,9 +38,8 @@ func ResolveIPNS(ctx context.Context, nsys namesys.NameSystem, p path.Path) (pat
 		if len(seg) < 2 || seg[1] == "" { // just "/<protocol/>" without further segments
 			err := fmt.Errorf("invalid path %q: btns path missing BTNS ID", p)
 			evt.Append(logging.LoggableMap{"error": err})
-			npath, _err := path.NewPath("")
-			log.Debug(_err)
-			return npath, err
+			npath, _ := path.NewPath("")
+			return npath, ErrNoNamesys
 		}
 
 		extensions := seg[2:]
@@ -49,26 +47,23 @@ func ResolveIPNS(ctx context.Context, nsys namesys.NameSystem, p path.Path) (pat
 		log.Debug(resolvable)
 		if err != nil {
 			evt.Append(logging.LoggableMap{"error": err.Error()})
-			npath, _err := path.NewPath("")
-			log.Debug(_err)
-			return npath, err
+			npath, _ := path.NewPath("")
+			return npath, ErrNoNamesys
 		}
 
 		respath, err := nsys.Resolve(ctx, resolvable.String())
 		if err != nil {
 			evt.Append(logging.LoggableMap{"error": err.Error()})
-			npath, _err := path.NewPath("")
-			log.Debug(_err)
-			return npath, err
+			npath, _ := path.NewPath("")
+			return npath, ErrNoNamesys
 		}
 
 		segments := append(respath.Segments(), extensions...)
 		p, err = path.NewPathFromSegments(segments...)
 		if err != nil {
 			evt.Append(logging.LoggableMap{"error": err.Error()})
-			npath, _err := path.NewPath("")
-			log.Debug(_err)
-			return npath, err
+			npath, _ := path.NewPath("")
+			return npath, ErrNoNamesys
 		}
 	}
 	return p, nil

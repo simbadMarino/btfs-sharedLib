@@ -14,7 +14,7 @@ ios-arm64:
 	CARCH="arm64" \
 	CC=$(PWD)/clangwrap.sh \
 	CGO_CFLAGS="-fembed-bitcode" \
-	go build -v -buildmode=c-archive -ldflags="-s -w" -tags ios -o $(IOS_OUT)/btfs.a .
+	go build -v -buildmode=c-archive -ldflags="-s -w" -gcflags=all="-l -B" -tags ios -o $(IOS_OUT)/btfs.a .
 
 
 ios-x86_64:

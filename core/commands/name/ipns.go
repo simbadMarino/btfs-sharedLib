@@ -20,7 +20,7 @@ import (
 var log = logging.Logger("core/commands/btns")
 
 type ResolvedPath struct {
-	Path path.Path
+	Path string
 }
 
 const (
@@ -133,8 +133,16 @@ Resolve the value of a dnslink:
 			if err != nil && (recursive || err != namesys.ErrResolveRecursion) {
 				return err
 			}
-			npath, _ := path.NewPath(output.String())
-			return cmds.EmitOnce(res, &ResolvedPath{npath})
+			/****TODO: Check if this is OK or not******/
+			pth, err := path.NewPath(output.String())
+			fmt.Println(pth)
+			if err != nil {
+				return err
+			}
+
+			return cmds.EmitOnce(res, &ResolvedPath{pth.String()})
+			/****TODO: Check if this is OK or not******/
+
 		}
 
 		output, err := api.Name().Search(req.Context, name, opts...)
@@ -146,8 +154,8 @@ Resolve the value of a dnslink:
 			if v.Err != nil && (recursive || v.Err != namesys.ErrResolveRecursion) {
 				return v.Err
 			}
-			npath, _ := path.NewPath(v.Path.String())
-			if err := res.Emit(&ResolvedPath{npath}); err != nil {
+
+			if err := res.Emit(&ResolvedPath{v.Path.String()}); err != nil {
 				return err
 			}
 

@@ -108,7 +108,7 @@ func TestErrorBubblingFromAPI(t *testing.T) {
 		status int
 	}{
 		{"404 Not Found from IPLD", &ipld.ErrNotFound{}, http.StatusNotFound},
-		{"404 Not Found from path resolver", resolver.ErrNoLink{}, http.StatusNotFound},
+		{"404 Not Found from path resolver", &resolver.ErrNoLink{}, http.StatusNotFound},
 		{"502 Bad Gateway", ErrBadGateway, http.StatusBadGateway},
 		{"504 Gateway Timeout", ErrGatewayTimeout, http.StatusGatewayTimeout},
 	} {
