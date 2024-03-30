@@ -8,12 +8,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 	"unsafe"
-	"runtime"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
 
@@ -494,8 +494,11 @@ func CheckDirEmpty(dirname string) bool {
 }
 
 func SetEnvVariables() {
+	if runtime.GOOS == "ios" {
+		os.Setenv("HOME", "~/Documents") // $HOME path definition only
+	}
 	if runtime.GOOS == "android" {
-		os.Setenv("HOME","/data/data/com.justshare/files/home") // $HOME path definition only
+		os.Setenv("HOME", "/data/data/com.justshare/files/home") // $HOME path definition only
 	}
 	//TODO: Pending to add $HOME path for iOS
 	if CheckExist(PropertiesFileName) {

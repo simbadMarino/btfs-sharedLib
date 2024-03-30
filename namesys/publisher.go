@@ -153,7 +153,7 @@ func (p *IpnsPublisher) updateRecord(ctx context.Context, k ci.PrivKey, value pa
 	}
 
 	seqno := rec.GetSequence() // returns 0 if rec is nil
-	newPath, err := path.NewPath(string(rec.GetValue()))
+	newPath, _ := path.NewPath(string(rec.GetValue()))
 	if rec != nil && value != newPath {
 		// Don't bother incrementing the sequence number unless the
 		// value changes.

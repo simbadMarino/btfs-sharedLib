@@ -15,6 +15,7 @@ import (
 	options "github.com/bittorrent/interface-go-btfs-core/options"
 	nsopts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
+	ipfspath "github.com/ipfs/boxo/path"
 	cidenc "github.com/ipfs/go-cidutil/cidenc"
 )
 
@@ -107,8 +108,8 @@ Resolve the value of an BTFS DAG path:
 			if err != nil && err != ns.ErrResolveRecursion {
 				return err
 			}
-			//npath, _ := ipfspath.NewPath(p.String())
-			return cmds.EmitOnce(res, &ncmd.ResolvedPath{Path: p.String()})
+			npath, _ := ipfspath.NewPath(p.String())
+			return cmds.EmitOnce(res, &ncmd.ResolvedPath{Path: npath.String()})
 		}
 
 		var enc cidenc.Encoder
@@ -138,8 +139,8 @@ Resolve the value of an BTFS DAG path:
 		if remainder := rp.Remainder(); remainder != "" {
 			encoded += "/" + remainder
 		}
-		//npath, _ := ipfspath.NewPath(encoded)
-		return cmds.EmitOnce(res, &ncmd.ResolvedPath{Path: encoded})
+		npath, _ := ipfspath.NewPath(encoded)
+		return cmds.EmitOnce(res, &ncmd.ResolvedPath{Path: npath.String()})
 	},
 	Encoders: cmds.EncoderMap{
 		cmds.Text: cmds.MakeTypedEncoder(func(req *cmds.Request, w io.Writer, rp *ncmd.ResolvedPath) error {
