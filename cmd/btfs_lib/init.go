@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bittorrent/go-btfs/assets"
 	"github.com/bittorrent/go-btfs/chain"
@@ -20,6 +22,8 @@ import (
 	"github.com/bittorrent/go-btfs/core/commands"
 	"github.com/bittorrent/go-btfs/namesys"
 	fsrepo "github.com/bittorrent/go-btfs/repo/fsrepo"
+	"github.com/ethereum/go-ethereum/accounts/keystore"
+	ethCrypto "github.com/ethereum/go-ethereum/crypto"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	config "github.com/bittorrent/go-btfs-config"
@@ -32,10 +36,13 @@ const (
 	profileOptionName   = "profile"
 	keyTypeDefault      = "BIP39"
 	keyTypeOptionName   = "key"
+	keyPathOptionName   = "keypath"
+	passOptionName      = "pass"
 	importKeyOptionName = "import"
 	rmOnUnpinOptionName = "rm-on-unpin"
 	seedOptionName      = "seed"
 	simpleMode          = "simple-mode"
+	recoveryOptionName  = "recovery"
 	/*
 		passWordOptionName     = "password"
 		passwordFileoptionName = "password-file"
@@ -68,10 +75,13 @@ environment variable:
 		cmds.BoolOption(emptyRepoOptionName, "e", "Don't add and pin help files to the local storage."),
 		cmds.StringOption(profileOptionName, "p", "Apply profile settings to config. Multiple profiles can be separated by ','"),
 		cmds.StringOption(keyTypeOptionName, "k", "Key generation algorithm, e.g. RSA, Ed25519, Secp256k1, ECDSA, BIP39. By default is BIP39"),
+		cmds.StringOption(keyPathOptionName, "kp", "Keystore file path when key type is keystore"),
+		cmds.StringOption(passOptionName, "Keystore file password when key type is keystore"),
 		cmds.StringOption(importKeyOptionName, "i", "Import TRON private key to generate btfs PeerID."),
 		cmds.BoolOption(rmOnUnpinOptionName, "r", "Remove unpinned files.").WithDefault(false),
 		cmds.StringOption(seedOptionName, "s", "Import seed phrase"),
 		cmds.BoolOption(simpleMode, "sm", "init with simple mode or not."),
+		cmds.StringOption(recoveryOptionName, "Recovery data from a backup"),
 		/*
 			cmds.StringOption(passWordOptionName, "", "password for decrypting keys."),
 			cmds.StringOption(passwordFileoptionName, "", "path to a file that contains password for decrypting keys"),
@@ -136,11 +146,55 @@ environment variable:
 		keyType, _ := req.Options[keyTypeOptionName].(string)
 		seedPhrase, _ := req.Options[seedOptionName].(string)
 		simpleModeIn, _ := req.Options[simpleMode].(bool)
+		keyPath, _ := req.Options[keyPathOptionName].(string)
+		keyPass, _ := req.Options[passOptionName].(string)
 		/*
 			password, _ := req.Options[passWordOptionName].(string)
 			passwordFile, _ := req.Options[passwordFileoptionName].(string)
 		*/
+		if keyType == "keystore" {
+			if keyPath == "" || keyPass == "" {
+				return fmt.Errorf("keypath or pass option should not be empty when key type is keystore")
+			}
+			file, err := os.Open(keyPath)
+			if err != nil {
+				return err
+			}
+			jsonBytes, err := io.ReadAll(file)
+			if err != nil {
+				return err
+			}
+			key, err := keystore.DecryptKey(jsonBytes, keyPass)
+			if err != nil {
+				return err
+			}
+			importKey = hex.EncodeToString(ethCrypto.FromECDSA(key.PrivateKey))
+			keyType = "Secp256k1"
+		}
+		backupPath, ok := req.Options[recoveryOptionName].(string)
+		if ok {
+			btfsPath := env.(*oldcmds.Context).ConfigRoot
+			dstPath := filepath.Dir(btfsPath)
+			if fsrepo.IsInitialized(btfsPath) {
+				newPath := filepath.Join(dstPath, fmt.Sprintf(".btfs_backup_%d", time.Now().Unix()))
+				// newPath := filepath.Join(filepath.Dir(btfsPath), backup)
+				err := os.Rename(btfsPath, newPath)
+				if err != nil {
+					return err
+				}
+				fmt.Println("btfs configuration file already exists!")
+				fmt.Println("We have renamed it to ", newPath)
+			}
 
+			if err := commands.UnTar(backupPath, dstPath); err != nil {
+				err = commands.UnZip(backupPath, dstPath)
+				if err != nil {
+					return errors.New("your file format is not tar.gz or zip, please check again")
+				}
+			}
+			fmt.Println("Recovery successful!")
+			return nil
+		}
 		return doInit(os.Stdout, cctx.ConfigRoot, empty, nBitsForKeypair, profile, conf, keyType, importKey, seedPhrase, rmOnUnpin, simpleModeIn)
 	},
 }

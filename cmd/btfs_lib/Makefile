@@ -2,15 +2,23 @@
 ANDROID_OUT=./bin/jniLibs
 IOS_OUT=./bin/ios
 ANDROID_SDK=$(HOME)/Library/Android/sdk
-NDK_BIN=$(ANDROID_SDK)/ndk/21.4.7075529/toolchains/llvm/prebuilt/darwin-x86_64/bin
+NDK_BIN=$(ANDROID_SDK)/ndk/23.1.7779620/toolchains/llvm/prebuilt/darwin-x86_64/bin
 
+# README
+# CGO_CFLAGS=-v  //This flag can be used to obtain more building information on C and C++ related building processes.
+# CGO_LDFLAGS=-v //This flag can be used to obtain more building information on C and C++ related building processes.
+# -lresol flag is used starting from go 1.20 to properly link c-archive libraries.
+# anacrolix/torrrent repo needs to be compiled using C++, we need to add CXX flag to avoid Apple Clang going for the default macos compiler and thus having a btfs.a binary file with macOS static links
+# END OF README
 
 ios-arm64:
 	CGO_ENABLED=1 \
 	GOOS=ios \
 	GOARCH=arm64 \
 	CC=$(PWD)/clangwrap.sh \
+	CXX=$(PWD)/clangwrap.sh \
 	CGO_CFLAGS="-fembed-bitcode" \
+	CGO_LDFLAGS=-lresolv \
 	go build -v -buildmode=c-archive -ldflags="-s -w" -gcflags=all="-l -B" -tags ios -o $(IOS_OUT)/btfs.a .
 
 
@@ -22,6 +30,7 @@ ios-x86_64:
 	SDK=iphonesimulator \
 	CGO_CFLAGS="-Wno-undef-prefix" \
 	CC=$(PWD)/clangwrap.sh \
+	CXX=$(PWD)/clangwrap.sh \
 	go build -v -buildmode=c-archive -ldflags="-s -w" -gcflags=all="-l -B" -tags ios -o $(IOS_OUT)/x86_64.a .
 
 

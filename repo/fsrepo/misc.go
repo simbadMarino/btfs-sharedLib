@@ -3,6 +3,7 @@ package fsrepo
 import (
 	"os"
 	"runtime"
+
 	"github.com/mitchellh/go-homedir"
 )
 
@@ -10,7 +11,7 @@ import (
 // present, this function returns that value. Otherwise, it returns the default
 // repo path.
 func BestKnownPath() (string, error) {
-	btfsPath := "~/Documents/.btfs"
+	btfsPath := "~/.btfs"
 	if runtime.GOOS == "ios" { //TODO: Leave only ./btfs path by defining properly the $HOME dir for iOS in path.go file
 		btfsPath = "~/Documents/.btfs" //iOS path
 	}
@@ -24,5 +25,6 @@ func BestKnownPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	//fmt.Println("repoPath: " + curPath)
 	return curPath, nil
 }

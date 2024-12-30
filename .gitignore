@@ -1,3 +1,5 @@
 *.DS_Store
 cmd/btfs/bin/
 cmd/btfs_lib/bin/
+vendor/
+vendor 2/

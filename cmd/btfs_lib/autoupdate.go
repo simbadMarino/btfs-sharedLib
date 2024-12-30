@@ -10,16 +10,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
-	"time"
 
-	btfs_version "github.com/bittorrent/go-btfs"
-	"github.com/bittorrent/go-btfs-api"
-	"github.com/mholt/archiver/v3"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 )
@@ -62,7 +56,7 @@ type Repo struct {
 }
 
 // Auto update function.
-func update(url, hval string) {
+/*func update(url, hval string) {
 	// Get current program execution path.
 	defaultBtfsPath, err := getCurrentPath()
 	if err != nil {
@@ -311,7 +305,7 @@ updateLoop:
 }
 
 // Determine if the path file exists.
-func pathExists(path string) bool {
+/*func pathExists(path string) bool {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true
@@ -320,7 +314,7 @@ func pathExists(path string) bool {
 		return false
 	}
 	return false
-}
+}*/
 
 // Get config struct from yaml file.
 func getConfigure(fileName string) (*Config, error) {

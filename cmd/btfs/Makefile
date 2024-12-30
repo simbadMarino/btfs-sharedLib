@@ -44,13 +44,12 @@ wasm:
 	go build -o $(WASM_OUT)/btfs.wasm .
 
 
-darwin_m1_macos:
+darwin-arm64-macos:
 	CGO_ENABLED=1 \
 	GOOS=ios \
 	GOARCH=arm64 \
 	CARCH="arm64" \
 	SDK=macos \
-	CGO_CFLAGS="-fembed-bitcode" \
-	go build -v -trimpath -ldflags="-s -w" -gcflags=all="-l -B" -tags ios -o $(IOS_OUT)/btfs_macOS .
+	go build -x -v -trimpath -ldflags="-s -w" -gcflags=all="-l -B" -tags ios -o $(IOS_OUT)/btfs_macOS .
 
-all:linux-amd64 linux-i386 windows-amd64 windows-i386 darwin_m1_macos
+all:linux-amd64 linux-i386 windows-amd64 windows-i386 darwin-arm64-macos
