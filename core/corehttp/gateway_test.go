@@ -19,11 +19,10 @@ import (
 	config "github.com/bittorrent/go-btfs-config"
 	iface "github.com/bittorrent/interface-go-btfs-core"
 	nsopts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
-	path "github.com/ipfs/boxo/path"
 	datastore "github.com/ipfs/go-datastore"
 	syncds "github.com/ipfs/go-datastore/sync"
+	path "github.com/ipfs/go-path"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
-	//id "github.com/libp2p/go-libp2p/p2p/protocol/identify"
 )
 
 type mockNamesys map[string]path.Path
@@ -47,7 +46,7 @@ func (m mockNamesys) Resolve(ctx context.Context, name string, opts ...nsopts.Re
 		var ok bool
 		value, ok = m[name]
 		if !ok {
-			return nil, namesys.ErrResolveFailed
+			return "", namesys.ErrResolveFailed
 		}
 		name = value.String()
 	}
@@ -174,7 +173,4 @@ func TestVersion(t *testing.T) {
 		t.Fatalf("response doesn't contain client version:\n%s", s)
 	}
 
-	/*if !strings.Contains(s, "Protocol Version: "+id.DefaultProtocolVersion) {
-		t.Fatalf("response doesn't contain protocol version:\n%s", s)
-	}*/
 }

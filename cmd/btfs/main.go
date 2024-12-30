@@ -20,15 +20,14 @@ import (
 	loader "github.com/bittorrent/go-btfs/plugin/loader"
 	repo "github.com/bittorrent/go-btfs/repo"
 	fsrepo "github.com/bittorrent/go-btfs/repo/fsrepo"
+	"github.com/google/uuid"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	"github.com/bittorrent/go-btfs-cmds/cli"
 	cmdhttp "github.com/bittorrent/go-btfs-cmds/http"
 	config "github.com/bittorrent/go-btfs-config"
-	u "github.com/ipfs/boxo/util"
+	u "github.com/ipfs/go-ipfs-util"
 	logging "github.com/ipfs/go-log"
-	//loggables "github.com/libp2p/go-libp2p-loggables" //loggables are now depreciated using uuid
-	"github.com/google/uuid"
 	ma "github.com/multiformats/go-multiaddr"
 	madns "github.com/multiformats/go-multiaddr-dns"
 	manet "github.com/multiformats/go-multiaddr/net"
@@ -70,15 +69,6 @@ func loadPlugins(repoPath string) (*loader.PluginLoader, error) {
 // - if anything fails, print error, maybe with help
 func main() {
 	os.Exit(mainRet())
-}
-func newUUID(key string) logging.Metadata {
-	ids := "#UUID-ERROR#"
-	if id, err := uuid.NewRandom(); err == nil {
-		ids = id.String()
-	}
-	return logging.Metadata{
-		key: ids,
-	}
 }
 
 func mainRet() int {
@@ -391,4 +381,14 @@ func resolveAddr(ctx context.Context, addr ma.Multiaddr) (ma.Multiaddr, error) {
 	}
 
 	return addrs[0], nil
+}
+
+func newUUID(key string) logging.Metadata {
+	ids := "#UUID-ERROR#"
+	if id, err := uuid.NewRandom(); err == nil {
+		ids = id.String()
+	}
+	return logging.Metadata{
+		key: ids,
+	}
 }

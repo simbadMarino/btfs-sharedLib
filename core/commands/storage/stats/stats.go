@@ -3,11 +3,12 @@ package stats
 import (
 	"context"
 	"errors"
-	"github.com/bittorrent/go-btfs/utils"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/bittorrent/go-btfs/utils"
 
 	"github.com/bittorrent/go-btfs/core"
 	"github.com/bittorrent/go-btfs/core/commands/cmdenv"

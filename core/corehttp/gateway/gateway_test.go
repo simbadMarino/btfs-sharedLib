@@ -16,10 +16,10 @@ import (
 	"github.com/bittorrent/go-btfs/namesys"
 	nsopts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
 	ipath "github.com/bittorrent/interface-go-btfs-core/path"
-	"github.com/ipfs/boxo/blockservice"
-	offline "github.com/ipfs/boxo/exchange/offline"
-	path "github.com/ipfs/boxo/path"
+	"github.com/ipfs/go-blockservice"
 	"github.com/ipfs/go-cid"
+	offline "github.com/ipfs/go-ipfs-exchange-offline"
+	path "github.com/ipfs/go-path"
 	carblockstore "github.com/ipld/go-car/v2/blockstore"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/routing"
@@ -47,7 +47,7 @@ func (m mockNamesys) Resolve(ctx context.Context, name string, opts ...nsopts.Re
 		var ok bool
 		value, ok = m[name]
 		if !ok {
-			return nil, namesys.ErrResolveFailed
+			return "", namesys.ErrResolveFailed
 		}
 		name = value.String()
 	}
@@ -226,10 +226,10 @@ func TestGatewayGet(t *testing.T) {
 	assert.Nil(t, err)
 
 	api.namesys["/btns/example.com"] = path.FromCid(k.Cid())
-	api.namesys["/btns/working.example.com"], _ = path.NewPath(k.String())
-	api.namesys["/btns/double.example.com"], _ = path.NewPath("/btns/working.example.com")
-	api.namesys["/btns/triple.example.com"], _ = path.NewPath("/btns/double.example.com")
-	api.namesys["/btns/broken.example.com"], _ = path.NewPath("/btns/" + k.Cid().String())
+	api.namesys["/btns/working.example.com"] = path.FromString(k.String())
+	api.namesys["/btns/double.example.com"] = path.FromString("/btns/working.example.com")
+	api.namesys["/btns/triple.example.com"] = path.FromString("/btns/double.example.com")
+	api.namesys["/btns/broken.example.com"] = path.FromString("/btns/" + k.Cid().String())
 	// We picked .man because:
 	// 1. It's a valid TLD.
 	// 2. Go treats it as the file extension for "man" files (even though
@@ -237,7 +237,7 @@ func TestGatewayGet(t *testing.T) {
 	//
 	// Unfortunately, this may not work on all platforms as file type
 	// detection is platform dependent.
-	api.namesys["/btns/example.man"], _ = path.NewPath(k.String())
+	api.namesys["/btns/example.man"] = path.FromString(k.String())
 
 	t.Log(ts.URL)
 	for _, test := range []struct {
@@ -335,7 +335,7 @@ func TestIPNSHostnameRedirect(t *testing.T) {
 	assert.Nil(t, err)
 
 	t.Logf("k: %s\n", k)
-	api.namesys["/btns/example.net"], _ = path.NewPath(k.String())
+	api.namesys["/btns/example.net"] = path.FromString(k.String())
 
 	// make request to directory containing index.html
 	req, err := http.NewRequest(http.MethodGet, ts.URL+"/foo", nil)
@@ -474,7 +474,7 @@ func TestPretty404(t *testing.T) {
 	assert.Nil(t, err)
 
 	host := "example.net"
-	api.namesys["/btns/"+host], _ = path.NewPath(k.String())
+	api.namesys["/btns/"+host] = path.FromString(k.String())
 
 	for _, test := range []struct {
 		path   string

@@ -9,9 +9,9 @@ import (
 	pb "github.com/bittorrent/go-btns/pb"
 	opts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
 	proto "github.com/gogo/protobuf/proto"
-	path "github.com/ipfs/boxo/path"
 	cid "github.com/ipfs/go-cid"
 	logging "github.com/ipfs/go-log"
+	path "github.com/ipfs/go-path"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 	peer "github.com/libp2p/go-libp2p/core/peer"
 	routing "github.com/libp2p/go-libp2p/core/routing"
@@ -109,7 +109,7 @@ func (r *IpnsResolver) resolveOnceAsync(ctx context.Context, name string, option
 					p = path.FromCid(cid.NewCidV0(valh))
 				} else {
 					// Not a multihash, probably a new style record
-					p, err = path.NewPath(string(entry.GetValue()))
+					p, err = path.ParsePath(string(entry.GetValue()))
 					if err != nil {
 						emitOnceResult(ctx, out, onceResult{err: err})
 						return

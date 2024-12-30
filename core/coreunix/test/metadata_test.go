@@ -18,8 +18,8 @@ import (
 	uio "github.com/bittorrent/go-unixfs/io"
 	"github.com/bittorrent/go-unixfs/mod"
 	ftutil "github.com/bittorrent/go-unixfs/util"
-	bserv "github.com/ipfs/boxo/blockservice"
-	merkledag "github.com/ipfs/boxo/ipld/merkledag"
+	bserv "github.com/ipfs/go-blockservice"
+	merkledag "github.com/ipfs/go-merkledag"
 
 	chunker "github.com/bittorrent/go-btfs-chunker"
 	config "github.com/bittorrent/go-btfs-config"
@@ -30,14 +30,14 @@ import (
 	"github.com/bittorrent/go-btfs/repo"
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	ipath "github.com/bittorrent/interface-go-btfs-core/path"
-	bstore "github.com/ipfs/boxo/blockstore"
-	offline "github.com/ipfs/boxo/exchange/offline"
-	u "github.com/ipfs/boxo/util"
 	cid "github.com/ipfs/go-cid"
 	datastore "github.com/ipfs/go-datastore"
 	ds "github.com/ipfs/go-datastore"
 	dssync "github.com/ipfs/go-datastore/sync"
 	syncds "github.com/ipfs/go-datastore/sync"
+	bstore "github.com/ipfs/go-ipfs-blockstore"
+	offline "github.com/ipfs/go-ipfs-exchange-offline"
+	u "github.com/ipfs/go-ipfs-util"
 	ipld "github.com/ipfs/go-ipld-format"
 )
 

@@ -19,13 +19,13 @@ import (
 	iface "github.com/bittorrent/interface-go-btfs-core"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
 	"github.com/dustin/go-humanize"
-	bservice "github.com/ipfs/boxo/blockservice"
-	offline "github.com/ipfs/boxo/exchange/offline"
-	dag "github.com/ipfs/boxo/ipld/merkledag"
+	bservice "github.com/ipfs/go-blockservice"
 	cid "github.com/ipfs/go-cid"
 	cidenc "github.com/ipfs/go-cidutil/cidenc"
+	offline "github.com/ipfs/go-ipfs-exchange-offline"
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
+	dag "github.com/ipfs/go-merkledag"
 	mh "github.com/multiformats/go-multihash"
 )
 

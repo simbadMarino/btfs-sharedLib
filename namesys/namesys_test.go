@@ -9,10 +9,10 @@ import (
 	btns "github.com/bittorrent/go-btns"
 	unixfs "github.com/bittorrent/go-unixfs"
 	opts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
-	path "github.com/ipfs/boxo/path"
-	offroute "github.com/ipfs/boxo/routing/offline"
 	ds "github.com/ipfs/go-datastore"
 	dssync "github.com/ipfs/go-datastore/sync"
+	offroute "github.com/ipfs/go-ipfs-routing/offline"
+	path "github.com/ipfs/go-path"
 	record "github.com/libp2p/go-libp2p-record"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
 	peer "github.com/libp2p/go-libp2p/core/peer"
@@ -39,7 +39,7 @@ func testResolution(t *testing.T, resolver Resolver, name string, depth uint, ex
 }
 
 func (r *mockResolver) resolveOnceAsync(ctx context.Context, name string, options opts.ResolveOpts) <-chan onceResult {
-	p, err := path.NewPath(r.entries[name])
+	p, err := path.ParsePath(r.entries[name])
 	out := make(chan onceResult, 1)
 	out <- onceResult{value: p, err: err}
 	close(out)
@@ -116,7 +116,7 @@ func TestPublishWithCache0(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	p, err := path.NewPath(unixfs.EmptyDirNode().Cid().String())
+	p, err := path.ParsePath(unixfs.EmptyDirNode().Cid().String())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,7 +155,7 @@ func TestPublishWithTTL(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	p, err := path.NewPath(unixfs.EmptyDirNode().Cid().String())
+	p, err := path.ParsePath(unixfs.EmptyDirNode().Cid().String())
 	if err != nil {
 		t.Fatal(err)
 	}

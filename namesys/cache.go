@@ -3,7 +3,7 @@ package namesys
 import (
 	"time"
 
-	path "github.com/ipfs/boxo/path"
+	path "github.com/ipfs/go-path"
 )
 
 func (ns *mpns) cacheGet(name string) (path.Path, bool) {
@@ -16,12 +16,12 @@ func (ns *mpns) cacheGet(name string) (path.Path, bool) {
 	}
 
 	if ns.cache == nil {
-		return nil, false
+		return "", false
 	}
 
 	ientry, ok := ns.cache.Get(name)
 	if !ok {
-		return nil, false
+		return "", false
 	}
 
 	entry, ok := ientry.(cacheEntry)
@@ -36,7 +36,7 @@ func (ns *mpns) cacheGet(name string) (path.Path, bool) {
 
 	ns.cache.Remove(name)
 
-	return nil, false
+	return "", false
 }
 
 func (ns *mpns) cacheSet(name string, val path.Path, ttl time.Duration) {

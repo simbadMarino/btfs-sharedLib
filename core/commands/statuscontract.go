@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	onlinePb "github.com/bittorrent/go-btfs-common/protos/online"
-	"github.com/bittorrent/go-btfs/utils"
 	"io"
 	"math/big"
 	"strconv"
 	"time"
+
+	onlinePb "github.com/bittorrent/go-btfs-common/protos/online"
+	"github.com/bittorrent/go-btfs/utils"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	"github.com/bittorrent/go-btfs/chain"

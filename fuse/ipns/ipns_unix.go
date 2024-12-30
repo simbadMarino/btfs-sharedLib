@@ -22,7 +22,7 @@ import (
 	path "github.com/bittorrent/interface-go-btfs-core/path"
 	cid "github.com/ipfs/go-cid"
 	logging "github.com/ipfs/go-log"
-	dag "github.com/ipfs/boxo/ipld/merkledag"
+	dag "github.com/ipfs/go-merkledag"
 )
 
 func init() {

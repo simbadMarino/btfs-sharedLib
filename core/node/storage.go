@@ -7,9 +7,9 @@ import (
 	"github.com/bittorrent/go-btfs/thirdparty/verifbs"
 
 	config "github.com/bittorrent/go-btfs-config"
-	blockstore "github.com/ipfs/boxo/blockstore"
-	"github.com/ipfs/boxo/filestore"
 	"github.com/ipfs/go-datastore"
+	"github.com/ipfs/go-filestore"
+	blockstore "github.com/ipfs/go-ipfs-blockstore"
 	"go.uber.org/fx"
 )
 

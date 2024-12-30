@@ -29,9 +29,9 @@ import (
 	importer "github.com/bittorrent/go-unixfs/importer"
 	uio "github.com/bittorrent/go-unixfs/io"
 	ipath "github.com/bittorrent/interface-go-btfs-core/path"
-	dag "github.com/ipfs/boxo/ipld/merkledag"
-	u "github.com/ipfs/boxo/util"
+	u "github.com/ipfs/go-ipfs-util"
 	ipld "github.com/ipfs/go-ipld-format"
+	dag "github.com/ipfs/go-merkledag"
 	ci "github.com/libp2p/go-libp2p-testing/ci"
 )
 

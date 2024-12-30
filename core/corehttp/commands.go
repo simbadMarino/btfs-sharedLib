@@ -19,6 +19,7 @@ import (
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	cmdsHttp "github.com/bittorrent/go-btfs-cmds/http"
 	config "github.com/bittorrent/go-btfs-config"
+	path "github.com/ipfs/go-path"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -187,8 +188,7 @@ func CheckVersionOption() ServeOption {
 		parent.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(r.URL.Path, APIPath) {
 				cmdqry := r.URL.Path[len(APIPath):]
-
-				pth := strings.Split(cmdqry, "/")
+				pth := path.SplitList(cmdqry)
 
 				// backwards compatibility to previous version check
 				if len(pth) >= 2 && pth[1] != "version" {

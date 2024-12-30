@@ -78,11 +78,11 @@ The resolver can recursively resolve:
 		if err != nil && (recursive || err != namesys.ErrResolveRecursion) {
 			return err
 		}
-		return cmds.EmitOnce(res, &ncmd.ResolvedPath{Path: output.String()})
+		return cmds.EmitOnce(res, &ncmd.ResolvedPath{Path: output})
 	},
 	Encoders: cmds.EncoderMap{
 		cmds.Text: cmds.MakeTypedEncoder(func(req *cmds.Request, w io.Writer, out *ncmd.ResolvedPath) error {
-			fmt.Fprintln(w, out)
+			fmt.Fprintln(w, out.Path.String())
 			return nil
 		}),
 	},

@@ -9,7 +9,7 @@ import (
 	tar "github.com/bittorrent/go-btfs/tar"
 
 	path "github.com/bittorrent/interface-go-btfs-core/path"
-	dag "github.com/ipfs/boxo/ipld/merkledag"
+	dag "github.com/ipfs/go-merkledag"
 )
 
 var TarCmd = &cmds.Command{

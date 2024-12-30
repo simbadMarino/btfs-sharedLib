@@ -6,7 +6,7 @@ import (
 
 	config "github.com/bittorrent/go-btfs-config"
 	"github.com/libp2p/go-libp2p"
-	"github.com/libp2p/go-libp2p/p2p/muxer/yamux"
+	yamux "github.com/libp2p/go-libp2p/p2p/muxer/yamux"
 )
 
 func makeSmuxTransportOption(tptConfig config.Transports) (libp2p.Option, error) {

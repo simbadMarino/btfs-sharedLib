@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"io"
 
-	bs "github.com/ipfs/boxo/blockstore"
-	pin "github.com/ipfs/boxo/pinning/pinner"
 	cid "github.com/ipfs/go-cid"
+	bs "github.com/ipfs/go-ipfs-blockstore"
+	pin "github.com/ipfs/go-ipfs-pinner"
 	ipld "github.com/ipfs/go-ipld-format"
 )
 

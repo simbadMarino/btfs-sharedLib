@@ -11,7 +11,7 @@ import (
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	unixfs "github.com/bittorrent/go-unixfs"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
-	merkledag "github.com/ipfs/boxo/ipld/merkledag"
+	merkledag "github.com/ipfs/go-merkledag"
 )
 
 type LsLink struct {

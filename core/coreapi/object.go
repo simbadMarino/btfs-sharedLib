@@ -17,11 +17,11 @@ import (
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	caopts "github.com/bittorrent/interface-go-btfs-core/options"
 	ipath "github.com/bittorrent/interface-go-btfs-core/path"
-	dag "github.com/ipfs/boxo/ipld/merkledag"
-	"github.com/ipfs/boxo/ipld/merkledag/dagutils"
-	pin "github.com/ipfs/boxo/pinning/pinner"
 	cid "github.com/ipfs/go-cid"
+	pin "github.com/ipfs/go-ipfs-pinner"
 	ipld "github.com/ipfs/go-ipld-format"
+	dag "github.com/ipfs/go-merkledag"
+	"github.com/ipfs/go-merkledag/dagutils"
 )
 
 const inputLimit = 2 << 20
@@ -119,7 +119,7 @@ func (api *ObjectAPI) Put(ctx context.Context, src io.Reader, opts ...caopts.Obj
 	}
 
 	if options.Pin {
-		api.pinning.PinWithMode(ctx, dagnode.Cid(), pin.Recursive, "")
+		api.pinning.PinWithMode(dagnode.Cid(), pin.Recursive)
 		err = api.pinning.Flush(ctx)
 		if err != nil {
 			return nil, err

@@ -25,14 +25,14 @@ import (
 	"github.com/bittorrent/go-btfs/p2p"
 	"github.com/bittorrent/go-btfs/repo"
 	mfs "github.com/bittorrent/go-mfs"
-	bserv "github.com/ipfs/boxo/blockservice"
-	bstore "github.com/ipfs/boxo/blockstore"
-	exchange "github.com/ipfs/boxo/exchange"
-	"github.com/ipfs/boxo/fetcher"
-	"github.com/ipfs/boxo/filestore"
-	pin "github.com/ipfs/boxo/pinning/pinner"
-	provider "github.com/ipfs/boxo/provider"
+	bserv "github.com/ipfs/go-blockservice"
+	"github.com/ipfs/go-fetcher"
+	"github.com/ipfs/go-filestore"
 	"github.com/ipfs/go-graphsync"
+	bstore "github.com/ipfs/go-ipfs-blockstore"
+	exchange "github.com/ipfs/go-ipfs-exchange-interface"
+	pin "github.com/ipfs/go-ipfs-pinner"
+	provider "github.com/ipfs/go-ipfs-provider"
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
 	goprocess "github.com/jbenet/goprocess"
@@ -82,7 +82,7 @@ type IpfsNode struct {
 	Discovery            discovery.Service         `optional:"true"`
 	FilesRoot            *mfs.Root
 	RecordValidator      record.Validator
-	//Statestore      storage.StateStorer
+	// Statestore      storage.StateStorer
 
 	// Online
 	PeerHost      p2phost.Host               `optional:"true"` // the network host (server+client)

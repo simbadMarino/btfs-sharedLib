@@ -13,13 +13,12 @@ import (
 
 	config "github.com/bittorrent/go-btfs-config"
 	uio "github.com/bittorrent/go-unixfs/io"
-	blockstore "github.com/ipfs/boxo/blockstore"
-	offline "github.com/ipfs/boxo/exchange/offline"
-	util "github.com/ipfs/boxo/util"
+	blockstore "github.com/ipfs/go-ipfs-blockstore"
+	offline "github.com/ipfs/go-ipfs-exchange-offline"
+	util "github.com/ipfs/go-ipfs-util"
 	log "github.com/ipfs/go-log"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 	peer "github.com/libp2p/go-libp2p/core/peer"
-	rcmgr "github.com/libp2p/go-libp2p/p2p/host/resource-manager"
 	"go.uber.org/fx"
 )
 
@@ -37,7 +36,7 @@ var BaseLibP2P = fx.Options(
 	fx.Invoke(libp2p.PNetChecker),
 )
 
-func LibP2P(bcfg *BuildCfg, cfg *config.Config, userResourceOverrides rcmgr.PartialLimitConfig) fx.Option {
+func LibP2P(bcfg *BuildCfg, cfg *config.Config) fx.Option {
 	// parse ConnMgr config
 	var connmgr fx.Option
 
@@ -134,7 +133,7 @@ func LibP2P(bcfg *BuildCfg, cfg *config.Config, userResourceOverrides rcmgr.Part
 	opts := fx.Options(
 		BaseLibP2P,
 
-		fx.Provide(libp2p.ResourceManager(cfg.Swarm, userResourceOverrides)),
+		fx.Provide(libp2p.ResourceManager(cfg.Swarm)),
 		fx.Provide(libp2p.AddrFilters(cfg.Swarm.AddrFilters)),
 		fx.Provide(libp2p.AddrsFactory(cfg.Addresses.Announce, cfg.Addresses.NoAnnounce)),
 		fx.Provide(libp2p.SmuxTransport(cfg.Swarm.Transports)),
@@ -215,7 +214,8 @@ func Identity(cfg *config.Config) fx.Option {
 	if cfg.Identity.PrivKey == "" {
 		return fx.Options( // No PK (usually in tests)
 			fx.Provide(PeerID(id)),
-			fx.Provide(libp2p.Peerstore),
+			// fx.Provide(libp2p.Peerstore),
+			fx.Provide(libp2p.PeerstoreDs),
 		)
 	}
 
@@ -237,7 +237,8 @@ func Identity(cfg *config.Config) fx.Option {
 	return fx.Options( // Full identity
 		fx.Provide(PeerID(id)),
 		fx.Provide(PrivateKey(sk)),
-		fx.Provide(libp2p.Peerstore),
+		// fx.Provide(libp2p.Peerstore),
+		fx.Provide(libp2p.PeerstoreDs),
 
 		fx.Invoke(libp2p.PstoreAddSelfKeys),
 	)
@@ -249,7 +250,7 @@ var IPNS = fx.Options(
 )
 
 // Online groups online-only units
-func Online(bcfg *BuildCfg, cfg *config.Config, userResourceOverrides rcmgr.PartialLimitConfig) fx.Option {
+func Online(bcfg *BuildCfg, cfg *config.Config) fx.Option {
 
 	// Namesys params
 
@@ -297,17 +298,18 @@ func Online(bcfg *BuildCfg, cfg *config.Config, userResourceOverrides rcmgr.Part
 		fx.Provide(Namesys(ipnsCacheSize)),
 		fx.Provide(Peering),
 		PeerWith(cfg.Peering.Peers...),
+		PeerWithLastConn(),
 
 		fx.Invoke(IpnsRepublisher(repubPeriod, recordLifetime)),
 
 		fx.Provide(p2p.New),
 
-		LibP2P(bcfg, cfg, userResourceOverrides),
+		LibP2P(bcfg, cfg),
 		OnlineProviders(
 			cfg.Experimental.StrategicProviding,
+			cfg.Experimental.AcceleratedDHTClient,
 			cfg.Reprovider.Strategy.WithDefault(config.DefaultReproviderStrategy),
 			cfg.Reprovider.Interval.WithDefault(config.DefaultReproviderInterval),
-			cfg.Experimental.AcceleratedDHTClient,
 		),
 	)
 }
@@ -321,13 +323,12 @@ func Offline(cfg *config.Config) fx.Option {
 		fx.Provide(libp2p.Routing),
 		fx.Provide(libp2p.ContentRouting),
 		fx.Provide(libp2p.OfflineRouting),
-		/*OfflineProviders(
+		OfflineProviders(
 			cfg.Experimental.StrategicProviding,
 			cfg.Experimental.AcceleratedDHTClient,
 			cfg.Reprovider.Strategy.WithDefault(config.DefaultReproviderStrategy),
 			cfg.Reprovider.Interval.WithDefault(config.DefaultReproviderInterval),
-		),*/
-		OfflineProviders(), //New boxo approach, check if working with BTFS
+		),
 	)
 }
 
@@ -340,9 +341,9 @@ var Core = fx.Options(
 	fx.Provide(Files),
 )
 
-func Networked(bcfg *BuildCfg, cfg *config.Config, userResourceOverrides rcmgr.PartialLimitConfig) fx.Option {
+func Networked(bcfg *BuildCfg, cfg *config.Config) fx.Option {
 	if bcfg.Online {
-		return Online(bcfg, cfg, userResourceOverrides)
+		return Online(bcfg, cfg)
 	}
 	return Offline(cfg)
 }
@@ -357,10 +358,6 @@ func IPFS(ctx context.Context, bcfg *BuildCfg) fx.Option {
 	if cfg == nil {
 		return bcfgOpts // error
 	}
-	userResourceOverrides, err := bcfg.Repo.UserResourceOverrides()
-	if err != nil {
-		return fx.Error(err)
-	}
 
 	// TEMP: setting global sharding switch here
 	uio.UseHAMTSharding = cfg.Experimental.ShardingEnabled
@@ -373,7 +370,7 @@ func IPFS(ctx context.Context, bcfg *BuildCfg) fx.Option {
 		Storage(bcfg, cfg),
 		Identity(cfg),
 		IPNS,
-		Networked(bcfg, cfg, userResourceOverrides),
+		Networked(bcfg, cfg),
 
 		Core,
 	)

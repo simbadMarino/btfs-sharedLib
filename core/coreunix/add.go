@@ -20,13 +20,13 @@ import (
 	ftutil "github.com/bittorrent/go-unixfs/util"
 	coreiface "github.com/bittorrent/interface-go-btfs-core"
 	"github.com/bittorrent/interface-go-btfs-core/path"
-	bstore "github.com/ipfs/boxo/blockstore"
-	posinfo "github.com/ipfs/boxo/filestore/posinfo"
-	dag "github.com/ipfs/boxo/ipld/merkledag"
-	pin "github.com/ipfs/boxo/pinning/pinner"
 	"github.com/ipfs/go-cid"
+	bstore "github.com/ipfs/go-ipfs-blockstore"
+	pin "github.com/ipfs/go-ipfs-pinner"
+	posinfo "github.com/ipfs/go-ipfs-posinfo"
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
+	dag "github.com/ipfs/go-merkledag"
 )
 
 var log = logging.Logger("coreunix")
@@ -275,7 +275,7 @@ func (adder *Adder) PinRoot(ctx context.Context, root ipld.Node) error {
 		}
 		adder.tempRoot = rnk
 	}
-	adder.pinning.PinWithMode(ctx, rnk, pin.Recursive, "")
+	adder.pinning.PinWithMode(rnk, pin.Recursive)
 	return adder.pinning.Flush(ctx)
 }
 

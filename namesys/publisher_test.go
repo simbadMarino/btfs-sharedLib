@@ -8,11 +8,11 @@ import (
 
 	ipns "github.com/bittorrent/go-btns"
 
-	dshelp "github.com/ipfs/boxo/datastore/dshelp"
-	"github.com/ipfs/boxo/path"
-	mockrouting "github.com/ipfs/boxo/routing/mock"
 	ds "github.com/ipfs/go-datastore"
 	dssync "github.com/ipfs/go-datastore/sync"
+	dshelp "github.com/ipfs/go-ipfs-ds-help"
+	mockrouting "github.com/ipfs/go-ipfs-routing/mock"
+	"github.com/ipfs/go-path"
 	testutil "github.com/libp2p/go-libp2p-testing/net"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
 	peer "github.com/libp2p/go-libp2p/core/peer"
@@ -125,7 +125,7 @@ func TestAsyncDS(t *testing.T) {
 	publisher := NewIpnsPublisher(rt, ds)
 
 	ipnsFakeID := testutil.RandIdentityOrFatal(t)
-	ipnsVal, err := path.NewPath("/btns/foo.bar")
+	ipnsVal, err := path.ParsePath("/btns/foo.bar")
 	if err != nil {
 		t.Fatal(err)
 	}

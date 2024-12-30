@@ -15,10 +15,10 @@ import (
 	"github.com/bittorrent/interface-go-btfs-core/options"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
 	humanize "github.com/dustin/go-humanize"
-	dag "github.com/ipfs/boxo/ipld/merkledag"
 	"github.com/ipfs/go-cid"
 	"github.com/ipfs/go-cidutil/cidenc"
 	ipld "github.com/ipfs/go-ipld-format"
+	dag "github.com/ipfs/go-merkledag"
 )
 
 type Node struct {
@@ -61,10 +61,10 @@ const (
 
 var ObjectCmd = &cmds.Command{
 	Helptext: cmds.HelpText{
-		Tagline: "Interact with BTFS objects.",
+		Tagline: "Deprecated commands to interact with dag-pb objects. Use 'dag' or 'files' instead.",
 		ShortDescription: `
-'btfs object' is a plumbing command used to manipulate DAG objects
-directly.`,
+'btfs object' is a legacy plumbing command used to manipulate dag-pb objects
+directly. Deprecated, use more modern 'btfs dag' and 'btfs files' instead.`,
 	},
 
 	Subcommands: map[string]*cmds.Command{

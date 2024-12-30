@@ -30,12 +30,12 @@ type Stream struct {
 	Registry *StreamRegistry
 }
 
-// close stream endpoints and deregister it.
+// close stream endpoints and deregister it
 func (s *Stream) close() {
 	s.Registry.Close(s)
 }
 
-// reset closes stream endpoints and deregisters it.
+// reset closes stream endpoints and deregisters it
 func (s *Stream) reset() {
 	s.Registry.Reset(s)
 }
@@ -72,7 +72,7 @@ type StreamRegistry struct {
 	ifconnmgr.ConnManager
 }
 
-// Register registers a stream to the registry.
+// Register registers a stream to the registry
 func (r *StreamRegistry) Register(streamInfo *Stream) {
 	r.Lock()
 	defer r.Unlock()
@@ -89,7 +89,7 @@ func (r *StreamRegistry) Register(streamInfo *Stream) {
 	streamInfo.startStreaming()
 }
 
-// Deregister deregisters stream from the registry.
+// Deregister deregisters stream from the registry
 func (r *StreamRegistry) Deregister(streamID uint64) {
 	r.Lock()
 	defer r.Unlock()
@@ -129,7 +129,7 @@ func (r *StreamRegistry) Close(s *Stream) {
 	s.Registry.Deregister(s.id)
 }
 
-// Reset closes stream endpoints and deregisters it.
+// Reset closes stream endpoints and deregisters it
 func (r *StreamRegistry) Reset(s *Stream) {
 	_ = s.Local.Close()
 	_ = s.Remote.Reset()

@@ -9,10 +9,10 @@ import (
 
 	opts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
 	lru "github.com/hashicorp/golang-lru"
-	path "github.com/ipfs/boxo/path"
 	cid "github.com/ipfs/go-cid"
 	ds "github.com/ipfs/go-datastore"
 	dssync "github.com/ipfs/go-datastore/sync"
+	path "github.com/ipfs/go-path"
 	isd "github.com/jbenet/go-is-domain"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
 	peer "github.com/libp2p/go-libp2p/core/peer"
@@ -25,13 +25,14 @@ import (
 // Uses several Resolvers:
 // (a) BTFS routing naming: SFS-like PKI names.
 // (b) dns domains: resolves using links in DNS TXT records
+// (c) proquints: interprets string as the raw byte data.
 //
 // It can only publish to: (a) BTFS routing naming.
 type mpns struct {
 	ds ds.Datastore
 
-	dnsResolver, ipnsResolver resolver
-	ipnsPublisher             Publisher
+	dnsResolver, proquintResolver, ipnsResolver resolver
+	ipnsPublisher                               Publisher
 
 	staticMap map[string]path.Path
 	cache     *lru.Cache
@@ -85,10 +86,7 @@ func NewNameSystem(r routing.ValueStore, opts ...Option) (NameSystem, error) {
 		for _, pair := range strings.Split(list, ",") {
 			mapping := strings.SplitN(pair, ":", 2)
 			key := mapping[0]
-			value, err := path.NewPath(mapping[1])
-			if err != nil {
-				return nil, err
-			}
+			value := path.FromString(mapping[1])
 			staticMap[key] = value
 		}
 	}
@@ -113,9 +111,11 @@ func NewNameSystem(r routing.ValueStore, opts ...Option) (NameSystem, error) {
 
 	ns.ipnsResolver = NewIpnsResolver(r)
 	ns.ipnsPublisher = NewIpnsPublisher(r, ns.ds)
+	ns.proquintResolver = new(ProquintResolver)
 	return ns, nil
 	// return &mpns{
 	// 	dnsResolver:      NewDNSResolver(),
+	// 	proquintResolver: new(ProquintResolver),
 	// 	ipnsResolver:     NewIpnsResolver(r),
 	// 	ipnsPublisher:    NewIpnsPublisher(r, ds),
 	// 	staticMap:        staticMap,
@@ -129,11 +129,11 @@ const DefaultResolverCacheTTL = time.Minute
 // Resolve implements Resolver.
 func (ns *mpns) Resolve(ctx context.Context, name string, options ...opts.ResolveOpt) (path.Path, error) {
 	if strings.HasPrefix(name, "/btfs/") {
-		return path.NewPath(name)
+		return path.ParsePath(name)
 	}
 
 	if !strings.HasPrefix(name, "/") {
-		return path.NewPath("/btfs/" + name)
+		return path.ParsePath("/btfs/" + name)
 	}
 
 	return resolve(ctx, ns, name, opts.ProcessOpts(options))
@@ -141,7 +141,7 @@ func (ns *mpns) Resolve(ctx context.Context, name string, options ...opts.Resolv
 
 func (ns *mpns) ResolveAsync(ctx context.Context, name string, options ...opts.ResolveOpt) <-chan Result {
 	if strings.HasPrefix(name, "/btfs/") {
-		p, err := path.NewPath(name)
+		p, err := path.ParsePath(name)
 		res := make(chan Result, 1)
 		res <- Result{p, err}
 		close(res)
@@ -149,7 +149,7 @@ func (ns *mpns) ResolveAsync(ctx context.Context, name string, options ...opts.R
 	}
 
 	if !strings.HasPrefix(name, "/") {
-		p, err := path.NewPath("/btfs/" + name)
+		p, err := path.ParsePath("/btfs/" + name)
 		res := make(chan Result, 1)
 		res <- Result{p, err}
 		close(res)
@@ -184,6 +184,7 @@ func (ns *mpns) resolveOnceAsync(ctx context.Context, name string, options opts.
 	// Resolver selection:
 	// 1. if it is a PeerID/CID/multihash resolve through "ipns".
 	// 2. if it is a domain name, resolve through "dns"
+	// 3. otherwise resolve through the "proquint" resolver
 
 	var res resolver
 	ipnsKey, err := peer.Decode(key)
@@ -210,7 +211,7 @@ func (ns *mpns) resolveOnceAsync(ctx context.Context, name string, options opts.
 	if p, ok := ns.cacheGet(cacheKey); ok {
 		var err error
 		if len(segments) > 3 {
-			p, err = path.Join(p, segments[3])
+			p, err = path.FromSegments("", strings.TrimRight(p.String(), "/"), segments[3])
 		}
 
 		out <- onceResult{value: p, err: err}
@@ -223,9 +224,7 @@ func (ns *mpns) resolveOnceAsync(ctx context.Context, name string, options opts.
 	} else if isd.IsDomain(key) {
 		res = ns.dnsResolver
 	} else {
-		out <- onceResult{err: fmt.Errorf("invalid BPNS root: %q", key)}
-		close(out)
-		return out
+		res = ns.proquintResolver
 	}
 
 	resCh := res.resolveOnceAsync(ctx, key, options)
@@ -250,7 +249,7 @@ func (ns *mpns) resolveOnceAsync(ctx context.Context, name string, options opts.
 
 				// Attach rest of the path
 				if len(segments) > 3 {
-					p, err = path.Join(p, segments[3])
+					p, err = path.FromSegments("", strings.TrimRight(p.String(), "/"), segments[3])
 				}
 
 				emitOnceResult(ctx, out, onceResult{value: p, ttl: ttl, err: err})

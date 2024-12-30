@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"math"
 
-	"github.com/ipfs/boxo/ipld/merkledag"
+	"github.com/ipfs/go-merkledag"
 
 	block "github.com/ipfs/go-block-format"
 	cid "github.com/ipfs/go-cid"

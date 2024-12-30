@@ -6,7 +6,7 @@ import (
 	"net/url"
 
 	cmdenv "github.com/bittorrent/go-btfs/core/commands/cmdenv"
-	filestore "github.com/ipfs/boxo/filestore"
+	filestore "github.com/ipfs/go-filestore"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	files "github.com/bittorrent/go-btfs-files"

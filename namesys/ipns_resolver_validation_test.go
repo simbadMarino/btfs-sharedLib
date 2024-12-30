@@ -9,11 +9,11 @@ import (
 	pb "github.com/bittorrent/go-btns/pb"
 	opts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
 
-	path "github.com/ipfs/boxo/path"
-	mockrouting "github.com/ipfs/boxo/routing/mock"
-	offline "github.com/ipfs/boxo/routing/offline"
 	ds "github.com/ipfs/go-datastore"
 	dssync "github.com/ipfs/go-datastore/sync"
+	mockrouting "github.com/ipfs/go-ipfs-routing/mock"
+	offline "github.com/ipfs/go-ipfs-routing/offline"
+	path "github.com/ipfs/go-path"
 	record "github.com/libp2p/go-libp2p-record"
 	testutil "github.com/libp2p/go-libp2p-testing/net"
 	ci "github.com/libp2p/go-libp2p/core/crypto"
@@ -60,8 +60,6 @@ func testResolverValidation(t *testing.T, keyType int) {
 	priv, id, _, ipnsDHTPath := genKeys(t, keyType)
 	ts := time.Now()
 	p := []byte("/btfs/QmfM2r8seH2GiRaC4esTjeraXEachRt8ZsSeGaWTPLyMoG")
-	p_string := "/btfs/QmfM2r8seH2GiRaC4esTjeraXEachRt8ZsSeGaWTPLyMoG"
-	path_test, _ := path.NewPath(p_string)
 	entry, err := createIPNSRecordWithEmbeddedPublicKey(priv, p, 1, ts.Add(time.Hour))
 	if err != nil {
 		t.Fatal(err)
@@ -78,8 +76,7 @@ func testResolverValidation(t *testing.T, keyType int) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if resp != path_test {
+	if resp != path.Path(p) {
 		t.Fatalf("Mismatch between published path %s and resolved path %s", p, resp)
 	}
 	// Create expired entry

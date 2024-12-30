@@ -7,18 +7,24 @@ import (
 	"fmt"
 	"strings"
 
-	bserv "github.com/ipfs/boxo/blockservice"
-	bstore "github.com/ipfs/boxo/blockstore"
-	offline "github.com/ipfs/boxo/exchange/offline"
-	dag "github.com/ipfs/boxo/ipld/merkledag"
-	pin "github.com/ipfs/boxo/pinning/pinner"
-	"github.com/ipfs/boxo/verifcid"
+	bserv "github.com/ipfs/go-blockservice"
 	cid "github.com/ipfs/go-cid"
 	dstore "github.com/ipfs/go-datastore"
+	bstore "github.com/ipfs/go-ipfs-blockstore"
+	offline "github.com/ipfs/go-ipfs-exchange-offline"
+	pin "github.com/ipfs/go-ipfs-pinner"
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
+	dag "github.com/ipfs/go-merkledag"
+	"github.com/ipfs/go-verifcid"
 )
 
+const (
+	Eagar = iota + 1 // This may cause a deadlock when multiple GC's are running
+	Lazy
+)
+
+var cleanMode = Eagar
 var log = logging.Logger("gc")
 
 // Result represents an incremental output from a garbage collection
@@ -26,16 +32,6 @@ var log = logging.Logger("gc")
 type Result struct {
 	KeyRemoved cid.Cid
 	Error      error
-}
-
-// converts a set of CIDs with different codecs to a set of CIDs with the raw codec.
-func toRawCids(set *cid.Set) (*cid.Set, error) {
-	newSet := cid.NewSet()
-	err := set.ForEach(func(c cid.Cid) error {
-		newSet.Add(cid.NewCidV1(cid.Raw, c.Hash()))
-		return nil
-	})
-	return newSet, err
 }
 
 // GC performs a mark and sweep garbage collection of the blocks in the blockstore
@@ -70,17 +66,6 @@ func GC(ctx context.Context, bs bstore.GCBlockstore, dstor dstore.Datastore, pn 
 			}
 			return
 		}
-
-		// The blockstore reports raw blocks. We need to remove the codecs from the CIDs.
-		gcs, err = toRawCids(gcs)
-		if err != nil {
-			select {
-			case output <- Result{Error: err}:
-			case <-ctx.Done():
-			}
-			return
-		}
-
 		keychan, err := bs.AllKeysChan(ctx)
 		if err != nil {
 			select {
@@ -100,8 +85,6 @@ func GC(ctx context.Context, bs bstore.GCBlockstore, dstor dstore.Datastore, pn 
 				if !ok {
 					break loop
 				}
-				// NOTE: assumes that all CIDs returned by the keychan are _raw_ CIDv1 CIDs.
-				// This means we keep the block as long as we want it somewhere (CIDv1, CIDv0, Raw, other...).
 				if !gcs.Has(k) {
 					err := bs.DeleteBlock(ctx, k)
 					removed++
@@ -154,49 +137,40 @@ func GC(ctx context.Context, bs bstore.GCBlockstore, dstor dstore.Datastore, pn 
 // Descendants recursively finds all the descendants of the given roots and
 // adds them to the given cid.Set, using the provided dag.GetLinks function
 // to walk the tree.
-func Descendants(ctx context.Context, getLinks dag.GetLinks, set *cid.Set, roots <-chan pin.StreamedPin) error {
+func Descendants(ctx context.Context, getLinks dag.GetLinks,
+	set *cid.Set, roots []cid.Cid) error {
 	verifyGetLinks := func(ctx context.Context, c cid.Cid) ([]*ipld.Link, error) {
-		err := verifcid.ValidateCid(verifcid.DefaultAllowlist, c)
+		err := verifcid.ValidateCid(c)
 		if err != nil {
 			return nil, err
 		}
-
 		return getLinks(ctx, c)
 	}
 
 	verboseCidError := func(err error) error {
 		if strings.Contains(err.Error(), verifcid.ErrBelowMinimumHashLength.Error()) ||
 			strings.Contains(err.Error(), verifcid.ErrPossiblyInsecureHashFunction.Error()) {
-			err = fmt.Errorf("\"%s\"\nPlease run 'ipfs pin verify'"+ // nolint
+			err = fmt.Errorf("\"%s\"\nPlease run 'btfs pin verify'"+
 				" to list insecure hashes. If you want to read them,"+
-				" please downgrade your go-ipfs to 0.4.13\n", err)
+				" please downgrade your go-btfs to 0.0.1\n", err)
 			log.Error(err)
 		}
 		return err
 	}
 
-	for {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case wrapper, ok := <-roots:
-			if !ok {
-				return nil
-			}
-			if wrapper.Err != nil {
-				return wrapper.Err
-			}
+	for _, c := range roots {
+		// Walk recursively walks the dag and adds the keys to the given set
+		err := dag.Walk(ctx, verifyGetLinks, c, func(k cid.Cid) bool {
+			return set.Visit(toCidV1(k))
+		}, dag.Concurrent())
 
-			// Walk recursively walks the dag and adds the keys to the given set
-			err := dag.Walk(ctx, verifyGetLinks, wrapper.Pin.Key, func(k cid.Cid) bool {
-				return set.Visit(toCidV1(k))
-			}, dag.Concurrent())
-			if err != nil {
-				err = verboseCidError(err)
-				return err
-			}
+		if err != nil {
+			err = verboseCidError(err)
+			return err
 		}
 	}
+
+	return nil
 }
 
 // toCidV1 converts any CIDv0s to CIDv1s.
@@ -226,8 +200,19 @@ func ColoredSet(ctx context.Context, pn pin.Pinner, ng ipld.NodeGetter, bestEffo
 		}
 		return links, nil
 	}
-	rkeys := pn.RecursiveKeys(ctx, false)
-	err := Descendants(ctx, getLinks, gcs, rkeys)
+	// rmap, err := pn.RecursiveMap(ctx)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// dmap, err := pn.DirectMap(ctx)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	rkeys, err := pn.RecursiveKeys(ctx)
+	if err != nil {
+		return nil, err
+	}
+	err = Descendants(ctx, getLinks, gcs, rkeys)
 	if err != nil {
 		errors = true
 		select {
@@ -249,18 +234,7 @@ func ColoredSet(ctx context.Context, pn pin.Pinner, ng ipld.NodeGetter, bestEffo
 		}
 		return links, nil
 	}
-	bestEffortRootsChan := make(chan pin.StreamedPin)
-	go func() {
-		defer close(bestEffortRootsChan)
-		for _, root := range bestEffortRoots {
-			select {
-			case <-ctx.Done():
-				return
-			case bestEffortRootsChan <- pin.StreamedPin{Pin: pin.Pinned{Key: root}}:
-			}
-		}
-	}()
-	err = Descendants(ctx, bestEffortGetLinks, gcs, bestEffortRootsChan)
+	err = Descendants(ctx, bestEffortGetLinks, gcs, bestEffortRoots)
 	if err != nil {
 		errors = true
 		select {
@@ -270,15 +244,19 @@ func ColoredSet(ctx context.Context, pn pin.Pinner, ng ipld.NodeGetter, bestEffo
 		}
 	}
 
-	dkeys := pn.DirectKeys(ctx, false)
-	for k := range dkeys {
-		if k.Err != nil {
-			return nil, k.Err
-		}
-		gcs.Add(toCidV1(k.Pin.Key))
+	dkeys, err := pn.DirectKeys(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, k := range dkeys {
+		gcs.Add(toCidV1(k))
 	}
 
-	ikeys := pn.InternalPins(ctx, false)
+	ikeys, err := pn.InternalPins(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	err = Descendants(ctx, getLinks, gcs, ikeys)
 	if err != nil {
 		errors = true

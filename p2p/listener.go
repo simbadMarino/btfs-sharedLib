@@ -10,7 +10,7 @@ import (
 	ma "github.com/multiformats/go-multiaddr"
 )
 
-// Listener listens for connections and proxies them to a target.
+// Listener listens for connections and proxies them to a target
 type Listener interface {
 	Protocol() protocol.ID
 	ListenAddress() ma.Multiaddr
@@ -51,7 +51,7 @@ func newListenersP2P(host p2phost.Host) *Listeners {
 		reg.RLock()
 		defer reg.RUnlock()
 
-		l := reg.Listeners[stream.Protocol()]
+		l := reg.Listeners[protocol.ID(stream.Protocol())]
 		if l != nil {
 			go l.(*remoteListener).handleStream(stream)
 		}

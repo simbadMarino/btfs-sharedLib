@@ -8,7 +8,7 @@ import (
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	path "github.com/bittorrent/interface-go-btfs-core/path"
-	"github.com/ipfs/boxo/ipld/merkledag/dagutils"
+	"github.com/ipfs/go-merkledag/dagutils"
 )
 
 const (

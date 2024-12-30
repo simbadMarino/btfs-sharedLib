@@ -2,7 +2,6 @@ package routing
 
 import (
 	"context"
-	"errors"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/ipfs/go-cid"
@@ -12,10 +11,8 @@ import (
 	"github.com/multiformats/go-multihash"
 )
 
-var (
-	_ routinghelpers.ProvideManyRouter = &Composer{}
-	_ routing.Routing                  = &Composer{}
-)
+var _ routinghelpers.ProvideManyRouter = &Composer{}
+var _ routing.Routing = &Composer{}
 
 type Composer struct {
 	GetValueRouter      routing.Routing
@@ -105,7 +102,7 @@ func (c *Composer) SearchValue(ctx context.Context, key string, opts ...routing.
 	ch, err := c.GetValueRouter.SearchValue(ctx, key, opts...)
 
 	// avoid nil channels on implementations not supporting SearchValue method.
-	if errors.Is(err, routing.ErrNotFound) && ch == nil {
+	if err == routing.ErrNotFound && ch == nil {
 		out := make(chan []byte)
 		close(out)
 		return out, err

@@ -10,7 +10,7 @@ import (
 	core "github.com/bittorrent/go-btfs/core"
 	cmdenv "github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	e "github.com/bittorrent/go-btfs/core/commands/e"
-	filestore "github.com/ipfs/boxo/filestore"
+	filestore "github.com/ipfs/go-filestore"
 
 	"github.com/ipfs/go-cid"
 )

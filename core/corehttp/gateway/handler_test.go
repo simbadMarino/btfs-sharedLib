@@ -12,9 +12,9 @@ import (
 
 	files "github.com/bittorrent/go-btfs-files"
 	ipath "github.com/bittorrent/interface-go-btfs-core/path"
-	"github.com/ipfs/boxo/path/resolver"
 	cid "github.com/ipfs/go-cid"
 	ipld "github.com/ipfs/go-ipld-format"
+	"github.com/ipfs/go-path/resolver"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -108,7 +108,7 @@ func TestErrorBubblingFromAPI(t *testing.T) {
 		status int
 	}{
 		{"404 Not Found from IPLD", &ipld.ErrNotFound{}, http.StatusNotFound},
-		{"404 Not Found from path resolver", &resolver.ErrNoLink{}, http.StatusNotFound},
+		{"404 Not Found from path resolver", resolver.ErrNoLink{}, http.StatusNotFound},
 		{"502 Bad Gateway", ErrBadGateway, http.StatusBadGateway},
 		{"504 Gateway Timeout", ErrGatewayTimeout, http.StatusGatewayTimeout},
 	} {
