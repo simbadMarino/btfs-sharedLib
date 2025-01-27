@@ -2,7 +2,7 @@
 ANDROID_OUT=./bin/jniLibs
 IOS_OUT=./bin/ios
 ANDROID_SDK=$(HOME)/Library/Android/sdk
-NDK_BIN=$(ANDROID_SDK)/ndk/23.1.7779620/toolchains/llvm/prebuilt/darwin-x86_64/bin
+NDK_BIN=$(ANDROID_SDK)/ndk/25.1.8937393/toolchains/llvm/prebuilt/darwin-x86_64/bin
 
 # README
 # CGO_CFLAGS=-v  //This flag can be used to obtain more building information on C and C++ related building processes.
