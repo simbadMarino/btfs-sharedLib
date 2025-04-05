@@ -51,6 +51,7 @@ const (
 
 func loadPlugins(repoPath string) (*loader.PluginLoader, error) {
 	plugins, err := loader.NewPluginLoader(repoPath)
+	//Println(plugins)
 	if err != nil {
 		return nil, fmt.Errorf("error loading plugins: %s", err)
 	}
@@ -60,7 +61,8 @@ func loadPlugins(repoPath string) (*loader.PluginLoader, error) {
 	}
 
 	if err := plugins.Inject(); err != nil {
-		return nil, fmt.Errorf("error initializing plugins: %s", err)
+		return nil, fmt.Errorf("error Injecting initializing plugins: %s", err)
+
 	}
 	return plugins, nil
 }
@@ -71,6 +73,7 @@ func loadPlugins(repoPath string) (*loader.PluginLoader, error) {
 // - run the command invocation
 // - output the response
 // - if anything fails, print error, maybe with help
+
 func main() {
 	// os.Exit(mainRet())
 }
@@ -79,7 +82,7 @@ func main() {
 func mainC(in *C.char) *C.char {
 	args := strings.Split(C.GoString(in), " ")
 	args = append([]string{"btfs"}, args...)
-	fmt.Println("args:", args)
+	//Println("mainC args: ", args)
 	exitCode := mainRet(args)
 	return C.CString("exit code:" + strconv.Itoa(exitCode))
 }
@@ -90,19 +93,19 @@ func mainRet(args []string) int {
 
 	// we'll call this local helper to output errors.
 	// this is so we control how to print errors in one place.
-	//Println("1")
-	printErr := func(err error) {
+	//Println(time.Now().String() + " Step 1: Entering MainRet")
+	/*printErr := func(err error) {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err.Error())
-	}
+	}*/
 
 	stopFunc, err := profileIfEnabled()
 	if err != nil {
-		printErr(err)
+		//Println("Error enabling profile: ", err)
 		return 1
 	}
 	defer stopFunc() // to be executed as late as possible
 
-	//Println("2")
+	//Println(time.Now().String() + " Step 2: Setting up Interrupt handler")
 	intrh, ctx := util.SetupInterruptHandler(ctx)
 	defer intrh.Close()
 
@@ -135,7 +138,7 @@ func mainRet(args []string) int {
 	// so we need to make sure it's stable
 	//os.Args[0] = "ipfs"
 
-	//Println("3", args)
+	//Println(time.Now().String()+" Step 3: ", args)
 	buildEnv := func(ctx context.Context, req *cmds.Request) (cmds.Environment, error) {
 		checkDebug(req)
 		repoPath, err := getRepoPath(req)
@@ -143,11 +146,13 @@ func mainRet(args []string) int {
 			return nil, err
 		}
 		log.Debugf("config path is %s", repoPath)
-
-		//Println("4")
+		//Println("config path is %s", repoPath)
+		//Println("Building evn: Loading plugins")
 		plugins, err := loadPlugins(repoPath)
 		if err != nil {
-			return nil, err
+			//return nil, err
+			//Println(err)
+			//Println("Bypassing return from plugins error... attemping continue...")
 		}
 
 		// this sets up the function that will initialize the node
@@ -159,11 +164,14 @@ func mainRet(args []string) int {
 			Plugins:    plugins,
 			ConstructNode: func() (n *core.IpfsNode, err error) {
 				if req == nil {
+					//	Println("constructing node without a request")
+					//	Println(req)
 					return nil, errors.New("constructing node without a request")
 				}
 
 				r, err := fsrepo.Open(repoPath)
 				if err != nil { // repo is owned by the node
+					//	Println(err)
 					return nil, err
 				}
 
@@ -173,24 +181,26 @@ func mainRet(args []string) int {
 					Repo: r,
 				})
 				if err != nil {
+					//	Println(err)
 					return nil, err
 				}
-
+				//Println("Returnung node build object, env OK :)")
 				return n, nil
 			},
 		}, nil
 	}
 
 	os.Args = args
-	//Println("5", args)
+	//Println(time.Now().String()+" Step 4", args)
 
 	err = cli.Run(ctx, Root, os.Args, os.Stdin, os.Stdout, os.Stderr, buildEnv, makeExecutor)
 	if err != nil {
-		//Println("6", err)
+		//Println(time.Now().String()+" Step 5: Error running", err)
 		return 1
 	}
 
-	//Println("7")
+	//Println(time.Now().String() + " Step 6: Command executed properly :) . Trying to Close Repo...")
+
 	// everything went better than expected :)
 	return 0
 }
