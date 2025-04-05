@@ -106,10 +106,27 @@ Build your desired shared library or binary file by:
 2. `cd cmd/btfs/` for Desktop and wasm | `cd cmd/btfs_lib` for mobile
 3. `make YOUR_BUILD` where "YOUR_BUILD" is any of the builds described in the above section
 
+
+**ANDROID**
+
+Note: Due to a [long unsolved issue with go net](https://github.com/golang/go/issues/40569#issuecomment-1907675841) we need to perform additional steps to build jniLibs for Android. Before proceeding with dCloud build you need to do the following:
+
+1. Download applicable go source code from: https://go.dev/dl/
+2. Replace the following files:
+
+   [interface_linux.go](https://github.com/simbadMarino/btfs-sharedLib/tree/main/assets/android_net_assets)
+
+   [netlink_llinux.go](https://github.com/simbadMarino/btfs-sharedLib/tree/main/assets/android_net_assets)
+
+   into the go/src directory
+3. Compile golang distribution by entering src folder and sending `./all.bash` in a terminal.
+4. Update GOROOT envvar by sending: `export GOROOT=/path/to/your/modified/go/folder` (e.g. `export GOROOT=/Users/user1/Documents/go`)
+5. Compile btfs-shared-library as usual.
+
 ## go-btfs Reference
 
 For further details about go-btfs please go to: https://github.com/bittorrent/go-btfs
 
-## License 
+## License
 
 [MIT](./LICENSE)
