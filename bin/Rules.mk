@@ -15,6 +15,8 @@ else
 	ln -s $(notdir $^) $@
 endif
 
+bin/protoc-gen-gogofaster:
+	$(call go-build,github.com/gogo/protobuf/protoc-gen-gogofaster)
 
 CLEAN += $(TGTS_$(d))
 include mk/footer.mk

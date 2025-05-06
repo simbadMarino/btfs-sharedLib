@@ -13,7 +13,7 @@ import (
 
 	version "github.com/bittorrent/go-btfs"
 	cmds "github.com/bittorrent/go-btfs-cmds"
-	////"github.com/bittorrent/go-btfs/chain"
+	"github.com/bittorrent/go-btfs/chain"
 	"github.com/bittorrent/go-btfs/core"
 	"github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	ke "github.com/bittorrent/go-btfs/core/commands/keyencode"
@@ -207,22 +207,22 @@ func printPeer(keyEnc ke.KeyEncoder, ps pstore.Peerstore, p peer.ID, node *core.
 	if node.IsDaemon {
 		info.DaemonProcessID = os.Getpid()
 
-	//	info.BttcAddress = chain.ChainObject.OverlayAddress.Hex()
-		//info.VaultAddress = chain.SettleObject.VaultService.Address().Hex()
+		info.BttcAddress = chain.ChainObject.OverlayAddress.Hex()
+		info.VaultAddress = chain.SettleObject.VaultService.Address().Hex()
 	} else {
 		info.DaemonProcessID = -1
 
-		//bttcAddr, err := chain.GetBttcNonDaemon(env)
+		bttcAddr, err := chain.GetBttcNonDaemon(env)
 		if err != nil {
 			return nil, err
 		}
-		//info.BttcAddress = bttcAddr
+		info.BttcAddress = bttcAddr
 
-		//valutAddr, err := chain.GetVaultNonDaemon(env)
+		valutAddr, err := chain.GetVaultNonDaemon(env)
 		if err != nil {
 			return nil, err
 		}
-		//info.VaultAddress = valutAddr
+		info.VaultAddress = valutAddr
 	}
 
 	return info, nil
@@ -274,27 +274,27 @@ func printSelf(keyEnc ke.KeyEncoder, node *core.IpfsNode, env cmds.Environment) 
 		info.DaemonProcessID = os.Getpid()
 
 		if !conf.SimpleMode {
-		//	info.BttcAddress = chain.ChainObject.OverlayAddress.Hex()
-			//info.VaultAddress = chain.SettleObject.VaultService.Address().Hex()
+			info.BttcAddress = chain.ChainObject.OverlayAddress.Hex()
+			info.VaultAddress = chain.SettleObject.VaultService.Address().Hex()
 
 			// show chain id only local peer and in daemon mode
-		//	info.ChainID = chain.ChainObject.ChainID
+			info.ChainID = chain.ChainObject.ChainID
 		}
 
 	} else {
 		info.DaemonProcessID = -1
 
-	//	bttcAddr, err := chain.GetBttcNonDaemon(env)
+		bttcAddr, err := chain.GetBttcNonDaemon(env)
 		if err != nil {
 			return nil, err
 		}
-	//	info.BttcAddress = bttcAddr
+		info.BttcAddress = bttcAddr
 
-	//	valutAddr, err := chain.GetVaultNonDaemon(env)
+		valutAddr, err := chain.GetVaultNonDaemon(env)
 		if err != nil {
 			return nil, err
 		}
-		//info.VaultAddress = valutAddr
+		info.VaultAddress = valutAddr
 	}
 
 	return info, nil

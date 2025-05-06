@@ -8,7 +8,7 @@ import (
 	_ "github.com/bittorrent/protobuf/gogoproto"
 	proto "github.com/bittorrent/protobuf/proto"
 	github_com_tron_us_protobuf_types "github.com/bittorrent/protobuf/types"
-	_ "github.com/bittorrent/protobuf/types"
+	_ "github.com/gogo/protobuf/types"
 	golang_proto "github.com/golang/protobuf/proto"
 	io "io"
 	math "math"

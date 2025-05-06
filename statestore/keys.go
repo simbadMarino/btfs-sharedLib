@@ -2,7 +2,7 @@ package statestore
 
 import (
 	"fmt"
-	//"github.com/bittorrent/go-btfs/chain/tokencfg"
+	"github.com/bittorrent/go-btfs/chain/tokencfg"
 	"time"
 
 	"github.com/bittorrent/go-btfs/utils"

@@ -11,7 +11,7 @@ import (
 	btns "github.com/bittorrent/go-btns"
 	pb "github.com/bittorrent/go-btns/pb"
 
-	proto "github.com/bittorrent/protobuf/proto"
+	proto "github.com/gogo/protobuf/proto"
 	ds "github.com/ipfs/go-datastore"
 	logging "github.com/ipfs/go-log"
 	path "github.com/ipfs/go-path"

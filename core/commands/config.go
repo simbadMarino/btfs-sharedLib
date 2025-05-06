@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	////"github.com/bittorrent/go-btfs/chain"
+	"github.com/bittorrent/go-btfs/chain"
 	"github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	"github.com/bittorrent/go-btfs/repo"
 	"github.com/bittorrent/go-btfs/repo/fsrepo"
@@ -407,11 +407,11 @@ var SyncChainInfoCmd = &cmds.Command{
 			return errors.New("please start the node first, for synchronization")
 		}
 
-		//cfgRoot, err := cmdenv.GetConfigRoot(env)
+		cfgRoot, err := cmdenv.GetConfigRoot(env)
 		if err != nil {
 			return err
 		}
-		/*chainInfo := chain.ChainObject
+		chainInfo := chain.ChainObject
 		err = SyncConfigChainInfo(cfgRoot, &chainInfo)
 		if err != nil {
 			return err
@@ -420,7 +420,7 @@ var SyncChainInfoCmd = &cmds.Command{
 		err = chain.StoreChainIdIfNotExists(chainInfo.ChainID, chain.StateStore)
 		if err != nil {
 			return err
-		}*/
+		}
 
 		out := fmt.Sprintf("sync chain info ok. \n")
 		return cmds.EmitOnce(res, &out)
@@ -706,7 +706,7 @@ func transformConfig(configRoot string, configName string, transformer config.Tr
 	return oldCfg, newCfg, nil
 }
 
-/*func SyncConfigChainInfo(configRoot string, chainInfo *chain.ChainInfo) error {
+func SyncConfigChainInfo(configRoot string, chainInfo *chain.ChainInfo) error {
 	r, err := fsrepo.Open(configRoot)
 	if err != nil {
 		return err
@@ -730,7 +730,7 @@ func transformConfig(configRoot string, configName string, transformer config.Tr
 	}
 
 	return nil
-}*/
+}
 
 func SyncConfigChainInfoV2(configRoot string, chainid int64, endpoint string, currentFactoryAddr, priceOracleAddr common.Address) error {
 	r, err := fsrepo.Open(configRoot)

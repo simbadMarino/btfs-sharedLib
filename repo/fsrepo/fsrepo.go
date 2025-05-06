@@ -10,14 +10,12 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-	"embed"
-	"encoding/json"
 
 	keystore "github.com/bittorrent/go-btfs/keystore"
 	repo "github.com/bittorrent/go-btfs/repo"
 	"github.com/bittorrent/go-btfs/repo/common"
 	mfsr "github.com/bittorrent/go-btfs/repo/fsrepo/migrations"
-	//dir "github.com/bittorrent/go-btfs/thirdparty/dir"
+	dir "github.com/bittorrent/go-btfs/thirdparty/dir"
 
 	config "github.com/bittorrent/go-btfs-config"
 	serialize "github.com/bittorrent/go-btfs-config/serialize"
@@ -106,8 +104,6 @@ type FSRepo struct {
 	keystore keystore.Keystore
 	filemgr  *filestore.FileManager
 }
-//go:embed btfsrepo/*
-var btfsrepo embed.FS
 
 var _ repo.Repo = (*FSRepo)(nil)
 
@@ -125,7 +121,6 @@ func open(repoPath string) (repo.Repo, error) {
 	defer packageLock.Unlock()
 
 	r, err := newFSRepo(repoPath)
-	log.Error("expPath: ", r)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +130,7 @@ func open(repoPath string) (repo.Repo, error) {
 		return nil, err
 	}
 
-/*	r.lockfile, err = lockfile.Lock(r.path, LockFile)
+	r.lockfile, err = lockfile.Lock(r.path, LockFile)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +140,7 @@ func open(repoPath string) (repo.Repo, error) {
 		if !keepLocked {
 			r.lockfile.Close()
 		}
-	}()*/
+	}()
 
 	// Check version, and error out if not matching
 	//ver, err := mfsr.RepoPath(r.path).Version()
@@ -165,9 +160,9 @@ func open(repoPath string) (repo.Repo, error) {
 	//}
 
 	// check repo path, then check all constituent parts.
-	/*if err := dir.Writable(r.path); err != nil {
+	if err := dir.Writable(r.path); err != nil {
 		return nil, err
-	}*/
+	}
 
 	if err := r.openConfig(); err != nil {
 		return nil, err
@@ -187,7 +182,7 @@ func open(repoPath string) (repo.Repo, error) {
 		r.filemgr.AllowUrls = r.config.Experimental.UrlstoreEnabled
 	}
 
-	//keepLocked = true
+	keepLocked = true
 	return r, nil
 }
 
@@ -395,12 +390,10 @@ func (r *FSRepo) SetAPIAddr(addr ma.Multiaddr) error {
 // openConfig returns an error if the config file is not present.
 func (r *FSRepo) openConfig() error {
 	configFilename, err := config.Filename(r.path)
-	log.Error("config filename: ",configFilename)
 	if err != nil {
 		return err
 	}
-	conf, err := Load(configFilename)
-	log.Error("conf: ",conf)
+	conf, err := serialize.Load(configFilename)
 	if err != nil {
 		return err
 	}
@@ -574,7 +567,7 @@ func (r *FSRepo) setConfigUnsynced(updated *config.Config) error {
 	// as a map, write the updated struct values to the map and write the map
 	// to disk.
 	var mapconf map[string]interface{}
-	if err := ReadConfigFile(configFilename, &mapconf); err != nil {
+	if err := serialize.ReadConfigFile(configFilename, &mapconf); err != nil {
 		return err
 	}
 	m, err := config.ToMap(updated)
@@ -618,7 +611,7 @@ func (r *FSRepo) GetConfigKey(key string) (interface{}, error) {
 		return nil, err
 	}
 	var cfg map[string]interface{}
-	if err := ReadConfigFile(filename, &cfg); err != nil {
+	if err := serialize.ReadConfigFile(filename, &cfg); err != nil {
 		return nil, err
 	}
 	return common.MapGetKV(cfg, key)
@@ -639,7 +632,7 @@ func (r *FSRepo) SetConfigKey(key string, value interface{}) error {
 	}
 	// Load into a map so we don't end up writing any additional defaults to the config file.
 	var mapconf map[string]interface{}
-	if err := ReadConfigFile(filename, &mapconf); err != nil {
+	if err := serialize.ReadConfigFile(filename, &mapconf); err != nil {
 		return err
 	}
 
@@ -728,45 +721,4 @@ func IsInitialized(path string) bool {
 // hold the packageLock.
 func isInitializedUnsynced(repoPath string) bool {
 	return configIsInitialized(repoPath)
-}
-
-
-// ReadConfigFile reads the config from `filename` into `cfg`.
-func ReadConfigFile(filename string, cfg interface{}) error {
-	log.Error("filename from ReadconfirFile: ",filename)
-	dir, err := btfsrepo.ReadDir("btfsrepo")
-	log.Error("embed dir: ",dir, err)
-	f, err := btfsrepo.Open("btfsrepo/config")
-	log.Error(f)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	if err := json.NewDecoder(f).Decode(cfg); err != nil {
-		return fmt.Errorf("failure to decode config: %s", err)
-	}
-	return nil
-}
-
-
-func Load(filename string) (*config.Config, error) {
-	var cfg config.Config
-	log.Error("filename: ",filename)
-	err := ReadConfigFile(filename, &cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	// After reading config from the file, try to rewrite content of "IPFS" and "IPNS" fileds with the content of "BTFS" and "BTNS" fields.
-	// The content of "IPFS" and "IPNS" fields will still be used when old config firstly be loaded,
-	// and the content of "BTFS" and "BTNS" fields will be used
-	// after they be written into the file.
-	if cfg.Mounts.BTFS != "" {
-		cfg.Mounts.IPFS = cfg.Mounts.BTFS
-	}
-	if cfg.Mounts.BTNS != "" {
-		cfg.Mounts.IPNS = cfg.Mounts.BTNS
-	}
-
-	return &cfg, err
 }

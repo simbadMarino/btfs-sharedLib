@@ -8,7 +8,7 @@ import (
 	ipns "github.com/bittorrent/go-btns"
 	pb "github.com/bittorrent/go-btns/pb"
 	opts "github.com/bittorrent/interface-go-btfs-core/options/namesys"
-	proto "github.com/bittorrent/protobuf/proto"
+	proto "github.com/gogo/protobuf/proto"
 	cid "github.com/ipfs/go-cid"
 	logging "github.com/ipfs/go-log"
 	path "github.com/ipfs/go-path"

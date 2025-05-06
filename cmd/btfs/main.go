@@ -119,9 +119,7 @@ func mainRet() int {
 
 	// output depends on executable name passed in os.Args
 	// so we need to make sure it's stable
-	os.Args = append(os.Args, "daemon")
-	//os.Args[0] = "btfs daemon"
-	//os.Args[1] = "daemon"
+	//os.Args[0] = "ipfs"
 
 	buildEnv := func(ctx context.Context, req *cmds.Request) (cmds.Environment, error) {
 		checkDebug(req)
@@ -129,12 +127,12 @@ func mainRet() int {
 		if err != nil {
 			return nil, err
 		}
-		//log.Error("config path is %s", repoPath)
+		log.Debugf("config path is %s", repoPath)
 
-	/*	plugins, err := loadPlugins(repoPath)
+		plugins, err := loadPlugins(repoPath)
 		if err != nil {
 			return nil, err
-		}*/
+		}
 
 		// this sets up the function that will initialize the node
 		// this is so that we can construct the node lazily.
@@ -142,16 +140,15 @@ func mainRet() int {
 			ConfigRoot: repoPath,
 			LoadConfig: loadConfig,
 			ReqLog:     &oldcmds.ReqLog{},
-			//Plugins:    plugins,
+			Plugins:    plugins,
 			ConstructNode: func() (n *core.IpfsNode, err error) {
 				if req == nil {
 					return nil, errors.New("constructing node without a request")
 				}
-				//log.Error("About to open")
+
 				r, err := fsrepo.Open(repoPath)
 				if err != nil { // repo is owned by the node
 					return nil, err
-					//log.Error("Something failed during opening")
 				}
 
 				// ok everything is good. set it on the invocation (for ownership)

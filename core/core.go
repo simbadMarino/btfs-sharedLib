@@ -19,7 +19,7 @@ import (
 	"github.com/bittorrent/go-btfs/core/bootstrap"
 	"github.com/bittorrent/go-btfs/core/node"
 	"github.com/bittorrent/go-btfs/core/node/libp2p"
-	//"github.com/bittorrent/go-btfs/fuse/mount"
+	"github.com/bittorrent/go-btfs/fuse/mount"
 	"github.com/bittorrent/go-btfs/namesys"
 	ipnsrp "github.com/bittorrent/go-btfs/namesys/republisher"
 	"github.com/bittorrent/go-btfs/p2p"
@@ -64,7 +64,7 @@ type IpfsNode struct {
 
 	// Local node
 	Pinning         pin.Pinner             // the pinning manager
-	//Mounts          Mounts                 `optional:"true"` // current mount state, if any.
+	Mounts          Mounts                 `optional:"true"` // current mount state, if any.
 	PrivateKey      ic.PrivKey             `optional:"true"` // the local node's private Key
 	PNetFingerprint libp2p.PNetFingerprint `optional:"true"` // fingerprint of private network
 
@@ -82,7 +82,7 @@ type IpfsNode struct {
 	Discovery            discovery.Service         `optional:"true"`
 	FilesRoot            *mfs.Root
 	RecordValidator      record.Validator
-	//Statestore      storage.StateStorer
+	// Statestore      storage.StateStorer
 
 	// Online
 	PeerHost      p2phost.Host               `optional:"true"` // the network host (server+client)
@@ -115,10 +115,10 @@ type IpfsNode struct {
 // Mounts defines what the node's mount state is. This should
 // perhaps be moved to the daemon or mount. It's here because
 // it needs to be accessible across daemon requests.
-/*type Mounts struct {
+type Mounts struct {
 	Ipfs mount.Mount
 	Ipns mount.Mount
-}*/
+}
 
 // Close calls Close() on the App object
 func (n *IpfsNode) Close() error {

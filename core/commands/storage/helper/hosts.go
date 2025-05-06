@@ -13,7 +13,7 @@ import (
 	nodepb "github.com/bittorrent/go-btfs-common/protos/node"
 
 	"github.com/dustin/go-humanize"
-	"github.com/bittorrent/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	ds "github.com/ipfs/go-datastore"
 	"github.com/ipfs/go-datastore/query"
 	"github.com/shirou/gopsutil/v3/disk"

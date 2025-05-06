@@ -1,14 +1,16 @@
 package main
 
 import (
-	//"context"
-	//"encoding/base64"
-	//"encoding/hex"
+	"context"
+	"encoding/base64"
+	"encoding/hex"
 	"errors"
 	_ "expvar"
 	"fmt"
+	"github.com/bittorrent/go-btfs/s3"
+	"github.com/bittorrent/go-btfs/s3/api/services/accesskey"
 	"io/ioutil"
-	//"math/rand"
+	"math/rand"
 	"net"
 	"net/http"
 	_ "net/http/pprof"
@@ -19,43 +21,43 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	//"time"
+	"time"
 
-//	"github.com/bittorrent/go-btfs/chain/tokencfg"
+	"github.com/bittorrent/go-btfs/chain/tokencfg"
 
-	//"github.com/bittorrent/go-btfs/guide"
+	"github.com/bittorrent/go-btfs/guide"
 
 	version "github.com/bittorrent/go-btfs"
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	config "github.com/bittorrent/go-btfs-config"
 	cserial "github.com/bittorrent/go-btfs-config/serialize"
 	"github.com/bittorrent/go-btfs/bindata"
-	////"github.com/bittorrent/go-btfs/chain"
-	//cc "github.com/bittorrent/go-btfs/chain/config"
-	//chainconfig "github.com/bittorrent/go-btfs/chain/config"
+	"github.com/bittorrent/go-btfs/chain"
+	cc "github.com/bittorrent/go-btfs/chain/config"
+	chainconfig "github.com/bittorrent/go-btfs/chain/config"
 	utilmain "github.com/bittorrent/go-btfs/cmd/btfs/util"
 	oldcmds "github.com/bittorrent/go-btfs/commands"
 	"github.com/bittorrent/go-btfs/core"
 	commands "github.com/bittorrent/go-btfs/core/commands"
-//	"github.com/bittorrent/go-btfs/core/commands/cmdenv"
+	"github.com/bittorrent/go-btfs/core/commands/cmdenv"
 	"github.com/bittorrent/go-btfs/core/commands/storage/path"
 	corehttp "github.com/bittorrent/go-btfs/core/corehttp"
 	httpremote "github.com/bittorrent/go-btfs/core/corehttp/remote"
 	corerepo "github.com/bittorrent/go-btfs/core/corerepo"
 	libp2p "github.com/bittorrent/go-btfs/core/node/libp2p"
-	//nodeMount "github.com/bittorrent/go-btfs/fuse/node"
-	//"github.com/bittorrent/go-btfs/repo"
+	nodeMount "github.com/bittorrent/go-btfs/fuse/node"
+	"github.com/bittorrent/go-btfs/repo"
 	fsrepo "github.com/bittorrent/go-btfs/repo/fsrepo"
-	//"github.com/bittorrent/go-btfs/reportstatus"
-	//"github.com/bittorrent/go-btfs/settlement/swap/vault"
-//	"github.com/bittorrent/go-btfs/spin"
-//	"github.com/bittorrent/go-btfs/transaction"
-	//"github.com/bittorrent/go-btfs/transaction/crypto"
-	//"github.com/bittorrent/go-btfs/transaction/storage"
-	//"github.com/ethereum/go-ethereum/common"
+	"github.com/bittorrent/go-btfs/reportstatus"
+	"github.com/bittorrent/go-btfs/settlement/swap/vault"
+	"github.com/bittorrent/go-btfs/spin"
+	"github.com/bittorrent/go-btfs/transaction"
+	"github.com/bittorrent/go-btfs/transaction/crypto"
+	"github.com/bittorrent/go-btfs/transaction/storage"
+	"github.com/ethereum/go-ethereum/common"
 
-	//cp "github.com/bittorrent/go-btfs-common/crypto"
-	//nodepb "github.com/bittorrent/go-btfs-common/protos/node"
+	cp "github.com/bittorrent/go-btfs-common/crypto"
+	nodepb "github.com/bittorrent/go-btfs-common/protos/node"
 	multierror "github.com/hashicorp/go-multierror"
 	util "github.com/ipfs/go-ipfs-util"
 	mprome "github.com/ipfs/go-metrics-prometheus"
@@ -100,6 +102,7 @@ const (
 	chainID                   = "chain-id"
 	// apiAddrKwd    = "address-api"
 	// swarmAddrKwd  = "address-swarm"
+	enableS3CompatibleAPIKwd = "s3-compatible-api"
 )
 
 // BTFS daemon test exit error code
@@ -227,6 +230,7 @@ Headers.
 		// TODO: add way to override addresses. tricky part: updating the config if also --init.
 		// cmds.StringOption(apiAddrKwd, "Address for the daemon rpc API (overrides config)"),
 		// cmds.StringOption(swarmAddrKwd, "Address for the swarm socket (overrides config)"),
+		cmds.BoolOption(enableS3CompatibleAPIKwd, "Enable s3-compatible-api server"),
 	},
 	Subcommands: map[string]*cmds.Command{},
 	NoRemote:    true,
@@ -371,34 +375,34 @@ If the user need to start multiple nodes on the same machine, the configuration 
 	fmt.Printf("Repo location: %s\n", cctx.ConfigRoot)
 	fmt.Printf("Peer identity: %s\n", cfg.Identity.PeerID)
 
-	// privKey, err := cp.ToPrivKey(cfg.Identity.PrivKey)
-	// if err != nil {
-	// 	return err
-	// }
+	privKey, err := cp.ToPrivKey(cfg.Identity.PrivKey)
+	if err != nil {
+		return err
+	}
 
-	// keys, err := cp.FromIcPrivateKey(privKey)
-	// if err != nil {
-	// 	return err
-	// }
-	//
-	// // decode from string
-	// pkbytesOri, err := base64.StdEncoding.DecodeString(cfg.Identity.PrivKey)
-	// if err != nil {
-	// 	return err
-	// }
+	keys, err := cp.FromIcPrivateKey(privKey)
+	if err != nil {
+		return err
+	}
+
+	// decode from string
+	pkbytesOri, err := base64.StdEncoding.DecodeString(cfg.Identity.PrivKey)
+	if err != nil {
+		return err
+	}
 	//new singer
-	//pk := crypto.Secp256k1PrivateKeyFromBytes(pkbytesOri[4:])
-	// singer := crypto.NewDefaultSigner(pk)
-	//
-	// address0x, _ := singer.EthereumAddress()
-	//
-	// fmt.Println("the address of Bttc format is: ", address0x)
-	// fmt.Println("the address of Tron format is: ", keys.Base58Address)
+	pk := crypto.Secp256k1PrivateKeyFromBytes(pkbytesOri[4:])
+	singer := crypto.NewDefaultSigner(pk)
+
+	address0x, _ := singer.EthereumAddress()
+
+	fmt.Println("the address of Bttc format is: ", address0x)
+	fmt.Println("the address of Tron format is: ", keys.Base58Address)
 
 	SimpleMode := cfg.SimpleMode
 	if SimpleMode == false {
 		// guide server init
-	/*	optionApiAddr, _ := req.Options[commands.ApiOption].(string)
+		optionApiAddr, _ := req.Options[commands.ApiOption].(string)
 		guide.SetServerAddr(cfg.Addresses.API, optionApiAddr)
 		guide.SetInfo(&guide.Info{
 			BtfsVersion: version.CurrentVersionNumber,
@@ -407,11 +411,11 @@ If the user need to start multiple nodes on the same machine, the configuration 
 			PrivateKey:  hex.EncodeToString(pkbytesOri[4:]),
 		})
 		guide.StartServer()
-		defer guide.TryShutdownServer()*/
+		defer guide.TryShutdownServer()
 	}
 
 	//chain init
-	/*configRoot := cctx.ConfigRoot
+	configRoot := cctx.ConfigRoot
 	statestore, err := chain.InitStateStore(configRoot)
 	if err != nil {
 		fmt.Println("init statestore err: ", err)
@@ -419,9 +423,9 @@ If the user need to start multiple nodes on the same machine, the configuration 
 	}
 	defer func() {
 		statestore.Close()
-	}()*/
+	}()
 
-	if SimpleMode == false {/*
+	if SimpleMode == false {
 		chainid, stored, err := getChainID(req, cfg, statestore)
 		if err != nil {
 			return err
@@ -481,7 +485,7 @@ If the user need to start multiple nodes on the same machine, the configuration 
 		}
 
 		/*settleinfo*/
-	/*	settleInfo, err := chain.InitSettlement(context.Background(), statestore, chainInfo, deployGasPrice, chainInfo.ChainID)
+		settleInfo, err := chain.InitSettlement(context.Background(), statestore, chainInfo, deployGasPrice, chainInfo.ChainID)
 		if err != nil {
 			fmt.Println("init settlement err: ", err)
 			if strings.Contains(err.Error(), "insufficient funds") {
@@ -493,10 +497,10 @@ If the user need to start multiple nodes on the same machine, the configuration 
 			}
 
 			return err
-		}*/
+		}
 
 		/*upgrade vault implementation*/
-		/*oldImpl, newImpl, err := settleInfo.VaultService.UpgradeTo(context.Background(), chainInfo.Chainconfig.VaultLogicAddress)
+		oldImpl, newImpl, err := settleInfo.VaultService.UpgradeTo(context.Background(), chainInfo.Chainconfig.VaultLogicAddress)
 		if err != nil {
 			emsg := err.Error()
 			if strings.Contains(emsg, "already upgraded") {
@@ -521,7 +525,7 @@ If the user need to start multiple nodes on the same machine, the configuration 
 		if err != nil {
 			fmt.Println("check report status, err: ", err)
 			return err
-		}*/
+		}
 	}
 
 	// init ip2location db
@@ -645,7 +649,7 @@ If the user need to start multiple nodes on the same machine, the configuration 
 
 	if SimpleMode == false {
 		// if the guide server was started, shutdown it
-	//	guide.TryShutdownServer()
+		guide.TryShutdownServer()
 	}
 
 	// construct api endpoint - every time
@@ -713,21 +717,49 @@ If the user need to start multiple nodes on the same machine, the configuration 
 		functest(cfg.Services.OnlineServerDomain, cfg.Identity.PeerID, hValue)
 	}
 
+	// Init s3 providers
+	err = s3.InitProviders(statestore)
+	if err != nil {
+		return err
+	}
+
+	// Init access-key
+	accesskey.InitService(s3.GetProviders())
+
+	// Start s3-compatible-api server
+	s3OptEnable, s3Opt := req.Options[enableS3CompatibleAPIKwd].(bool)
+	if s3OptEnable || (!s3Opt && cfg.S3CompatibleAPI.Enable) {
+		s3Server := s3.NewServer(cfg.S3CompatibleAPI)
+		err = s3Server.Start()
+		if err != nil {
+			fmt.Printf("S3-Compatible-API server: %v\n", err)
+			return
+		}
+		fmt.Printf("S3-Compatible-API server started, endpoint-url: http://%s\n", cfg.S3CompatibleAPI.Address)
+		defer func() {
+			err = s3Server.Stop()
+			if err != nil {
+				fmt.Printf("S3-Compatible-API server: %v\n", err)
+			}
+		}()
+	}
+
 	if SimpleMode == false {
 		// set Analytics flag if specified
 		if dc, ok := req.Options[enableDataCollection]; ok == true {
 			node.Repo.SetConfigKey("Experimental.Analytics", dc)
 		}
 		// Spin jobs in the background
-		/*spin.RenterSessions(req, env)
+		spin.RenterSessions(req, env)
 		api, err := cmdenv.GetApi(env, req)
 		if err != nil {
 			return err
-		}*/
+		}
 
-		/*spin.Analytics(api, cctx.ConfigRoot, node, version.CurrentVersionNumber, hValue)
+		spin.Analytics(api, cctx.ConfigRoot, node, version.CurrentVersionNumber, hValue)
 		spin.Hosts(node, env)
-		spin.Contracts(node, req, env, nodepb.ContractStat_HOST.String())*/
+		spin.Contracts(node, req, env, nodepb.ContractStat_HOST.String())
+		spin.RestartFixChequeCashOut()
 	}
 
 	// Give the user some immediate feedback when they hit C-c
@@ -877,17 +909,17 @@ func getInputChainID(req *cmds.Request) (chainid int64, err error) {
 	return 0, nil
 }
 
-/*func getChainID(req *cmds.Request, cfg *config.Config, stateStorer storage.StateStorer) (chainId int64, stored bool, err error) {
+func getChainID(req *cmds.Request, cfg *config.Config, stateStorer storage.StateStorer) (chainId int64, stored bool, err error) {
 	cfgChainId := cfg.ChainInfo.ChainId
 	inputChainId, err := getInputChainID(req)
 	if err != nil {
 		return 0, stored, err
 	}
-/*	storeChainid, err := chain.GetChainIdFromDisk(stateStorer)
+	storeChainid, err := chain.GetChainIdFromDisk(stateStorer)
 	if err != nil {
 		return 0, stored, err
-	}*/
-/*
+	}
+
 	chainId = cc.DefaultChain
 	//config chain version, must be have cfgChainId
 	if storeChainid > 0 {
@@ -922,7 +954,7 @@ func getInputChainID(req *cmds.Request) (chainid int64, err error) {
 	}
 
 	return chainId, stored, nil
-}*/
+}
 
 // printSwarmAddrs prints the addresses of the host
 func printSwarmAddrs(node *core.IpfsNode) {
@@ -1130,15 +1162,15 @@ func mountFuse(req *cmds.Request, cctx *oldcmds.Context) error {
 		nsdir = cfg.Mounts.IPNS
 	}
 
-	/*node, err := cctx.ConstructNode()
+	node, err := cctx.ConstructNode()
 	if err != nil {
 		return fmt.Errorf("mountFuse: ConstructNode() failed: %s", err)
-	}*/
+	}
 
-	/*err = nodeMount.Mount(node, fsdir, nsdir)
+	err = nodeMount.Mount(node, fsdir, nsdir)
 	if err != nil {
 		return err
-	}*/
+	}
 	fmt.Printf("BTFS mounted at: %s\n", fsdir)
 	fmt.Printf("BTNS mounted at: %s\n", nsdir)
 	return nil
@@ -1284,4 +1316,177 @@ func functest(onlineServerDomain, peerId, hValue string) {
 	} else {
 		fmt.Printf("BTFS daemon test skipped\n")
 	}
+}
+
+// VaultFactory upgraded to V2, we need re-deploy a vault for user
+func doIfNeedUpgradeFactoryToV2(chainid int64, chainCfg *chainconfig.ChainConfig, statestore storage.StateStorer, repo repo.Repo, cfg *config.Config, configRoot string) (need bool, err error) {
+
+	currChainCfg, ok := chainconfig.GetChainConfig(chainid)
+	if !ok {
+		err = errors.New(fmt.Sprintf("chain %d is not supported yet", chainid))
+		return
+	}
+
+	confFactory := cfg.ChainInfo.CurrentFactory      // Factory address from config file, may be ""
+	currFactory := currChainCfg.CurrentFactory.Hex() // Factory address read from source code
+	if !chainconfig.IsV2FactoryAddr(currFactory) {
+		return
+	}
+
+	// calculate whether need to upgrade factory to v2
+	if confFactory == "" {
+		need = true
+	} else {
+		if confFactory == currFactory {
+			need = false
+		} else {
+			need = chainconfig.IsV1FactoryAddr(confFactory)
+		}
+	}
+	if !need {
+		return
+	}
+
+	fmt.Println("prepare upgrading your vault contract")
+
+	oldVault, err := vault.GetStoredVaultAddr(statestore)
+	if err != nil {
+		return
+	}
+
+	// backup `statestore` folder
+	err = statestore.Close()
+	if err != nil {
+		return
+	}
+
+	bkSuffix := fmt.Sprintf("backup%d", rand.Intn(100))
+	err = chain.BackUpStateStore(configRoot, bkSuffix)
+	if err != nil {
+		return
+	}
+
+	// backup `config` file
+	var bkConfig string
+	bkConfig, err = repo.BackUpConfigV2(bkSuffix)
+	if err != nil {
+		fmt.Printf("backup config file failed, err: %s\n", err)
+		return
+	}
+	fmt.Printf("backup config file successfully to %s\n", bkConfig)
+
+	// update factory address and other chain info to config file.
+	// note that we only changed the `CurrentFactory`, so we won't overide other chaininfo field in the config file.
+	chainCfg.CurrentFactory = common.HexToAddress(currFactory)
+
+	cfg.ChainInfo.ChainId = chainid // set these fields here is a little tricky
+	cfg.ChainInfo.Endpoint = chainCfg.Endpoint
+	cfg.ChainInfo.CurrentFactory = chainCfg.CurrentFactory.Hex()
+	cfg.ChainInfo.PriceOracleAddress = chainCfg.PriceOracleAddress.Hex()
+
+	err = commands.SyncConfigChainInfoV2(configRoot, chainid, chainCfg.Endpoint, chainCfg.CurrentFactory, chainCfg.PriceOracleAddress)
+	if err != nil {
+		return
+	}
+
+	zeroaddr := common.Address{}
+	if oldVault != zeroaddr {
+		fmt.Printf("your old vault address is %s\n", oldVault)
+	}
+	fmt.Println("will re-deploy a vault contract for you")
+	return
+}
+
+// CheckExistLastOnlineReport sync conf and lastOnlineInfo
+func CheckExistLastOnlineReport(cfg *config.Config, configRoot string, chainId int64, reportStatusServ reportstatus.Service) error {
+	lastOnline, err := chain.GetLastOnline()
+	if err != nil {
+		return err
+	}
+
+	// if nil, set config online status config
+	if lastOnline == nil {
+		var reportOnline bool
+		var reportStatusContract bool
+		if cfg.Experimental.StorageHostEnabled {
+			reportOnline = true
+			reportStatusContract = true
+		}
+
+		var onlineServerDomain string
+		if chainId == 199 {
+			onlineServerDomain = config.DefaultServicesConfig().OnlineServerDomain
+		} else {
+			onlineServerDomain = config.DefaultServicesConfigTestnet().OnlineServerDomain
+		}
+
+		err = commands.SyncConfigOnlineCfg(configRoot, onlineServerDomain, reportOnline, reportStatusContract)
+		if err != nil {
+			return err
+		}
+	}
+
+	// if nil, set last online info
+	if lastOnline == nil {
+		err = reportStatusServ.CheckLastOnlineInfo(cfg.Identity.PeerID, cfg.Identity.BttcAddr)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// CheckExistLastOnlineReport sync conf and lastOnlineInfo
+func CheckHubDomainConfig(cfg *config.Config, configRoot string, chainId int64) error {
+	var hubServerDomain string
+	if chainId == 199 {
+		hubServerDomain = config.DefaultServicesConfig().HubDomain
+	} else {
+		hubServerDomain = config.DefaultServicesConfigTestnet().HubDomain
+	}
+
+	if hubServerDomain != cfg.Services.HubDomain {
+		err := commands.SyncHubDomainConfig(configRoot, hubServerDomain)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// CheckExistLastOnlineReportV2 sync conf and lastOnlineInfo
+func CheckExistLastOnlineReportV2(cfg *config.Config, configRoot string, chainId int64) error {
+	lastOnline, err := chain.GetLastOnline()
+	if err != nil {
+		return err
+	}
+
+	// if nil, set config online status config
+	if lastOnline == nil {
+		var reportOnline bool
+		if cfg.Experimental.StorageHostEnabled {
+			reportOnline = true
+		}
+
+		var onlineServerDomain string
+		if chainId == 199 {
+			onlineServerDomain = config.DefaultServicesConfig().OnlineServerDomain
+		} else {
+			onlineServerDomain = config.DefaultServicesConfigTestnet().OnlineServerDomain
+		}
+
+		err = commands.SyncConfigOnlineCfgV2(configRoot, onlineServerDomain, reportOnline)
+		if err != nil {
+			return err
+		}
+	}
+
+	// if nil, set last online info
+	if lastOnline == nil {
+		if err != spin.GetLastOnlineInfoWhenNodeMigration(context.Background(), cfg) {
+			return err
+		}
+	}
+	return nil
 }

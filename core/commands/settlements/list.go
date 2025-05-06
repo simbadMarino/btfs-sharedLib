@@ -3,13 +3,13 @@ package settlement
 import (
 	"context"
 	"errors"
-	//"github.com/bittorrent/go-btfs/chain/tokencfg"
+	"github.com/bittorrent/go-btfs/chain/tokencfg"
 	"github.com/bittorrent/go-btfs/utils"
 	"math/big"
 	"time"
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
-	//"github.com/bittorrent/go-btfs/chain"
+	"github.com/bittorrent/go-btfs/chain"
 )
 
 type settlementResponse struct {

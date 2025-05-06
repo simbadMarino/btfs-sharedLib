@@ -6,12 +6,12 @@ import (
 	"errors"
 	"fmt"
 
-	//"github.com/bittorrent/go-btfs/transaction/storage"
-	"github.com/syndtr/goleveldb/leveldb"
-	ldberr "github.com/syndtr/goleveldb/leveldb/errors"
+	"github.com/bittorrent/go-btfs/transaction/storage"
 
 	logging "github.com/ipfs/go-log"
+	"github.com/syndtr/goleveldb/leveldb"
 	ldb "github.com/syndtr/goleveldb/leveldb"
+	ldberr "github.com/syndtr/goleveldb/leveldb/errors"
 	ldbs "github.com/syndtr/goleveldb/leveldb/storage"
 	"github.com/syndtr/goleveldb/leveldb/util"
 )

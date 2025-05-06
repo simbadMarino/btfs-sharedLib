@@ -1,0 +1,3 @@
+*.so
+/cmd/btfs_lib/bin/
+/cmd/btfs/bin/

@@ -8,7 +8,7 @@ import (
 
 	cmds "github.com/bittorrent/go-btfs-cmds"
 	Cfg "github.com/bittorrent/go-btfs-config"
-	//"github.com/bittorrent/go-btfs/chain"
+	"github.com/bittorrent/go-btfs/chain"
 )
 
 func TestGetChainID(t *testing.T) {
