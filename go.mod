@@ -1,6 +1,6 @@
 module github.com/bittorrent/go-btfs
 
-go 1.18
+go 1.22
 
 require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137
@@ -12,7 +12,7 @@ require (
 	github.com/bittorrent/go-eccrypto v0.1.0
 	github.com/bittorrent/go-mfs v0.4.0
 	github.com/bittorrent/go-unixfs v0.7.0
-	github.com/bittorrent/interface-go-btfs-core v0.8.2
+	github.com/bittorrent/interface-go-btfs-core v0.9.0
 	github.com/bittorrent/protobuf v1.4.0
 	github.com/bren2010/proquint v0.0.0-20160323162903-38337c27106d
 	github.com/btcsuite/btcd v0.22.1 // indirect
@@ -68,18 +68,15 @@ require (
 	github.com/jbenet/go-temp-err-catcher v0.1.0
 	github.com/jbenet/goprocess v0.1.4
 	github.com/klauspost/reedsolomon v1.9.14
-	github.com/libp2p/go-libp2p v0.24.2
+	github.com/libp2p/go-libp2p v0.36.2
 	github.com/libp2p/go-libp2p-http v0.4.0
-	github.com/libp2p/go-libp2p-kad-dht v0.20.0
+	github.com/libp2p/go-libp2p-kad-dht v0.25.2
 	github.com/libp2p/go-libp2p-kbucket v0.5.0
-	github.com/libp2p/go-libp2p-loggables v0.1.0
-	github.com/libp2p/go-libp2p-pubsub v0.8.1
 	github.com/libp2p/go-libp2p-pubsub-router v0.6.0
 	github.com/libp2p/go-libp2p-record v0.2.0
 	github.com/libp2p/go-libp2p-routing-helpers v0.4.0
 	github.com/libp2p/go-libp2p-testing v0.12.0
 	github.com/libp2p/go-socket-activation v0.1.0
-	github.com/libp2p/go-testutil v0.1.0
 	github.com/markbates/pkger v0.17.1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/multiformats/go-multiaddr v0.8.0
@@ -116,8 +113,7 @@ require (
 )
 
 require (
-	github.com/bittorrent/go-btfs-api v0.5.0
-	github.com/bittorrent/go-btfs-common v0.9.0
+	github.com/bittorrent/go-btfs-common v0.9.1-0.20240823025041-824b78e1c643
 	github.com/bittorrent/go-btfs-config v0.12.3
 	github.com/ethereum/go-ethereum v1.9.24
 )
@@ -145,10 +141,10 @@ require (
 	github.com/ipfs/go-ipld-legacy v0.1.1 // indirect
 	github.com/ipfs/go-ipns v0.3.0 // indirect
 	github.com/ipld/edelweiss v0.2.0 // indirect
-	github.com/libp2p/go-libp2p-core v0.20.1 // indirect
 	github.com/libp2p/go-libp2p-xor v0.1.0 // indirect
 	github.com/libp2p/go-yamux/v4 v4.0.0 // indirect
 	github.com/libp2p/zeroconf/v2 v2.2.0 // indirect
+	github.com/lucas-clemente/quic-go v0.31.1 // indirect
 	github.com/marten-seemann/qpack v0.3.0 // indirect
 	github.com/marten-seemann/qtls-go1-18 v0.1.3 // indirect
 	github.com/marten-seemann/qtls-go1-19 v0.1.1 // indirect
@@ -236,7 +232,6 @@ require (
 	github.com/libp2p/go-netroute v0.2.1 // indirect
 	github.com/libp2p/go-openssl v0.1.0 // indirect
 	github.com/libp2p/go-reuseport v0.4.0 // indirect
-	github.com/lucas-clemente/quic-go v0.31.1 // indirect
 	github.com/marten-seemann/tcp v0.0.0-20210406111302-dfbc87cc63fd // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
@@ -292,7 +287,7 @@ require (
 
 replace github.com/ipfs/go-path => github.com/bittorrent/go-path v0.4.1
 
-replace github.com/syndtr/goleveldb => github.com/simbadMarino/goleveldb v1.1.2
+replace github.com/syndtr/goleveldb => github.com/talentlessguy/goleveldb v1.0.0
 
 replace github.com/bittorrent/go-btfs-files => github.com/simbadMarino/go-btfs-files v0.3.5
 
